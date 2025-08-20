@@ -37,6 +37,10 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
         }
+        .logout-btn { transition: all 0.3s ease; }
+        .logout-btn:hover:not(:disabled) {
+            background-color: #B91C1C;
+        }
         body {
             background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%);
             position: relative;
@@ -101,7 +105,7 @@
                     <input type="file"
                         class="block w-full text-xs sm:text-sm text-gray-400 file:mr-4 file:py-2 sm:file:py-3 file:px-4 sm:file:px-6 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 transition duration-200"
                         id="audioFile" accept=".mp3,.mp4,.wav,.ogg,.m4a,.flac">
-                    <p id="fileHelp" class="mt-1 text-xs text-gray-400">Formatos: MP3, MP4, WAV, OGG, M4A, FLAC. Máx. 10 MB.</p>
+                    <p id="fileHelp" class="mt-1 text-xs text-gray-400">Formatos validos: MP3, MP4, WAV, OGG, M4A, FLAC. Máx. 700 MB.</p>
                 </div>
                 <button type="button"
                     class="btn w-full bg-emerald-600 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center mb-4"
@@ -113,13 +117,23 @@
                     class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed mb-4"
                     id="downloadTxtBtn" disabled>Descargar en TXT</button>
                 <button type="button"
-                    class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed mb-4"
                     id="downloadDocxBtn" disabled>Descargar en Word</button>
+                <button type="button"
+                    class="logout-btn w-full bg-red-600 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    id="logoutBtn">Cerrar Sesión</button>
                 <p id="status" class="mt-4 text-center text-xs sm:text-sm text-gray-400" aria-live="polite"></p>
             </div>
             <div class="w-full md:w-2/3 p-4 sm:p-6 bg-gray-800/90 rounded-xl neumorphic animate-fadeInScale">
                 <div class="flex justify-between items-center mb-2">
-                    <label for="transcript" class="block text-sm sm:text-base font-medium text-gray-200">Transcripción</label>
+                    <div class="flex items-center space-x-2">
+                        <button type="button"
+                            class="btn bg-emerald-500 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center disabled:bg-gray-600 disabled:cursor-not-allowed"
+                            id="reloadBtn" title="Recargar transcripción">
+                            <img src="https://cdn-icons-png.flaticon.com/512/189/189269.png" alt="Reload Icon" class="w-5 h-5 sm:w-6 sm:h-6">
+                        </button>
+                        <label for="transcript" class="text-sm sm:text-base font-medium text-gray-200">Transcripción</label>
+                    </div>
                     <button type="button"
                         class="btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed text-xs sm:text-sm"
                         id="copyBtn" disabled>Copiar Texto</button>
@@ -142,6 +156,8 @@
             const downloadTxtBtn = document.getElementById('downloadTxtBtn');
             const downloadDocxBtn = document.getElementById('downloadDocxBtn');
             const copyBtn = document.getElementById('copyBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const reloadBtn = document.getElementById('reloadBtn');
             const status = document.getElementById('status');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const alertModal = document.getElementById('alertModal');
@@ -154,6 +170,8 @@
             downloadTxtBtn.addEventListener('click', handleDownloadTxt);
             downloadDocxBtn.addEventListener('click', handleDownloadDocx);
             copyBtn.addEventListener('click', handleCopy);
+            logoutBtn.addEventListener('click', handleLogout);
+            reloadBtn.addEventListener('click', handleReload);
             alertModal.addEventListener('click', () => alertModal.style.display = 'none');
 
             function handleFileChange(e) {
@@ -166,8 +184,8 @@
                         transcribeBtn.disabled = true;
                         return;
                     }
-                    if (file.size > 10 * 1024 * 1024) {
-                        showAlert('Archivo demasiado grande (máximo 10 MB).');
+                    if (file.size > 700 * 1024 * 1024) {
+                        showAlert('Archivo demasiado grande (máximo 700 MB).');
                         transcribeBtn.disabled = true;
                         return;
                     }
@@ -282,6 +300,15 @@
                 });
             }
 
+            function handleLogout() {
+                showAlert('Sesión cerrada.');
+                // Add logout logic here (e.g., clear session storage, redirect, etc.)
+            }
+
+            function handleReload() {
+                window.location.reload();
+            }
+            
             function resetTranscript() {
                 transcript = '';
                 transcriptArea.value = '';
