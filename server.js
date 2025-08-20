@@ -29,7 +29,7 @@ app.post("/api/transcribe", upload.single("audio"), async (req, res) => {
   try {
     // Ejecutar el script de Python para transcripción
     const { stdout, stderr } = await new Promise((resolve, reject) => {
-      exec(`python3 transcribir.py "${inputPath}"`, (error, stdout, stderr) => {
+      exec(`py transcribir.py "${inputPath}"`, (error, stdout, stderr) => {
         if (error) {
           reject({ error, stderr });
         } else {
