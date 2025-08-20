@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Herramienta web para transcribir audio a texto con diseño moderno, responsivo y opción de copiar texto, usando SpeechRecognition o Whisper.">
+    <title>Transcriptor de Audio</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom animations */
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeInScale { animation: fadeInScale 0.5s ease-out forwards; }
+        .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.15);
+            border-top: 6px solid #10B981;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Neumorphic glow effect */
+        .neumorphic {
+            background: #1E293B;
+            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.5), -12px -12px 24px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neumorphic:hover { box-shadow: 0 0 30px rgba(16, 185, 129, 0.7); }
+        /* Button effects */
+        .btn { transition: all 0.3s ease; }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
+        }
+        /* Gradient background with enhanced particles */
+        body {
+            background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="10%" cy="15%" r="3" fill="rgba(255,255,255,0.15)"/><circle cx="90%" cy="25%" r="4" fill="rgba(16,185,129,0.3)"/><circle cx="60%" cy="75%" r="3" fill="rgba(255,255,255,0.15)"/><circle cx="30%" cy="55%" r="4" fill="rgba(16,185,129,0.3)"/><circle cx="70%" cy="40%" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="20%" cy="80%" r="3" fill="rgba(16,185,129,0.2)"/></svg>');
+            animation: float 10s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        /* Modal for alerts */
+        #alertModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+        #alertMessage {
+            background: #1E293B;
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+            font-size: 1rem;
+        }
+        @media (min-width: 640px) {
+            #alertMessage { font-size: 1.125rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
+    <div class="particles"></div>
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-12 flex-1 flex flex-col items-center">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center text-white mb-4 sm:mb-6 animate-fadeInScale">
+            Transcripción de Audio
+        </h1>
+        <p class="text-center text-xs sm:text-sm text-gray-300 mb-4 sm:mb-6 max-w-md sm:max-w-lg">
+            Sube un archivo de audio o video (MP3, MP4, WAV, OGG, M4A, FLAC) y obtén su transcripción en texto.
+        </p>
+        <div class="w-full max-w-5xl flex flex-col md:flex-row gap-4 md:gap-6">
+            <!-- Control Panel -->
+            <div class="control-panel w-full md:w-1/3 bg-gray-800/90 p-4 sm:p-6 rounded-xl neumorphic animate-fadeInScale">
+                <div class="mb-4 sm:mb-6">
+                    <label for="audioFile" class="block text-sm sm:text-base font-medium text-gray-200 mb-2">
+                        Sube tu audio o video
+                    </label>
+                    <input type="file"
+                        class="block w-full text-xs sm:text-sm text-gray-400 file:mr-4 file:py-2 sm:file:py-3 file:px-4 sm:file:px-6 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 transition duration-200"
+                        id="audioFile" accept=".mp3,.mp4,.wav,.ogg,.m4a,.flac">
+                    <p id="fileHelp" class="mt-1 text-xs text-gray-400">Formatos: MP3, MP4, WAV, OGG, M4A, FLAC. Máx. 10 MB.</p>
+                </div>
+                <button type="button"
+                    class="btn w-full bg-emerald-600 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center mb-4"
+                    id="transcribeBtn" disabled>
+                    <span>Transcribir Audio</span>
+                    <div id="loadingSpinner" class="ml-2 spinner hidden"></div>
+                </button>
+                <button type="button"
+                    class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    id="downloadBtn" disabled>Descargar Transcripción</button>
+                <p id="status" class="mt-4 text-center text-xs sm:text-sm text-gray-400" aria-live="polite"></p>
+            </div>
+            <!-- Transcription Area -->
+            <div class="w-full md:w-2/3 p-4 sm:p-6 bg-gray-800/90 rounded-xl neumorphic animate-fadeInScale">
+                <div class="flex justify-between items-center mb-2">
+                    <label for="transcript" class="block text-sm sm:text-base font-medium text-gray-200">Transcripción</label>
+                    <button type="button"
+                        class="btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed text-xs sm:text-sm"
+                        id="copyBtn" disabled>Copiar Texto</button>
+                </div>
+                <textarea
+                    class="w-full p-3 sm:p-4 bg-gray-900/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[200px] sm:min-h-[300px] md:min-h-[400px] resize-y font-mono text-sm sm:text-base"
+                    id="transcript" placeholder="Tu transcripción aparecerá aquí..." readonly
+                    aria-readonly="true"></textarea>
+            </div>
+        </div>
+    </div>
+    <!-- Alert Modal -->
+    <div id="alertModal">
+        <div id="alertMessage" class="text-white font-medium"></div>
+    </div>
+    <script>
+        (function () {
+            const audioFileInput = document.getElementById('audioFile');
+            const transcribeBtn = document.getElementById('transcribeBtn');
+            const transcriptArea = document.getElementById('transcript');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const status = document.getElementById('status');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const alertModal = document.getElementById('alertModal');
+            const alertMessage = document.getElementById('alertMessage');
+
+            let transcript = '';
+
+            audioFileInput.addEventListener('change', handleFileChange);
+            transcribeBtn.addEventListener('click', handleTranscribe);
+            downloadBtn.addEventListener('click', handleDownload);
+            copyBtn.addEventListener('click', handleCopy);
+            alertModal.addEventListener('click', () => alertModal.style.display = 'none');
+
+            function handleFileChange(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const validExtensions = ['.mp3', '.mp4', '.wav', '.ogg', '.m4a', '.flac'];
+                    const fileExtension = file.name.toLowerCase().split('.').pop();
+                    if (!validExtensions.includes(`.${fileExtension}`)) {
+                        showAlert('Solo se aceptan archivos MP3, MP4, WAV, OGG, M4A o FLAC.');
+                        transcribeBtn.disabled = true;
+                        return;
+                    }
+                    if (file.size > 10 * 1024 * 1024) {
+                        showAlert('Archivo demasiado grande (máximo 10 MB).');
+                        transcribeBtn.disabled = true;
+                        return;
+                    }
+                    transcribeBtn.disabled = false;
+                    updateStatus('Archivo cargado. Presiona "Transcribir Audio".', 'text-green-400');
+                } else {
+                    transcribeBtn.disabled = true;
+                    updateStatus('Por favor, selecciona un archivo de audio.', 'text-yellow-400');
+                }
+            }
+
+            async function handleTranscribe() {
+                const file = audioFileInput.files[0];
+                if (!file) {
+                    showAlert('No se seleccionó ningún archivo.');
+                    return;
+                }
+
+                resetTranscript();
+                updateStatus('Enviando archivo al servidor...', 'text-emerald-400 ');
+                showLoading(true);
+
+                const formData = new FormData();
+                formData.append('audio', file);
+
+                try {
+                    const response = await fetch('/api/transcribe', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error en la transcripción');
+                    }
+
+                    const data = await response.json();
+                    transcript = data.transcript || '';
+                    transcriptArea.value = transcript;
+
+                    if (transcript.trim()) {
+                        copyBtn.disabled = false;
+                        downloadBtn.disabled = false;
+                        updateStatus('Transcripción completada.', 'text-green-400');
+                    } else {
+                        updateStatus('No se pudo generar transcripción.', 'text-red-400');
+                    }
+                } catch (error) {
+                    showAlert(`Error: ${error.message}`);
+                    updateStatus('Error al transcribir.', 'text-red-400');
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            function handleCopy() {
+                if (!transcriptArea.value.trim()) {
+                    showAlert('No hay texto para copiar.');
+                    return;
+                }
+                navigator.clipboard.writeText(transcriptArea.value).then(() => {
+                    showAlert('¡Texto copiado al portapapeles!');
+                }).catch(() => {
+                    showAlert('Error al copiar el texto.');
+                });
+            }
+
+            function handleDownload() {
+                if (!transcript.trim()) {
+                    showAlert('No hay transcripción para descargar.');
+                    return;
+                }
+                const blob = new Blob([transcript], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'transcripcion.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+                updateStatus('Archivo TXT descargado.', 'text-green-400');
+            }
+
+            function resetTranscript() {
+                transcript = '';
+                transcriptArea.value = '';
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+            }
+
+            function updateStatus(message, className = 'text-gray-400') {
+                status.textContent = message;
+                status.className = `mt-4 text-center text-xs sm:text-sm ${className}`;
+            }
+
+            function showLoading(show) {
+                loadingSpinner.classList.toggle('hidden', !show);
+            }
+
+            function showAlert(message) {
+                alertMessage.textContent = message;
+                alertModal.style.display = 'flex';
+                setTimeout(() => {
+                    alertModal.style.display = 'none';
+                }, 4000);
+            }
+        })();
+    </script>
+</body>
+</html>
