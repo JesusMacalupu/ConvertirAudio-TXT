@@ -50,7 +50,7 @@ app.get("/transcribe", (req, res) => {
   if (!req.session.user) {
     return res.redirect("/");
   }
-  res.sendFile(path.join(__dirname, "public", "index.html")); // Asume que el HTML de transcripción se llama index.html
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Ruta para transcripción
