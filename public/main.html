@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Herramienta web para transcribir audio a texto con diseño moderno, responsivo y opción de copiar texto, usando SpeechRecognition o Whisper.">
     <title>Transcriptor de Audio</title>
-    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        /* Custom animations */
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -26,20 +26,17 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Neumorphic glow effect */
         .neumorphic {
             background: #1E293B;
             box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.5), -12px -12px 24px rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .neumorphic:hover { box-shadow: 0 0 30px rgba(16, 185, 129, 0.7); }
-        /* Button effects */
         .btn { transition: all 0.3s ease; }
         .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
         }
-        /* Gradient background with enhanced particles */
         body {
             background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%);
             position: relative;
@@ -59,7 +56,6 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-20px); }
         }
-        /* Modal for alerts */
         #alertModal {
             position: fixed;
             top: 0;
@@ -97,7 +93,6 @@
             Sube un archivo de audio o video (MP3, MP4, WAV, OGG, M4A, FLAC) y obtén su transcripción en texto.
         </p>
         <div class="w-full max-w-5xl flex flex-col md:flex-row gap-4 md:gap-6">
-            <!-- Control Panel -->
             <div class="control-panel w-full md:w-1/3 bg-gray-800/90 p-4 sm:p-6 rounded-xl neumorphic animate-fadeInScale">
                 <div class="mb-4 sm:mb-6">
                     <label for="audioFile" class="block text-sm sm:text-base font-medium text-gray-200 mb-2">
@@ -115,11 +110,13 @@
                     <div id="loadingSpinner" class="ml-2 spinner hidden"></div>
                 </button>
                 <button type="button"
+                    class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed mb-4"
+                    id="downloadTxtBtn" disabled>Descargar en TXT</button>
+                <button type="button"
                     class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed"
-                    id="downloadBtn" disabled>Descargar Transcripción</button>
+                    id="downloadDocxBtn" disabled>Descargar en Word</button>
                 <p id="status" class="mt-4 text-center text-xs sm:text-sm text-gray-400" aria-live="polite"></p>
             </div>
-            <!-- Transcription Area -->
             <div class="w-full md:w-2/3 p-4 sm:p-6 bg-gray-800/90 rounded-xl neumorphic animate-fadeInScale">
                 <div class="flex justify-between items-center mb-2">
                     <label for="transcript" class="block text-sm sm:text-base font-medium text-gray-200">Transcripción</label>
@@ -134,16 +131,16 @@
             </div>
         </div>
     </div>
-    <!-- Alert Modal -->
     <div id="alertModal">
-        <div id="alertMessage" class="text-black font-medium" style="font-weight: bold;"></div>
+        <div id="alertMessage" class="text-black font-medium"></div>
     </div>
     <script>
         (function () {
             const audioFileInput = document.getElementById('audioFile');
             const transcribeBtn = document.getElementById('transcribeBtn');
             const transcriptArea = document.getElementById('transcript');
-            const downloadBtn = document.getElementById('downloadBtn');
+            const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+            const downloadDocxBtn = document.getElementById('downloadDocxBtn');
             const copyBtn = document.getElementById('copyBtn');
             const status = document.getElementById('status');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -154,7 +151,8 @@
 
             audioFileInput.addEventListener('change', handleFileChange);
             transcribeBtn.addEventListener('click', handleTranscribe);
-            downloadBtn.addEventListener('click', handleDownload);
+            downloadTxtBtn.addEventListener('click', handleDownloadTxt);
+            downloadDocxBtn.addEventListener('click', handleDownloadDocx);
             copyBtn.addEventListener('click', handleCopy);
             alertModal.addEventListener('click', () => alertModal.style.display = 'none');
 
@@ -189,7 +187,7 @@
                 }
 
                 resetTranscript();
-                updateStatus('Enviando archivo al servidor...', 'text-emerald-400 ');
+                updateStatus('Enviando archivo al servidor...', 'text-emerald-400');
                 showLoading(true);
 
                 const formData = new FormData();
@@ -211,7 +209,8 @@
 
                     if (transcript.trim()) {
                         copyBtn.disabled = false;
-                        downloadBtn.disabled = false;
+                        downloadTxtBtn.disabled = false;
+                        downloadDocxBtn.disabled = false;
                         updateStatus('Transcripción completada.', 'text-green-400');
                     } else {
                         updateStatus('No se pudo generar transcripción.', 'text-red-400');
@@ -236,7 +235,7 @@
                 });
             }
 
-            function handleDownload() {
+            function handleDownloadTxt() {
                 if (!transcript.trim()) {
                     showAlert('No hay transcripción para descargar.');
                     return;
@@ -251,11 +250,44 @@
                 updateStatus('Archivo TXT descargado.', 'text-green-400');
             }
 
+            function handleDownloadDocx() {
+                if (!transcript.trim()) {
+                    showAlert('No hay transcripción para descargar.');
+                    return;
+                }
+                const doc = new docx.Document({
+                    sections: [{
+                        properties: {},
+                        children: [
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: transcript,
+                                        font: "Arial",
+                                        size: 24
+                                    })
+                                ],
+                                alignment: docx.AlignmentType.JUSTIFIED
+                            })
+                        ]
+                    }]
+                });
+
+                docx.Packer.toBlob(doc).then(blob => {
+                    saveAs(blob, "transcripcion.docx");
+                    updateStatus('Archivo Word descargado.', 'text-green-400');
+                }).catch(error => {
+                    showAlert('Error al generar el archivo Word.');
+                    console.error(error);
+                });
+            }
+
             function resetTranscript() {
                 transcript = '';
                 transcriptArea.value = '';
                 copyBtn.disabled = true;
-                downloadBtn.disabled = true;
+                downloadTxtBtn.disabled = true;
+                downloadDocxBtn.disabled = true;
             }
 
             function updateStatus(message, className = 'text-gray-400') {
