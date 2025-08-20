@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,35 +11,42 @@
         body {
             background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%);
         }
+
         .custom-card {
             background: #1E293B;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .custom-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 16px rgba(16, 185, 129, 0.4);
         }
+
         .custom-input {
             background: #1E293B;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
+
         .custom-input:focus {
             border-color: #10B981;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4);
             outline: none;
         }
+
         .custom-button {
             background: #10B981;
             transition: all 0.3s ease;
         }
+
         .custom-button:hover:not(:disabled) {
             background: #059669;
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
             transform: translateY(-2px);
         }
+
         #alertModal {
             position: fixed;
             top: 0;
@@ -51,6 +59,7 @@
             background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
         }
+
         #alertMessage {
             background: #10B981;
             padding: 1.5rem 2rem;
@@ -60,25 +69,31 @@
             width: 400px;
             box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
             font-size: 1rem;
-            color: #fff;
+            color: black;
+            font-weight: bold;
         }
+
         @media (max-width: 640px) {
             .custom-card {
                 padding: 1.5rem;
             }
+
             #alertMessage {
                 font-size: 0.875rem;
                 width: 90%;
             }
         }
+
         @media (min-width: 640px) {
             #alertMessage {
                 font-size: 1.125rem;
             }
         }
+
         .input-container {
             position: relative;
         }
+
         .input-icon {
             position: absolute;
             right: 1rem;
@@ -90,43 +105,35 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
     <div class="custom-card rounded-xl p-6 sm:p-8 max-w-md w-full bg-gray-900">
-        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6 sm:mb-8 text-center tracking-tight">Registrarse</h2>
+        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6 sm:mb-8 text-center tracking-tight">Registrarse
+        </h2>
         <div class="space-y-6">
             <div class="input-container">
                 <label for="nombre" class="block text-sm font-medium text-gray-200 mb-2">Nombres y Apellidos</label>
-                <input
-                    id="nombre"
-                    type="text"
+                <input id="nombre" type="text"
                     class="custom-input w-full px-4 py-3 text-white rounded-lg focus:outline-none placeholder-gray-400"
-                    placeholder="Ingresa tu nombre y apellido"
-                />
+                    placeholder="Ingresa tu nombre y apellido" />
                 <i class="fas fa-user input-icon"></i>
             </div>
             <div class="input-container">
                 <label for="email" class="block text-sm font-medium text-gray-200 mb-2">Correo Electrónico</label>
-                <input
-                    id="email"
-                    type="email"
+                <input id="email" type="email"
                     class="custom-input w-full px-4 py-3 text-white rounded-lg focus:outline-none placeholder-gray-400"
-                    placeholder="Ingresa tu correo"
-                />
+                    placeholder="Ingresa tu correo" />
                 <i class="fas fa-envelope input-icon"></i>
             </div>
             <div class="input-container">
                 <label for="password" class="block text-sm font-medium text-gray-200 mb-2">Contraseña</label>
-                <input
-                    id="password"
-                    type="password"
+                <input id="password" type="password"
                     class="custom-input w-full px-4 py-3 text-white rounded-lg focus:outline-none placeholder-gray-400"
-                    placeholder="Ingresa tu contraseña"
-                />
+                    placeholder="Ingresa tu contraseña" />
                 <i class="fas fa-eye input-icon toggle-password"></i>
             </div>
             <button
-                class="custom-button w-full py-3 text-black rounded-lg font-medium flex items-center justify-center disabled:opacity-50"
-            >
+                class="custom-button w-full py-3 text-black rounded-lg font-medium flex items-center justify-center disabled:opacity-50">
                 Registrarse
             </button>
         </div>
@@ -154,5 +161,47 @@
             }
         });
     </script>
+    <script>
+        document.querySelector(".custom-button").addEventListener("click", async () => {
+            const nombre = document.getElementById("nombre").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const alertModal = document.getElementById("alertModal");
+            const alertMessage = document.getElementById("alertMessage");
+
+            if (!nombre || !email || !password) {
+                alertMessage.textContent = "⚠️ Todos los campos son obligatorios";
+                alertModal.style.display = "flex";
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nombre, email, password })
+                });
+
+                const data = await res.json();
+                alertMessage.textContent = data.message || data.error;
+                alertModal.style.display = "flex";
+
+                if (res.ok) {
+                    document.getElementById("nombre").value = "";
+                    document.getElementById("email").value = "";
+                    document.getElementById("password").value = "";
+                }
+            } catch (error) {
+                alertMessage.textContent = "❌ Error de conexión con el servidor";
+                alertModal.style.display = "flex";
+            }
+        });
+
+        // Cierra el modal al hacer clic en cualquier parte
+        document.getElementById("alertModal").addEventListener("click", () => {
+            document.getElementById("alertModal").style.display = "none";
+        });
+    </script>
+
 </body>
 </html>
