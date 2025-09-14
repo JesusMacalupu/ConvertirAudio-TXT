@@ -1,19 +1,44 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Herramienta web para transcribir audio a texto con diseño moderno, responsivo y opción de copiar texto, usando SpeechRecognition o Whisper.">
+    <meta name="description"
+        content="Herramienta web para transcribir audio a texto con diseño moderno, responsivo y opción de copiar texto, usando SpeechRecognition o Whisper.">
     <title>Transcriptor de Audio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
+        /* Animaciones */
         @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
-        .animate-fadeInScale { animation: fadeInScale 0.5s ease-out forwards; }
+
+        .animate-fadeInScale {
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Spinner */
         .spinner {
             border: 6px solid rgba(255, 255, 255, 0.989);
             border-top: 6px solid #10B981;
@@ -22,30 +47,45 @@
             height: 36px;
             animation: spin 0.7s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
+        /* Efecto neumórfico */
         .neumorphic {
             background: #1E293B;
-            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.5), -12px -12px 24px rgba(255, 255, 255, 0.05);
+            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.5),
+                -12px -12px 24px rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .neumorphic:hover { box-shadow: 0 0 30px rgba(16, 185, 129, 0.7); }
-        .btn { transition: all 0.3s ease; }
+
+        .neumorphic:hover {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.7);
+        }
+
+        /* Botones */
+        .btn {
+            transition: all 0.3s ease;
+        }
+
         .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
         }
-        .logout-btn { transition: all 0.3s ease; }
+
+        .logout-btn {
+            transition: all 0.3s ease;
+        }
+
         .logout-btn:hover:not(:disabled) {
             background-color: #B91C1C;
         }
+
+        /* Fondo */
         body {
             background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%);
             position: relative;
             overflow-x: hidden;
         }
+
+        /* Partículas decorativas */
         .particles {
             position: absolute;
             top: 0;
@@ -53,13 +93,22 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"></svg>');
             animation: float 10s infinite ease-in-out;
         }
+
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
+
+        /* Modal de alertas */
         #alertModal {
             position: fixed;
             top: 0;
@@ -72,6 +121,7 @@
             background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
         }
+
         #alertMessage {
             background: #10B981;
             padding: 1.5rem 2rem;
@@ -80,73 +130,210 @@
             max-width: 90%;
             width: 400px;
             box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
-            font-size: 1rem;
+            font-size: 1.20rem;
+            font-weight: bold;
+            color: black;
         }
-        @media (min-width: 640px) {
-            #alertMessage { font-size: 1.125rem; }
+
+        /* Sidebar */
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        /* Enhanced Sidebar Styles */
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo-container {
+            background-color: white;
+            padding: 1rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .sidebar-logo {
+            max-width: 100%;
+            height: 3rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: #D1D5DB;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: #10B981;
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a.active {
+            background-color: #059669;
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar-nav img {
+            width: 1.25rem;
+            height: 1.25rem;
+            filter: brightness(0) invert(1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
-    <div class="particles"></div>
-    <div class="container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-12 flex-1 flex flex-col items-center">
-        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center text-white mb-4 sm:mb-6 animate-fadeInScale">
-            Transcripción de Audio
-        </h1>
-        <p class="text-center text-xs sm:text-sm text-gray-300 mb-4 sm:mb-6 max-w-md sm:max-w-lg">
-            Sube un archivo de audio o video (MP3, MP4, WAV, OGG, M4A, FLAC) y obtén su transcripción en texto.
-        </p>
-        <div class="w-full max-w-5xl flex flex-col md:flex-row gap-4 md:gap-6">
-            <div class="control-panel w-full md:w-1/3 bg-gray-800/90 p-4 sm:p-6 rounded-xl neumorphic animate-fadeInScale">
-                <div class="mb-4 sm:mb-6">
-                    <label for="audioFile" class="block text-sm sm:text-base font-medium text-gray-200 mb-2">
-                        Sube tu audio o video
-                    </label>
-                    <input type="file"
-                        class="block w-full text-xs sm:text-sm text-gray-400 file:mr-4 file:py-2 sm:file:py-3 file:px-4 sm:file:px-6 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 transition duration-200"
-                        id="audioFile" accept=".mp3,.mp4,.wav,.ogg,.m4a,.flac">
-                    <p id="fileHelp" class="mt-1 text-xs text-gray-400">Formatos validos: MP3, MP4, WAV, OGG, M4A, FLAC. Máx. 700 MB.</p>
-                </div>
-                <button type="button"
-                    class="btn w-full bg-emerald-600 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center mb-4"
-                    id="transcribeBtn" disabled>
-                    <span>Transcribir Audio</span>
-                    <div id="loadingSpinner" class="ml-2 spinner hidden"></div>
-                </button>
-                <button type="button"
-                    class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed mb-4"
-                    id="downloadTxtBtn" disabled>Descargar en TXT</button>
-                <button type="button"
-                    class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed mb-4"
-                    id="downloadDocxBtn" disabled>Descargar en Word</button>
-                <button type="button"
-                    class="logout-btn w-full bg-red-600 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed"
-                    id="logoutBtn">Cerrar Sesión</button>
-                <p id="status" class="mt-4 text-center text-xs sm:text-sm text-gray-400" aria-live="polite"></p>
+
+<body class="bg-gray-900 text-white font-sans min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="sidebar fixed md:relative top-0 left-0 h-full md:h-auto w-72 bg-gray-800/95 p-6 z-50 transform -translate-x-full md:translate-x-0 md:flex flex-col neumorphic">
+        <div class="sidebar-header">
+            <div class="sidebar-logo-container">
+                <img src="https://hrlatam.com/wp-content/uploads/2020/12/Logo-HR-LATAM-Horizontaltransparente.png" alt="Logo Empresa" class="sidebar-logo">
             </div>
-            <div class="w-full md:w-2/3 p-4 sm:p-6 bg-gray-800/90 rounded-xl neumorphic animate-fadeInScale">
-                <div class="flex justify-between items-center mb-2">
-                    <div class="flex items-center space-x-2">
-                        <button type="button"
-                            class="btn bg-emerald-500 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center disabled:bg-gray-600 disabled:cursor-not-allowed"
-                            id="reloadBtn" title="Recargar transcripción">
-                            <img src="https://cdn-icons-png.flaticon.com/512/189/189269.png" alt="Reload Icon" class="w-5 h-5 sm:w-6 sm:h-6">
-                        </button>
-                        <label for="transcript" class="text-sm sm:text-base font-medium text-gray-200">Transcripción</label>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="active">
+                        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Home Icon">
+                        Inicio
+                    </a></li>
+                <li><a href="#">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Transcriptions Icon">
+                        Mis Transcripciones
+                    </a></li>
+                <li><a href="#">
+                        <img src="https://cdn-icons-png.flaticon.com/512/124/124574.png" alt="Settings Icon">
+                        Configuración
+                    </a></li>
+            </ul>
+        </nav>
+        <button type="button" class="logout-btn w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold mt-6"
+            id="logoutBtn">
+            Cerrar Sesión
+        </button>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
+
+    <!-- Contenido principal -->
+    <div class="flex-1 flex flex-col">
+        <!-- Navbar -->
+        <header class="flex items-center justify-between bg-gray-800/90 px-4 py-3 shadow-md md:hidden">
+            <button id="menuToggle" class="text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Transcriptor</h1>
+        </header>
+
+        <!-- Contenido -->
+        <div class="particles"></div>
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-12 flex-1 flex flex-col items-center">
+            <h1
+                class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center text-white mb-4 sm:mb-6 animate-fadeInScale">
+                Transcripción de Audio
+            </h1>
+            <p class="text-center text-xs sm:text-sm text-gray-300 mb-4 sm:mb-6 max-w-md sm:max-w-lg">
+                Sube un archivo de audio o video (MP3, MP4, WAV, OGG, M4A, FLAC) y obtén su transcripción en texto.
+            </p>
+
+            <!-- Paneles -->
+            <div class="w-full max-w-5xl flex flex-col md:flex-row gap-4 md:gap-6">
+                <!-- Panel izquierdo -->
+                <div
+                    class="control-panel w-full md:w-1/3 bg-gray-800/90 p-4 sm:p-6 rounded-xl neumorphic animate-fadeInScale">
+                    <div class="mb-4 sm:mb-6">
+                        <label for="audioFile" class="block text-sm sm:text-base font-medium text-gray-200 mb-2">Sube tu
+                            audio o video</label>
+                        <input type="file"
+                            class="block w-full text-xs sm:text-sm text-gray-400 file:mr-4 file:py-2 sm:file:py-3 file:px-4 sm:file:px-6 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 transition duration-200"
+                            id="audioFile" accept=".mp3,.mp4,.wav,.ogg,.m4a,.flac">
+                        <p id="fileHelp" class="mt-1 text-xs text-gray-400">Formatos válidos: MP3, MP4, WAV, OGG, M4A,
+                            FLAC. Máx. 700 MB.</p>
                     </div>
                     <button type="button"
-                        class="btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed text-xs sm:text-sm"
-                        id="copyBtn" disabled>Copiar Texto</button>
+                        class="btn w-full bg-emerald-600 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center mb-4"
+                        id="transcribeBtn" disabled>
+                        <span>Transcribir Audio</span>
+                        <div id="loadingSpinner" class="ml-2 spinner hidden"></div>
+                    </button>
+                    <button type="button"
+                        class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed mb-4"
+                        id="downloadTxtBtn" disabled>Descargar en TXT</button>
+                    <button type="button"
+                        class="btn w-full bg-gray-700 text-white py-2 sm:py-3 px-4 rounded-lg font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed mb-4"
+                        id="downloadDocxBtn" disabled>Descargar en Word</button>
+                    <p id="status" class="mt-4 text-center text-xs sm:text-sm text-gray-400" aria-live="polite"></p>
                 </div>
-                <textarea
-                    class="w-full p-3 sm:p-4 bg-gray-900/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[200px] sm:min-h-[300px] md:min-h-[400px] resize-y font-mono text-sm sm:text-base"
-                    id="transcript" placeholder="Tu transcripción aparecerá aquí..." readonly
-                    aria-readonly="true"></textarea>
+
+                <!-- Panel derecho -->
+                <div class="w-full md:w-2/3 p-4 sm:p-6 bg-gray-800/90 rounded-xl neumorphic animate-fadeInScale">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center space-x-2">
+                            <button type="button"
+                                class="btn bg-emerald-500 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center disabled:bg-gray-600 disabled:cursor-not-allowed"
+                                id="reloadBtn" title="Recargar transcripción">
+                                <img src="https://cdn-icons-png.flaticon.com/512/189/189269.png" alt="Reload Icon"
+                                    class="w-5 h-5 sm:w-6 sm:h-6">
+                            </button>
+                            <label for="transcript"
+                                class="text-sm sm:text-base font-medium text-gray-200">Transcripción</label>
+                        </div>
+                        <button type="button"
+                            class="btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed text-xs sm:text-sm"
+                            id="copyBtn" disabled>Copiar Texto</button>
+                    </div>
+                    <textarea
+                        class="w-full p-3 sm:p-4 bg-gray-900/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[200px] sm:min-h-[300px] md:min-h-[400px] resize-y font-mono text-sm sm:text-base"
+                        id="transcript" placeholder="Tu transcripción aparecerá aquí..." readonly
+                        aria-readonly="true"></textarea>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
     <div id="alertModal">
-        <div id="alertMessage" class="text-black font-medium"></div>
+        <div id="alertMessage"></div>
     </div>
     <script>
         (function () {
@@ -163,8 +350,14 @@
             const alertModal = document.getElementById('alertModal');
             const alertMessage = document.getElementById('alertMessage');
 
+            // Sidebar elements
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const overlay = document.getElementById('overlay');
+
             let transcript = '';
 
+            // === Event listeners principales ===
             audioFileInput.addEventListener('change', handleFileChange);
             transcribeBtn.addEventListener('click', handleTranscribe);
             downloadTxtBtn.addEventListener('click', handleDownloadTxt);
@@ -174,6 +367,18 @@
             reloadBtn.addEventListener('click', handleReload);
             alertModal.addEventListener('click', () => alertModal.style.display = 'none');
 
+            // === Lógica del menú lateral ===
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+
+            // === Funciones principales ===
             function handleFileChange(e) {
                 const file = e.target.files[0];
                 if (file) {
@@ -303,15 +508,13 @@
             function handleLogout() {
                 fetch('/api/logout', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                 })
                     .then(response => response.json())
                     .then(data => {
                         showAlert(data.message);
                         setTimeout(() => {
-                            window.location.href = '/login.html'; 
+                            window.location.href = '/login.html';
                         }, 2000);
                     })
                     .catch(error => {
@@ -324,6 +527,7 @@
                 window.location.reload();
             }
 
+            // === Utilidades ===
             function resetTranscript() {
                 transcript = '';
                 transcriptArea.value = '';
@@ -350,5 +554,6 @@
             }
         })();
     </script>
+
 </body>
 </html>
