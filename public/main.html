@@ -130,7 +130,7 @@
             max-width: 90%;
             width: 400px;
             box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
-            font-size: 1.20rem;
+            font-size: 1.25rem;
             font-weight: bold;
             color: black;
         }
@@ -189,7 +189,7 @@
             transition: all 0.2s ease;
         }
 
-        .sidebar-nav a:hover {
+        .sidebar-nav a:not(.no-hover):hover {
             background-color: #10B981;
             color: white;
             transform: translateX(4px);
@@ -215,6 +215,93 @@
             padding-top: 0.75rem;
             padding-bottom: 0.75rem;
         }
+
+        .transcription-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            color: #D1D5DB;
+            font-weight: 500;
+        }
+
+        .transcription-item:hover {
+            background-color: #059669;
+            color: white;
+            cursor: pointer;
+        }
+
+        .ellipsis-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .ellipsis-btn {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            justify-content: center;
+            align-items: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            cursor: pointer;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background-color: #D1D5DB;
+            border-radius: 50%;
+        }
+
+        .ellipsis-menu-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #1E293B;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            border-radius: 0.5rem;
+        }
+
+        .ellipsis-menu-content a {
+            color: #D1D5DB;
+            padding: 0.5rem 1rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .ellipsis-menu-content a:nth-child(1):hover {
+            background-color: #A5D6F6; /* Pastel celeste */
+            color: #1E293B;
+        }
+
+        .ellipsis-menu-content a:nth-child(2):hover {
+            background-color: #F6B17A; /* Pastel anaranjado */
+            color: #1E293B;
+        }
+
+        .ellipsis-menu-content a:nth-child(3):hover {
+            background-color: #F6A5A5; /* Pastel rojo */
+            color: #1E293B;
+        }
+
+        .ellipsis-menu:hover .ellipsis-menu-content {
+            display: block;
+        }
+
+        .historial-title {
+            background-color: #10B981;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 
@@ -223,26 +310,18 @@
     <!-- Sidebar -->
     <aside id="sidebar"
         class="sidebar fixed md:relative top-0 left-0 h-full md:h-auto w-72 bg-gray-800/95 p-6 z-50 transform -translate-x-full md:translate-x-0 md:flex flex-col neumorphic">
+        <div id="welcomeMessage" class="text-white font-bold text-center mb-4">Bienvenido,</div>
         <div class="sidebar-header">
             <div class="sidebar-logo-container">
                 <img src="https://hrlatam.com/wp-content/uploads/2020/12/Logo-HR-LATAM-Horizontaltransparente.png" alt="Logo Empresa" class="sidebar-logo">
             </div>
         </div>
         <nav class="sidebar-nav">
-            <ul>
-                <li><a href="#" class="active">
-                        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Home Icon">
-                        Inicio
-                    </a></li>
-                <li><a href="#">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Transcriptions Icon">
-                        Mis Transcripciones
-                    </a></li>
-                <li><a href="#">
-                        <img src="https://cdn-icons-png.flaticon.com/512/124/124574.png" alt="Settings Icon">
-                        Configuración
-                    </a></li>
-            </ul>
+            <div class="historial-title">
+                <img src="https://cdn-icons-png.flaticon.com/512/2784/2784459.png" alt="Clock Icon" class="w-5 h-5 filter invert">
+                Historial
+            </div>
+            <ul id="transcriptionList" class="mt-4"></ul>
         </nav>
         <button type="button" class="logout-btn w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold mt-6"
             id="logoutBtn">
@@ -307,7 +386,7 @@
 
                 <!-- Panel derecho -->
                 <div class="w-full md:w-2/3 p-4 sm:p-6 bg-gray-800/90 rounded-xl neumorphic animate-fadeInScale">
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex justify-between items-center mb-2" id="transcriptHeader">
                         <div class="flex items-center space-x-2">
                             <button type="button"
                                 class="btn bg-emerald-500 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center disabled:bg-gray-600 disabled:cursor-not-allowed"
@@ -318,9 +397,11 @@
                             <label for="transcript"
                                 class="text-sm sm:text-base font-medium text-gray-200">Transcripción</label>
                         </div>
-                        <button type="button"
-                            class="btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed text-xs sm:text-sm"
-                            id="copyBtn" disabled>Copiar Texto</button>
+                        <div class="flex items-center space-x-[8px]">
+                            <button type="button"
+                                class="btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold disabled:bg-gray-600 disabled:cursor-not-allowed text-xs sm:text-sm"
+                                id="copyBtn" disabled>Copiar Texto</button>
+                        </div>
                     </div>
                     <textarea
                         class="w-full p-3 sm:p-4 bg-gray-900/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[200px] sm:min-h-[300px] md:min-h-[400px] resize-y font-mono text-sm sm:text-base"
@@ -349,6 +430,9 @@
             const loadingSpinner = document.getElementById('loadingSpinner');
             const alertModal = document.getElementById('alertModal');
             const alertMessage = document.getElementById('alertMessage');
+            const transcriptionList = document.getElementById('transcriptionList');
+            const transcriptHeader = document.getElementById('transcriptHeader');
+            const welcomeMessage = document.getElementById('welcomeMessage');
 
             // Sidebar elements
             const sidebar = document.getElementById('sidebar');
@@ -356,6 +440,18 @@
             const overlay = document.getElementById('overlay');
 
             let transcript = '';
+            let currentTranscriptionId = null;
+
+            // Fetch user info for welcome message
+            async function fetchUser() {
+                try {
+                    const response = await fetch('/api/user');
+                    const data = await response.json();
+                    welcomeMessage.textContent = `Bienvenido, ${data.nombre}`;
+                } catch (error) {
+                    console.error('Error fetching user:', error);
+                }
+            }
 
             // === Event listeners principales ===
             audioFileInput.addEventListener('change', handleFileChange);
@@ -415,6 +511,7 @@
 
                 const formData = new FormData();
                 formData.append('audio', file);
+                formData.append('filename', file.name);
 
                 try {
                     const response = await fetch('/api/transcribe', {
@@ -428,6 +525,7 @@
 
                     const data = await response.json();
                     transcript = data.transcript || '';
+                    currentTranscriptionId = data.id_transcripcion;
                     transcriptArea.value = transcript;
 
                     if (transcript.trim()) {
@@ -435,6 +533,7 @@
                         downloadTxtBtn.disabled = false;
                         downloadDocxBtn.disabled = false;
                         updateStatus('Transcripción completada.', 'text-green-400');
+                        fetchTranscriptionHistory();
                     } else {
                         updateStatus('No se pudo generar transcripción.', 'text-red-400');
                     }
@@ -443,6 +542,152 @@
                     updateStatus('Error al transcribir.', 'text-red-400');
                 } finally {
                     showLoading(false);
+                }
+            }
+
+            async function fetchTranscriptionHistory() {
+                try {
+                    const response = await fetch('/api/transcriptions');
+                    const transcriptions = await response.json();
+                    transcriptionList.innerHTML = '';
+                    transcriptions.forEach(transcription => {
+                        const li = document.createElement('li');
+                        li.className = 'transcription-item';
+                        li.innerHTML = `
+                            <span class="transcription-name" data-id="${transcription.id_transcripcion}">${transcription.nombre_archivo}</span>
+                            <div class="ellipsis-menu">
+                                <div class="ellipsis-btn">
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                </div>
+                                <div class="ellipsis-menu-content">
+                                    <a href="#" class="edit-name" data-id="${transcription.id_transcripcion}">Editar nombre</a>
+                                    <a href="#" class="edit-transcription" data-id="${transcription.id_transcripcion}">Editar transcripción</a>
+                                    <a href="#" class="delete-transcription" data-id="${transcription.id_transcripcion}">Borrar</a>
+                                </div>
+                            </div>
+                        `;
+                        transcriptionList.appendChild(li);
+                    });
+
+                    // Add event listeners for transcription items
+                    document.querySelectorAll('.transcription-name').forEach(item => {
+                        item.addEventListener('click', () => {
+                            currentTranscriptionId = item.dataset.id;
+                            fetchTranscription(currentTranscriptionId);
+                        });
+                    });
+
+                    document.querySelectorAll('.edit-name').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const id = item.dataset.id;
+                            const newName = prompt('Ingrese el nuevo nombre:');
+                            if (newName) {
+                                handleUpdateName(id, newName);
+                            }
+                        });
+                    });
+
+                    document.querySelectorAll('.edit-transcription').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const id = item.dataset.id;
+                            transcriptArea.removeAttribute('readonly');
+                            updateStatus('Editando transcripción. Presiona "Guardar" para guardar cambios.', 'text-yellow-400');
+                            // Add a save button next to copy
+                            const saveBtn = document.createElement('button');
+                            saveBtn.type = 'button';
+                            saveBtn.className = 'btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold ml-[8px]';
+                            saveBtn.textContent = 'Guardar';
+                            saveBtn.onclick = () => handleSaveTranscription(id, saveBtn);
+                            transcriptHeader.querySelector('.flex.items-center.space-x-\\\[8px\\\]').appendChild(saveBtn);
+                        });
+                    });
+
+                    document.querySelectorAll('.delete-transcription').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            handleDeleteTranscription(item.dataset.id);
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error fetching transcriptions:', error);
+                }
+            }
+
+            async function fetchTranscription(id) {
+                try {
+                    const response = await fetch(`/api/transcriptions/${id}`);
+                    const data = await response.json();
+                    transcript = data.texto_transcrito;
+                    transcriptArea.value = transcript;
+                    copyBtn.disabled = false;
+                    downloadTxtBtn.disabled = false;
+                    downloadDocxBtn.disabled = false;
+                    updateStatus('Transcripción cargada.', 'text-green-400');
+                } catch (error) {
+                    showAlert('Error al cargar la transcripción.');
+                }
+            }
+
+            async function handleSaveTranscription(id, saveBtn) {
+                try {
+                    const response = await fetch(`/api/transcriptions/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ texto_transcrito: transcriptArea.value })
+                    });
+                    if (response.ok) {
+                        showAlert('Transcripción guardada correctamente.');
+                        transcriptArea.setAttribute('readonly', 'true');
+                        saveBtn.remove();
+                        updateStatus('Transcripción guardada.', 'text-green-400');
+                    } else {
+                        showAlert('Error al guardar la transcripción.');
+                    }
+                } catch (error) {
+                    showAlert('Error al guardar la transcripción.');
+                }
+            }
+
+            async function handleUpdateName(id, newName) {
+                try {
+                    const response = await fetch(`/api/transcriptions/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nombre_archivo: newName })
+                    });
+                    if (response.ok) {
+                        showAlert('Nombre actualizado correctamente.');
+                        fetchTranscriptionHistory();
+                    } else {
+                        showAlert('Error al actualizar el nombre.');
+                    }
+                } catch (error) {
+                    showAlert('Error al actualizar el nombre.');
+                }
+            }
+
+            async function handleDeleteTranscription(id) {
+                if (confirm('¿Estás seguro de que deseas borrar esta transcripción?')) {
+                    try {
+                        const response = await fetch(`/api/transcriptions/${id}`, {
+                            method: 'DELETE'
+                        });
+                        if (response.ok) {
+                            showAlert('Transcripción borrada correctamente.');
+                            fetchTranscriptionHistory();
+                            if (currentTranscriptionId === id) {
+                                resetTranscript();
+                            }
+                        } else {
+                            showAlert('Error al borrar la transcripción.');
+                        }
+                    } catch (error) {
+                        showAlert('Error al borrar la transcripción.');
+                    }
                 }
             }
 
@@ -530,10 +775,14 @@
             // === Utilidades ===
             function resetTranscript() {
                 transcript = '';
+                currentTranscriptionId = null;
                 transcriptArea.value = '';
+                transcriptArea.setAttribute('readonly', 'true');
                 copyBtn.disabled = true;
                 downloadTxtBtn.disabled = true;
                 downloadDocxBtn.disabled = true;
+                const saveBtn = transcriptHeader.querySelector('.ml-\\[8px\\]');
+                if (saveBtn) saveBtn.remove();
             }
 
             function updateStatus(message, className = 'text-gray-400') {
@@ -552,6 +801,9 @@
                     alertModal.style.display = 'none';
                 }, 4000);
             }
+
+            fetchUser();
+            fetchTranscriptionHistory();
         })();
     </script>
 
