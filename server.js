@@ -25,7 +25,7 @@ const dbConfig = {
 // Configuración de sesiones
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "your-secret-key",
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }, // 24 horas
@@ -46,11 +46,19 @@ app.get("/", (req, res) => {
 });
 
 // Ruta protegida para la página de transcripción
-app.get("/transcribe", (req, res) => {
-  if (!req.session.user) {
+app.get("/main", (req, res) => {
+  if (!req.session.user || req.session.isAdmin) {
     return res.redirect("/");
   }
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "main.html"));
+});
+
+// Ruta protegida para el panel de administrador
+app.get("/panelAdmin", (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.redirect("/");
+  }
+  res.sendFile(path.join(__dirname, "public", "panelAdmin.html"));
 });
 
 // Ruta para obtener info del usuario
@@ -58,7 +66,7 @@ app.get("/api/user", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No autorizado" });
   }
-  res.json({ nombre: req.session.user.nombre });
+  res.json({ nombre: req.session.user.nombre, isAdmin: req.session.isAdmin || false });
 });
 
 // Ruta para transcripción
@@ -237,24 +245,44 @@ app.post("/api/login", async (req, res) => {
 
   try {
     const pool = await sql.connect(dbConfig);
-    const result = await pool
+
+    // Check administradoresMuni table
+    const adminResult = await pool
+      .request()
+      .input("Email", sql.NVarChar(150), email)
+      .query("SELECT Nombre, PasswordAdmin FROM administradoresMuni WHERE Email = @Email");
+
+    if (adminResult.recordset.length > 0) {
+      const admin = adminResult.recordset[0];
+      if (password === admin.PasswordAdmin) {
+        req.session.user = { nombre: admin.Nombre, email };
+        req.session.isAdmin = true;
+        return res.json({ success: true, message: `Bienvenido administrador, ${admin.Nombre}`, redirect: "/panelAdmin" });
+      } else {
+        return res.json({ success: false, message: "Contraseña incorrecta para administrador" });
+      }
+    }
+
+    // Check usuariosMuni table
+    const userResult = await pool
       .request()
       .input("Email", sql.NVarChar(150), email)
       .query("SELECT Nombre, PasswordHash FROM usuariosMuni WHERE Email = @Email");
 
-    if (result.recordset.length === 0) {
+    if (userResult.recordset.length === 0) {
       return res.json({ success: false, message: "Usuario no encontrado" });
     }
 
-    const user = result.recordset[0];
+    const user = userResult.recordset[0];
 
     if (password !== user.PasswordHash) {
       return res.json({ success: false, message: "Contraseña incorrecta" });
     }
 
     req.session.user = { nombre: user.Nombre, email };
+    req.session.isAdmin = false;
 
-    res.json({ success: true, message: `Bienvenido de nuevo, ${user.Nombre}`, redirect: "/transcribe" });
+    res.json({ success: true, message: `Bienvenido de nuevo, ${user.Nombre}`, redirect: "/main" });
   } catch (err) {
     console.error("Error al iniciar sesión:", err);
     res.status(500).json({ error: "Error al iniciar sesión" });
@@ -270,7 +298,7 @@ app.post("/api/logout", (req, res) => {
         console.error("Error al cerrar sesión:", err);
         return res.status(500).json({ error: "Error al cerrar sesión" });
       }
-      res.json({ message: `Acabas de cerrar sesión, ${nombre}` });
+      res.json({ message: `Sesión cerrada, ${nombre}` });
     });
   } else {
     res.json({ message: "No hay sesión activa" });

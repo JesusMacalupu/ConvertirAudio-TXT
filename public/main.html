@@ -447,7 +447,7 @@
                 try {
                     const response = await fetch('/api/user');
                     const data = await response.json();
-                    welcomeMessage.textContent = `Bienvenido, ${data.nombre}`;
+                    welcomeMessage.textContent = `Bienvenid@, ${data.nombre}`;
                 } catch (error) {
                     console.error('Error fetching user:', error);
                 }

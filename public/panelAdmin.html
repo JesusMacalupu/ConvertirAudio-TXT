@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de administrador estático para pruebas de diseño, con opciones para gestionar usuarios, transcripciones y configuraciones.">
+    <title>Panel de Administrador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Animaciones */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-fadeInScale {
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Spinner */
+        .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.989);
+            border-top: 6px solid #F97316; /* Orange */
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.7s linear infinite;
+        }
+
+        /* Efecto neumórfico */
+        .neumorphic {
+            background: #1E293B;
+            box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.5),
+                        -12px -12px 24px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Botones */
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover:not(:disabled) {
+            background-color: #B91C1C;
+        }
+
+        /* Fondo */
+        body {
+            background: linear-gradient(135deg, #0F172A 0%, #9A3412 100%); /* Orange gradient */
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Partículas decorativas */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Modal de alertas */
+        #alertModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+
+        #alertMessage {
+            background: #F97316; /* Orange */
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: black;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo-container {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .sidebar-logo {
+            max-width: 100%;
+            height: 3rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: #D1D5DB;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:not(.no-hover):hover {
+            background-color: #F97316; /* Orange */
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav a.active {
+            background-color: #EA580C; /* Darker orange */
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar-nav i {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #D1D5DB;
+        }
+
+        .sidebar-nav a:not(.no-hover):hover i,
+        .sidebar-nav a.active i {
+            color: white;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .welcome-text {
+            color: #F97316; /* Orange */
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 1000;
+            }
+
+            #alertMessage {
+                font-size: 0.875rem;
+                width: 90%;
+            }
+
+            .sidebar-logo-container {
+                padding: 0.75rem;
+            }
+
+            .sidebar-logo {
+                height: 2.5rem;
+            }
+
+            .welcome-text {
+                font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            #alertMessage {
+                font-size: 1.125rem;
+            }
+
+            .sidebar-logo {
+                height: 3rem;
+            }
+
+            .welcome-text {
+                font-size: 1.125rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-logo {
+                height: 3.5rem;
+            }
+
+            .welcome-text {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed md:static top-0 left-0 h-full md:h-auto w-72 bg-gray-800/95 p-6 z-50 transform -translate-x-full md:translate-x-0 flex flex-col neumorphic">
+        <div class="sidebar-header">
+            <div id="welcomeMessage" class="welcome-text">Bienvenido</div>
+            <div class="sidebar-logo-container">
+                <img src="https://hrlatam.com/wp-content/uploads/2020/12/Logo-HR-LATAM-Horizontaltransparente.png" alt="HR Latam Logo" class="sidebar-logo">
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="#" class="active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-users"></i>
+                        Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-file-alt"></i>
+                        Transcripciones
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-cog"></i>
+                        Configuraciones
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <button type="button" class="logout-btn w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold mt-6" id="logoutBtn">
+            <i class="fas fa-sign-out-alt mr-2"></i>
+            Cerrar Sesión
+        </button>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between bg-gray-800/90 px-4 py-3 shadow-md">
+            <button id="menuToggle" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <h1 class="text-lg sm:text-xl font-bold text-white">Sistema de Administración</h1>
+            <div class="w-6 h-6"></div> <!-- Placeholder for removed user icon -->
+        </header>
+
+        <!-- Content -->
+        <div class="particles"></div>
+        <main class="flex-1 p-4 sm:p-6 md:p-8">
+            <div class="container mx-auto max-w-5xl">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 sm:mb-6 animate-fadeInScale">
+                    <center>Panel de Administrador</center>
+                </h2>
+                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic animate-fadeInScale">
+                    <p class="text-gray-300 mb-4">
+                        Utiliza el menú lateral para gestionar usuarios, revisar transcripciones, ajustar configuraciones del sistema o cerrar sesión.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div class="bg-gray-900/50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-white mb-2">Resumen de Usuarios</h3>
+                            <p class="text-gray-400">Total de usuarios: <span id="userCount">42</span></p>
+                        </div>
+                        <div class="bg-gray-900/50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-white mb-2">Transcripciones Recientes</h3>
+                            <p class="text-gray-400">Total de transcripciones: <span id="transcriptionCount">127</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal">
+        <div id="alertMessage"></div>
+    </div>
+
+    <script>
+        (function () {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const overlay = document.getElementById('overlay');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const alertModal = document.getElementById('alertModal');
+            const alertMessage = document.getElementById('alertMessage');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+
+            // Fetch admin name and set welcome message
+            async function fetchAdminName() {
+                try {
+                    const response = await fetch('/api/user');
+                    const data = await response.json();
+                    if (data.nombre && data.isAdmin) {
+                        welcomeMessage.textContent = `Bienvenid@, ${data.nombre}`;
+                    } else {
+                        welcomeMessage.textContent = 'Bienvenido';
+                    }
+                } catch (err) {
+                    console.error('Error fetching admin name:', err);
+                    welcomeMessage.textContent = 'Bienvenido';
+                }
+            }
+
+            // Sidebar toggle
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+
+            // Handle sidebar item clicks
+            document.querySelectorAll('.sidebar-nav a').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.sidebar-nav a').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    showAlert(`Navegando a ${item.textContent.trim()}`);
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('-translate-x-full');
+                        overlay.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Logout
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/user');
+                    const data = await response.json();
+                    const nombre = data.nombre || 'Administrador';
+                    const logoutResponse = await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const logoutData = await logoutResponse.json();
+                    showAlert(logoutData.message || `Sesión cerrada correctamente, ${nombre}`);
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Error during logout:', err);
+                    showAlert('Error al cerrar sesión');
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                }
+            });
+
+            // Alert function
+            function showAlert(message) {
+                alertMessage.textContent = message;
+                alertModal.style.display = 'flex';
+                setTimeout(() => {
+                    alertModal.style.display = 'none';
+                }, 4000);
+            }
+
+            // Close modal on click
+            alertModal.addEventListener('click', () => {
+                alertModal.style.display = 'none';
+            });
+            fetchAdminName();
+        })();
+    </script>
+</body>
+</html>
