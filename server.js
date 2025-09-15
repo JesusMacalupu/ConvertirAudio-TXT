@@ -221,7 +221,7 @@ app.post("/api/register", async (req, res) => {
         "INSERT INTO usuariosMuni (Nombre, Email, PasswordHash) VALUES (@Nombre, @Email, @PasswordHash)"
       );
 
-    res.json({ message: "✅ Usuario registrado correctamente" });
+    res.json({ message: "👍 Usuario registrado correctamente" });
   } catch (err) {
     console.error("Error al registrar:", err);
     res.status(500).json({ error: "Error al registrar usuario" });

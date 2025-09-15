@@ -73,23 +73,6 @@
             font-weight: bold;
         }
 
-        @media (max-width: 640px) {
-            .custom-card {
-                padding: 1.5rem;
-            }
-
-            #alertMessage {
-                font-size: 0.875rem;
-                width: 90%;
-            }
-        }
-
-        @media (min-width: 640px) {
-            #alertMessage {
-                font-size: 1.125rem;
-            }
-        }
-
         .input-container {
             position: relative;
         }
@@ -103,13 +86,69 @@
             font-size: 1rem;
             cursor: pointer;
         }
+
+        .logo-container {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 80px;
+        }
+
+        @media (max-width: 640px) {
+            .custom-card {
+                padding: 1.5rem;
+            }
+
+            #alertMessage {
+                font-size: 0.875rem;
+                width: 90%;
+            }
+
+            .logo-container {
+                padding: 0.75rem;
+            }
+
+            .logo-image {
+                max-height: 50px;
+            }
+        }
+
+        @media (min-width: 640px) {
+            #alertMessage {
+                font-size: 1.125rem;
+            }
+
+            .logo-image {
+                max-height: 60px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .logo-image {
+                max-height: 80px;
+            }
+        }
     </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
     <div class="custom-card rounded-xl p-6 sm:p-8 max-w-md w-full bg-gray-900">
-        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6 sm:mb-8 text-center tracking-tight">Registrarse
-        </h2>
+        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-2 text-center tracking-tight">Registrarse</h2>
+        <div class="logo-container">
+            <img src="https://hrlatam.com/wp-content/uploads/2020/12/Logo-HR-LATAM-Horizontaltransparente.png"
+                alt="HR Latam Logo" class="logo-image">
+        </div>
         <div class="space-y-6">
             <div class="input-container">
                 <label for="nombre" class="block text-sm font-medium text-gray-200 mb-2">Nombres y Apellidos</label>
@@ -147,6 +186,52 @@
         <div id="alertMessage"></div>
     </div>
     <script>
+        const nombreInput = document.getElementById('nombre');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const registerButton = document.querySelector('.custom-button');
+        const alertModal = document.getElementById('alertModal');
+        const alertMessage = document.getElementById('alertMessage');
+
+        registerButton.addEventListener('click', async () => {
+            const nombre = nombreInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!nombre || !email || !password) {
+                alertMessage.textContent = "⚠️ Todos los campos son obligatorios";
+                alertModal.style.display = "flex";
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, email, password })
+                });
+
+                const data = await res.json();
+                alertMessage.textContent = data.message || data.error;
+                alertModal.style.display = 'flex';
+
+                if (res.ok) {
+                    nombreInput.value = '';
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                }
+            } catch (error) {
+                alertMessage.textContent = '❌ Error de conexión con el servidor';
+                alertModal.style.display = 'flex';
+            }
+        });
+
+        // Close modal on click
+        alertModal.addEventListener('click', () => {
+            alertModal.style.display = 'none';
+        });
+
+        // Toggle password visibility
         document.querySelector('.toggle-password').addEventListener('click', function () {
             const passwordInput = document.getElementById('password');
             const icon = this;
@@ -160,48 +245,16 @@
                 icon.classList.add('fa-eye');
             }
         });
-    </script>
-    <script>
-        document.querySelector(".custom-button").addEventListener("click", async () => {
-            const nombre = document.getElementById("nombre").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const alertModal = document.getElementById("alertModal");
-            const alertMessage = document.getElementById("alertMessage");
 
-            if (!nombre || !email || !password) {
-                alertMessage.textContent = "⚠️ Todos los campos son obligatorios";
-                alertModal.style.display = "flex";
-                return;
-            }
-
-            try {
-                const res = await fetch("/api/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ nombre, email, password })
-                });
-
-                const data = await res.json();
-                alertMessage.textContent = data.message || data.error;
-                alertModal.style.display = "flex";
-
-                if (res.ok) {
-                    document.getElementById("nombre").value = "";
-                    document.getElementById("email").value = "";
-                    document.getElementById("password").value = "";
+        // Trigger register button on Enter key press
+        [nombreInput, emailInput, passwordInput].forEach(input => {
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    registerButton.click();
                 }
-            } catch (error) {
-                alertMessage.textContent = "❌ Error de conexión con el servidor";
-                alertModal.style.display = "flex";
-            }
-        });
-
-        // Cierra el modal al hacer clic en cualquier parte
-        document.getElementById("alertModal").addEventListener("click", () => {
-            document.getElementById("alertModal").style.display = "none";
+            });
         });
     </script>
-
 </body>
 </html>

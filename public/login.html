@@ -73,23 +73,6 @@
             font-weight: bold;
         }
 
-        @media (max-width: 640px) {
-            .custom-card {
-                padding: 1.5rem;
-            }
-
-            #alertMessage {
-                font-size: 0.875rem;
-                width: 90%;
-            }
-        }
-
-        @media (min-width: 640px) {
-            #alertMessage {
-                font-size: 1.125rem;
-            }
-        }
-
         .input-container {
             position: relative;
         }
@@ -103,13 +86,69 @@
             font-size: 1rem;
             cursor: pointer;
         }
+
+        .logo-container {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 80px;
+        }
+
+        @media (max-width: 640px) {
+            .custom-card {
+                padding: 1.5rem;
+            }
+
+            #alertMessage {
+                font-size: 0.875rem;
+                width: 90%;
+            }
+
+            .logo-container {
+                padding: 0.75rem;
+            }
+
+            .logo-image {
+                max-height: 50px;
+            }
+        }
+
+        @media (min-width: 640px) {
+            #alertMessage {
+                font-size: 1.125rem;
+            }
+
+            .logo-image {
+                max-height: 60px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .logo-image {
+                max-height: 80px;
+            }
+        }
     </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
     <div class="custom-card rounded-xl p-6 sm:p-8 max-w-md w-full bg-gray-900">
-        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6 sm:mb-8 text-center tracking-tight">Iniciar Sesión
-        </h2>
+        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-2 text-center tracking-tight">Iniciar Sesión</h2>
+        <div class="logo-container">
+            <img src="https://hrlatam.com/wp-content/uploads/2020/12/Logo-HR-LATAM-Horizontaltransparente.png"
+                alt="HR Latam Logo" class="logo-image">
+        </div>
         <div class="space-y-6">
             <div class="input-container">
                 <label for="email" class="block text-sm font-medium text-gray-200 mb-2">Correo Electrónico</label>
@@ -167,7 +206,6 @@
 
                 if (data.success) {
                     showAlert(data.message);
-                    // Aquí podrías redirigir después de un tiempo
                     setTimeout(() => {
                         window.location.href = '/main.html';
                     }, 1500);
@@ -188,13 +226,29 @@
             }, 2000);
         }
 
-        document.querySelector('.toggle-password').addEventListener('click', function () { 
-            const passwordInput = document.getElementById('password'); 
-            const icon = this; if (passwordInput.type === 'password') { 
-                passwordInput.type = 'text'; icon.classList.remove('fa-eye'); 
-                icon.classList.add('fa-eye-slash'); } else { passwordInput.type = 'password'; 
-                icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } 
+        document.querySelector('.toggle-password').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // Add Enter key press event listeners for email and password inputs
+        [emailInput, passwordInput].forEach(input => {
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    loginButton.click();
+                }
             });
+        });
     </script>
 </body>
 
