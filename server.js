@@ -69,6 +69,85 @@ app.get("/api/user", (req, res) => {
   res.json({ nombre: req.session.user.nombre, isAdmin: req.session.isAdmin || false });
 });
 
+// Ruta para obtener el conteo de usuarios
+app.get("/api/users/count", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query("SELECT COUNT(*) AS count FROM usuariosMuni");
+    res.json({ count: result.recordset[0].count });
+  } catch (error) {
+    console.error("Error al obtener conteo de usuarios:", error);
+    res.status(500).json({ error: "Error al obtener conteo de usuarios" });
+  }
+});
+
+// Ruta para obtener el conteo de transcripciones
+app.get("/api/transcriptions/count", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query("SELECT COUNT(*) AS count FROM Historial_transcripciones");
+    res.json({ count: result.recordset[0].count });
+  } catch (error) {
+    console.error("Error al obtener conteo de transcripciones:", error);
+    res.status(500).json({ error: "Error al obtener conteo de transcripciones" });
+  }
+});
+
+// Ruta para obtener la última transcripción
+app.get("/api/transcriptions/latest", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .query("SELECT TOP 1 nombre_archivo FROM Historial_transcripciones ORDER BY fecha_subida DESC");
+    
+    if (result.recordset.length === 0) {
+      return res.json({ nombre_archivo: "Sin transcripciones" });
+    }
+    
+    res.json({ nombre_archivo: result.recordset[0].nombre_archivo });
+  } catch (error) {
+    console.error("Error al obtener la última transcripción:", error);
+    res.status(500).json({ error: "Error al obtener la última transcripción" });
+  }
+});
+
+// Nueva ruta para obtener los 3 usuarios con más transcripciones
+app.get("/api/transcriptions/top-users", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .query(`
+        SELECT TOP 3 nombre_usuario, COUNT(*) as transcription_count
+        FROM Historial_transcripciones
+        GROUP BY nombre_usuario
+        ORDER BY transcription_count DESC
+      `);
+    
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error al obtener los top usuarios:", error);
+    res.status(500).json({ error: "Error al obtener los top usuarios" });
+  }
+});
+
 // Ruta para transcripción
 app.post("/api/transcribe", upload.single("audio"), async (req, res) => {
   if (!req.file) {
