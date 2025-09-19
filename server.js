@@ -124,7 +124,7 @@ app.get("/api/transcriptions/latest", async (req, res) => {
   }
 });
 
-// Nueva ruta para obtener los 3 usuarios con más transcripciones
+// Ruta para obtener los 3 usuarios con más transcripciones
 app.get("/api/transcriptions/top-users", async (req, res) => {
   if (!req.session.user || !req.session.isAdmin) {
     return res.status(401).json({ error: "No autorizado" });
@@ -145,6 +145,49 @@ app.get("/api/transcriptions/top-users", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener los top usuarios:", error);
     res.status(500).json({ error: "Error al obtener los top usuarios" });
+  }
+});
+
+// Ruta para obtener el conteo de transcripciones por día de la semana
+app.get("/api/transcriptions/daily", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .query(`
+        SELECT 
+          DATEPART(WEEKDAY, fecha_subida) AS day_of_week,
+          COUNT(*) AS transcription_count
+        FROM Historial_transcripciones
+        GROUP BY DATEPART(WEEKDAY, fecha_subida)
+        ORDER BY day_of_week
+      `);
+
+    // Mapear los días de la semana (SQL Server: 1=Domingo, 2=Lunes, ..., 7=Sábado)
+    const days = [
+      { day: "Lunes", count: 0 },
+      { day: "Martes", count: 0 },
+      { day: "Miércoles", count: 0 },
+      { day: "Jueves", count: 0 },
+      { day: "Viernes", count: 0 },
+      { day: "Sábado", count: 0 },
+      { day: "Domingo", count: 0 }
+    ];
+
+    result.recordset.forEach(row => {
+      // Mapear 2(Lunes) -> 0, 3(Martes) -> 1, ..., 1(Domingo) -> 6
+      const index = row.day_of_week === 1 ? 6 : row.day_of_week - 2;
+      days[index].count = row.transcription_count;
+    });
+
+    res.json(days);
+  } catch (error) {
+    console.error("Error al obtener transcripciones por día:", error);
+    res.status(500).json({ error: "Error al obtener transcripciones por día" });
   }
 });
 

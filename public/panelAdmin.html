@@ -7,6 +7,7 @@
     <title>Panel de Administrador</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Animaciones */
         @keyframes fadeInScale {
@@ -173,6 +174,15 @@
             margin: 0 auto 1rem;
         }
 
+        /* Chart Container */
+        .chart-container {
+            background: #1E293B;
+            border: 2px solid #F97316;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.05);
+        }
+
         /* Sidebar */
         .sidebar {
             transition: transform 0.3s ease;
@@ -331,6 +341,10 @@
             .welcome-text {
                 font-size: 1rem;
             }
+
+            .chart-container canvas {
+                max-height: 200px;
+            }
         }
 
         @media (min-width: 640px) and (max-width: 768px) {
@@ -360,6 +374,10 @@
             .welcome-text {
                 font-size: 1.125rem;
             }
+
+            .chart-container canvas {
+                max-height: 250px;
+            }
         }
 
         @media (min-width: 768px) {
@@ -385,6 +403,10 @@
             .welcome-text {
                 font-size: 1.25rem;
             }
+
+            .chart-container canvas {
+                max-height: 300px;
+            }
         }
 
         @media (min-width: 1024px) {
@@ -399,6 +421,10 @@
 
             .welcome-text {
                 font-size: 1.25rem;
+            }
+
+            .chart-container canvas {
+                max-height: 350px;
             }
         }
 
@@ -432,6 +458,16 @@
 
             #topUsersModalContent .grid {
                 grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr 1fr;
             }
         }
     </style>
@@ -528,6 +564,17 @@
                             <i class="fas fa-clock text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
                             <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 card-info text-center" id="latestTranscription">Cargando...</h3>
                             <p class="text-white text-sm sm:text-base text-center font-medium card-title">Última Transcripción</p>
+                        </div>
+                    </div>
+                    <!-- Charts -->
+                    <div class="charts-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6">
+                        <div class="chart-container neumorphic-card">
+                            <h3 class="text-white text-lg sm:text-xl font-bold text-center mb-4">Transcripciones por Día</h3>
+                            <canvas id="barChart"></canvas>
+                        </div>
+                        <div class="chart-container neumorphic-card">
+                            <h3 class="text-white text-lg sm:text-xl font-bold text-center mb-4">Distribución de Transcripciones</h3>
+                            <canvas id="pieChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -649,13 +696,13 @@
                 } catch (err) {
                     console.error('Error fetching top users:', err);
                     showAlert('Error al cargar los top usuarios');
-                    renderTopUsers([]); // Render empty or placeholder content
+                    renderTopUsers([]);
                 }
             }
 
             // Render top users in the modal
             function renderTopUsers(users) {
-                topUsersList.innerHTML = ''; // Clear existing content
+                topUsersList.innerHTML = '';
                 const medals = [
                     'img/medalla-de-oro.png',
                     'img/medalla-de-plata.png',
@@ -666,7 +713,7 @@
                     return;
                 }
                 users.forEach((user, index) => {
-                    if (index < 3) { // Limit to top 3
+                    if (index < 3) {
                         const card = document.createElement('div');
                         card.className = 'top-user-card';
                         card.innerHTML = `
@@ -677,6 +724,217 @@
                         topUsersList.appendChild(card);
                     }
                 });
+            }
+
+            // Fetch and render charts
+            async function renderCharts() {
+                try {
+                    const response = await fetch('/api/transcriptions/daily');
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Error al obtener transcripciones por día');
+                    }
+
+                    const days = data.map(item => item.day);
+                    const counts = data.map(item => item.count);
+                    const total = counts.reduce((sum, count) => sum + count, 0);
+
+                    // Bar Chart
+                    const barChartCtx = document.getElementById('barChart').getContext('2d');
+                    new Chart(barChartCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Transcripciones por Día',
+                                data: counts,
+                                backgroundColor: '#F97316',
+                                borderColor: '#EA580C',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Número de Transcripciones',
+                                        color: '#D1D5DB',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#D1D5DB' }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Días de la Semana',
+                                        color: '#D1D5DB',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#D1D5DB' }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#D1D5DB' }
+                                }
+                            }
+                        }
+                    });
+
+                    // Pie Chart with percentage in legend
+                    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+                    new Chart(pieChartCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Distribución de Transcripciones',
+                                data: counts,
+                                backgroundColor: [
+                                    '#F97316',
+                                    '#EA580C',
+                                    '#D1D5DB',
+                                    '#9A3412',
+                                    '#2D3748',
+                                    '#1E293B',
+                                    '#4B5563'
+                                ],
+                                borderColor: '#FFFFFF',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        color: '#FFFFFF',
+                                        font: { size: 12 },
+                                        generateLabels: chart => {
+                                            const data = chart.data;
+                                            const total = data.datasets[0].data.reduce((sum, val) => sum + val, 0);
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: `${label}: ${percentage}%`,
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    strokeStyle: data.datasets[0].borderColor[i],
+                                                    lineWidth: data.datasets[0].borderWidth,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } catch (err) {
+                    console.error('Error fetching daily transcription data:', err);
+                    showAlert('Error al cargar los datos de los gráficos');
+                    // Fallback data
+                    const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+                    const counts = [0, 0, 0, 0, 0, 0, 0];
+
+                    // Render bar chart with fallback
+                    const barChartCtx = document.getElementById('barChart').getContext('2d');
+                    new Chart(barChartCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Transcripciones por Día',
+                                data: counts,
+                                backgroundColor: '#F97316',
+                                borderColor: '#EA580C',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Número de Transcripciones',
+                                        color: '#D1D5DB',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#D1D5DB' }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Días de la Semana',
+                                        color: '#D1D5DB',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#D1D5DB' }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#D1D5DB' }
+                                }
+                            }
+                        }
+                    });
+
+                    // Render pie chart with fallback
+                    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+                    new Chart(pieChartCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Distribución de Transcripciones',
+                                data: counts,
+                                backgroundColor: [
+                                    '#F97316',
+                                    '#EA580C',
+                                    '#D1D5DB',
+                                    '#9A3412',
+                                    '#2D3748',
+                                    '#1E293B',
+                                    '#4B5563'
+                                ],
+                                borderColor: '#FFFFFF',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        color: '#FFFFFF',
+                                        font: { size: 12 },
+                                        generateLabels: chart => {
+                                            return chart.data.labels.map((label, i) => ({
+                                                text: `${label}: 0%`,
+                                                fillStyle: chart.data.datasets[0].backgroundColor[i],
+                                                strokeStyle: chart.data.datasets[0].borderColor[i],
+                                                lineWidth: chart.data.datasets[0].borderWidth,
+                                                index: i
+                                            }));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
             }
 
             // Sidebar toggle
@@ -766,6 +1024,7 @@
             fetchUserCount();
             fetchTranscriptionCount();
             fetchLatestTranscription();
+            renderCharts();
         })();
     </script>
 </body>
