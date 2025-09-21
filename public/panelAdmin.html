@@ -159,12 +159,7 @@
             border-radius: 1rem;
             padding: 1.25rem;
             text-align: center;
-            box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.05);
-            transition: transform 0.2s ease;
-        }
-
-        .top-user-card:hover {
-            transform: translateY(-4px);
+            transition: none;
         }
 
         .top-user-image {
@@ -176,11 +171,16 @@
 
         /* Chart Container */
         .chart-container {
-            background: #1E293B;
+            background: linear-gradient(145deg, #F5F5F5 0%, #FFF7ED 100%);
             border: 2px solid #F97316;
             border-radius: 1rem;
             padding: 1.25rem;
             box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Ensure chart titles are black */
+        .chart-container h3 {
+            color: #000000;
         }
 
         /* Sidebar */
@@ -288,11 +288,6 @@
         /* Clickable card */
         .clickable-card {
             cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .clickable-card:hover {
-            transform: scale(1.02);
         }
 
         /* Responsive adjustments */
@@ -470,9 +465,50 @@
                 grid-template-columns: 1fr 1fr;
             }
         }
+
+        /* Body ya tiene background, etc. Agrega esto si no está */
+        body {
+            background: linear-gradient(135deg, #0F172A 0%, #9A3412 100%);
+            position: relative;
+            /* Ya lo agregamos en HTML: h-screen overflow-hidden flex */
+        }
+
+        /* Main: Asegura que ocupe todo y scrollee solo internamente */
+        main {
+            overflow-y: auto; /* Solo vertical, para evitar scroll horizontal innecesario */
+            scrollbar-width: thin; /* Opcional: hace el scrollbar más delgado en Firefox */
+            scrollbar-color: #F97316 #1E293B; /* Opcional: color del scrollbar */
+        }
+
+        /* Para Webkit (Chrome/Safari): personaliza scrollbar */
+        main::-webkit-scrollbar {
+            width: 8px;
+        }
+        main::-webkit-scrollbar-track {
+            background: #1E293B;
+        }
+        main::-webkit-scrollbar-thumb {
+            background: #F97316;
+            border-radius: 4px;
+        }
+        main::-webkit-scrollbar-thumb:hover {
+            background: #EA580C;
+        }
+
+        /* Asegura que el contenedor de charts y cards no desborde horizontalmente */
+        .charts-grid, .grid {
+            overflow: hidden; /* Previne desbordes en grids */
+        }
+
+        /* Responsive: En mobile, main ocupa todo */
+        @media (max-width: 767px) {
+            main {
+                padding: 1rem; /* Ajusta padding para mobile */
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex">
+<body class="h-screen overflow-hidden flex">
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar fixed md:static top-0 left-0 h-full md:h-auto w-72 bg-gray-800/95 p-6 z-50 transform -translate-x-full md:translate-x-0 flex flex-col neumorphic">
         <div class="sidebar-header">
@@ -519,9 +555,9 @@
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
-        <header class="flex items-center justify-between bg-gray-800/90 px-4 py-3 shadow-md">
+        <header class="flex items-center justify-between bg-gray-800/90 px-4 py-3 shadow-md z-10">
             <button id="menuToggle" class="md:hidden text-white focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -532,13 +568,13 @@
         </header>
 
         <!-- Content -->
-        <div class="particles"></div>
-        <main class="flex-1 p-4 sm:p-6 md:p-8">
+        <main class="flex-1 overflow-auto p-4 sm:p-6 md:p-8 relative">
+            <div class="particles"></div>
             <div class="container mx-auto max-w-5xl">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 sm:mb-6 animate-fadeInScale">
                     <center>Panel de Administrador</center>
                 </h2>
-                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic animate-fadeInScale">
+                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Estadísticas en Tiempo Real</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         <!-- Card: Total de Usuarios -->
@@ -569,11 +605,11 @@
                     <!-- Charts -->
                     <div class="charts-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6">
                         <div class="chart-container neumorphic-card">
-                            <h3 class="text-white text-lg sm:text-xl font-bold text-center mb-4">Transcripciones por Día</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-center mb-4">Transcripciones por Día</h3>
                             <canvas id="barChart"></canvas>
                         </div>
                         <div class="chart-container neumorphic-card">
-                            <h3 class="text-white text-lg sm:text-xl font-bold text-center mb-4">Distribución de Transcripciones</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-center mb-4">Distribución de Transcripciones</h3>
                             <canvas id="pieChart"></canvas>
                         </div>
                     </div>
@@ -762,24 +798,24 @@
                                     title: {
                                         display: true,
                                         text: 'Número de Transcripciones',
-                                        color: '#D1D5DB',
+                                        color: '#000000',
                                         font: { size: 12 }
                                     },
-                                    ticks: { color: '#D1D5DB' }
+                                    ticks: { color: '#000000' }
                                 },
                                 x: {
                                     title: {
                                         display: true,
                                         text: 'Días de la Semana',
-                                        color: '#D1D5DB',
+                                        color: '#000000',
                                         font: { size: 12 }
                                     },
-                                    ticks: { color: '#D1D5DB' }
+                                    ticks: { color: '#000000' }
                                 }
                             },
                             plugins: {
                                 legend: {
-                                    labels: { color: '#D1D5DB' }
+                                    labels: { color: '#000000' }
                                 }
                             }
                         }
@@ -814,9 +850,10 @@
                                 legend: {
                                     position: 'right',
                                     labels: {
-                                        color: '#FFFFFF',
+                                        color: '#000000',
                                         font: { size: 12 },
                                         generateLabels: chart => {
+                                            console.log('Generating pie chart legend with color: #000000');
                                             const data = chart.data;
                                             const total = data.datasets[0].data.reduce((sum, val) => sum + val, 0);
                                             return data.labels.map((label, i) => {
@@ -866,24 +903,24 @@
                                     title: {
                                         display: true,
                                         text: 'Número de Transcripciones',
-                                        color: '#D1D5DB',
+                                        color: '#000000',
                                         font: { size: 12 }
                                     },
-                                    ticks: { color: '#D1D5DB' }
+                                    ticks: { color: '#000000' }
                                 },
                                 x: {
                                     title: {
                                         display: true,
                                         text: 'Días de la Semana',
-                                        color: '#D1D5DB',
+                                        color: '#000000',
                                         font: { size: 12 }
                                     },
-                                    ticks: { color: '#D1D5DB' }
+                                    ticks: { color: '#000000' }
                                 }
                             },
                             plugins: {
                                 legend: {
-                                    labels: { color: '#D1D5DB' }
+                                    labels: { color: '#000000' }
                                 }
                             }
                         }
@@ -918,14 +955,15 @@
                                 legend: {
                                     position: 'right',
                                     labels: {
-                                        color: '#FFFFFF',
+                                        color: '#000000',
                                         font: { size: 12 },
                                         generateLabels: chart => {
+                                            console.log('Generating fallback pie chart legend with color: #000000');
                                             return chart.data.labels.map((label, i) => ({
                                                 text: `${label}: 0%`,
                                                 fillStyle: chart.data.datasets[0].backgroundColor[i],
                                                 strokeStyle: chart.data.datasets[0].borderColor[i],
-                                                lineWidth: chart.data.datasets[0].borderWidth,
+                                                lineWidth: data.datasets[0].borderWidth,
                                                 index: i
                                             }));
                                         }
