@@ -42,6 +42,7 @@
             width: 36px;
             height: 36px;
             animation: spin 0.7s linear infinite;
+            margin: 1rem auto;
         }
 
         /* Efecto neumórfico mejorado */
@@ -290,6 +291,131 @@
             cursor: pointer;
         }
 
+        /* Table styles */
+        .users-table-container {
+            overflow-x: auto;
+            position: relative;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: linear-gradient(145deg, #2D3748 0%, #1E293B 100%);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .users-table th {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: black;
+            font-size: 1rem;
+            background: #F97316;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+
+        .users-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #D1D5DB;
+            font-size: 1rem;
+        }
+
+        .users-table tr:nth-child(even) {
+            background: rgba(45, 55, 72, 0.8);
+        }
+
+        .users-table tr:hover {
+            background: rgba(249, 115, 22, 0.2);
+            transition: background 0.3s ease;
+        }
+
+        .users-table th:first-child,
+        .users-table td:first-child {
+            border-top-left-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
+
+        .users-table th:last-child,
+        .users-table td:last-child {
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+
+        /* Scrollbar for table */
+        .users-table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .users-table-container::-webkit-scrollbar-track {
+            background: #1E293B;
+        }
+
+        .users-table-container::-webkit-scrollbar-thumb {
+            background: #F97316;
+            border-radius: 4px;
+        }
+
+        .users-table-container::-webkit-scrollbar-thumb:hover {
+            background: #EA580C;
+        }
+
+        /* Search bar styles */
+        .search-container {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #F97316;
+            border-radius: 0.5rem;
+            background: #1E293B;
+            color: #D1D5DB;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #6B7280;
+        }
+
+        .search-input:focus {
+            border-color: #EA580C;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+        }
+
+        .filter-btn {
+            background: #F97316;
+            color: black;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.05);
+            font-size: 1rem;
+        }
+
+        .filter-btn:hover {
+            background: #EA580C;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 640px) {
             .sidebar {
@@ -340,6 +466,32 @@
             .chart-container canvas {
                 max-height: 200px;
             }
+
+            .users-table th,
+            .users-table td {
+                padding: 0.75rem;
+                font-size: 0.875rem;
+            }
+
+            .search-input {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                width: auto;
+            }
+
+            .search-container {
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+
+            .users-table-container {
+                max-height: 300px;
+            }
         }
 
         @media (min-width: 640px) and (max-width: 768px) {
@@ -373,6 +525,25 @@
             .chart-container canvas {
                 max-height: 250px;
             }
+
+            .users-table th,
+            .users-table td {
+                padding: 0.875rem;
+            }
+
+            .search-input {
+                padding: 0.625rem 0.875rem;
+                font-size: 1rem;
+            }
+
+            .filter-btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 1rem;
+            }
+
+            .users-table-container {
+                max-height: 350px;
+            }
         }
 
         @media (min-width: 768px) {
@@ -401,6 +572,10 @@
 
             .chart-container canvas {
                 max-height: 300px;
+            }
+
+            .users-table-container {
+                max-height: 400px;
             }
         }
 
@@ -466,18 +641,17 @@
             }
         }
 
-        /* Body ya tiene background, etc. Agrega esto si no está */
+        /* Body ya tiene background, etc. */
         body {
             background: linear-gradient(135deg, #0F172A 0%, #9A3412 100%);
             position: relative;
-            /* Ya lo agregamos en HTML: h-screen overflow-hidden flex */
         }
 
         /* Main: Asegura que ocupe todo y scrollee solo internamente */
         main {
-            overflow-y: auto; /* Solo vertical, para evitar scroll horizontal innecesario */
-            scrollbar-width: thin; /* Opcional: hace el scrollbar más delgado en Firefox */
-            scrollbar-color: #F97316 #1E293B; /* Opcional: color del scrollbar */
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #F97316 #1E293B;
         }
 
         /* Para Webkit (Chrome/Safari): personaliza scrollbar */
@@ -497,13 +671,13 @@
 
         /* Asegura que el contenedor de charts y cards no desborde horizontalmente */
         .charts-grid, .grid {
-            overflow: hidden; /* Previne desbordes en grids */
+            overflow: hidden;
         }
 
         /* Responsive: En mobile, main ocupa todo */
         @media (max-width: 767px) {
             main {
-                padding: 1rem; /* Ajusta padding para mobile */
+                padding: 1rem;
             }
         }
     </style>
@@ -614,6 +788,31 @@
                         </div>
                     </div>
                 </div>
+                <!-- Registered Users Section -->
+                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Usuarios Registrados</h3>
+                    <div class="search-container">
+                        <input type="text" id="userSearch" class="search-input" placeholder="Filtra por ID, Nombre o Correo...">
+                        <button class="filter-btn">Filtrar</button>
+                    </div>
+                    <div class="users-table-container">
+                        <div id="loadingSpinner" class="spinner hidden"></div>
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Contraseña</th>
+                                    <th>Fecha de registro</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -651,11 +850,19 @@
             const topUsersModalContent = document.getElementById('topUsersModalContent');
             const topUsersList = document.getElementById('topUsersList');
             const closeModalBtn = document.querySelector('.close-modal-btn');
+            const userSearch = document.getElementById('userSearch');
+            const filterBtn = document.querySelector('.filter-btn');
+            const usersTableBody = document.getElementById('usersTableBody');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            // Store original user data for filtering
+            let allUsers = [];
 
             // Fetch admin name and set welcome message
             async function fetchAdminName() {
                 try {
                     const response = await fetch('/api/user');
+                    if (!response.ok) throw new Error('Error al obtener datos del usuario');
                     const data = await response.json();
                     if (data.nombre && data.isAdmin) {
                         welcomeMessage.textContent = `Bienvenid@, ${data.nombre}`;
@@ -665,6 +872,7 @@
                 } catch (err) {
                     console.error('Error fetching admin name:', err);
                     welcomeMessage.textContent = 'Bienvenido';
+                    showAlert('Error al cargar el nombre del administrador');
                 }
             }
 
@@ -672,12 +880,9 @@
             async function fetchUserCount() {
                 try {
                     const response = await fetch('/api/users/count');
+                    if (!response.ok) throw new Error('Error al obtener conteo de usuarios');
                     const data = await response.json();
-                    if (response.ok) {
-                        userCountElement.textContent = data.count;
-                    } else {
-                        throw new Error(data.error || 'Error al obtener el conteo de usuarios');
-                    }
+                    userCountElement.textContent = data.count;
                 } catch (err) {
                     console.error('Error fetching user count:', err);
                     userCountElement.textContent = 'Error';
@@ -689,12 +894,9 @@
             async function fetchTranscriptionCount() {
                 try {
                     const response = await fetch('/api/transcriptions/count');
+                    if (!response.ok) throw new Error('Error al obtener conteo de transcripciones');
                     const data = await response.json();
-                    if (response.ok) {
-                        transcriptionCountElement.textContent = data.count;
-                    } else {
-                        throw new Error(data.error || 'Error al obtener el conteo de transcripciones');
-                    }
+                    transcriptionCountElement.textContent = data.count;
                 } catch (err) {
                     console.error('Error fetching transcription count:', err);
                     transcriptionCountElement.textContent = 'Error';
@@ -706,12 +908,9 @@
             async function fetchLatestTranscription() {
                 try {
                     const response = await fetch('/api/transcriptions/latest');
+                    if (!response.ok) throw new Error('Error al obtener la última transcripción');
                     const data = await response.json();
-                    if (response.ok) {
-                        latestTranscriptionElement.textContent = data.nombre_archivo;
-                    } else {
-                        throw new Error(data.error || 'Error al obtener la última transcripción');
-                    }
+                    latestTranscriptionElement.textContent = data.nombre_archivo;
                 } catch (err) {
                     console.error('Error fetching latest transcription:', err);
                     latestTranscriptionElement.textContent = 'Error';
@@ -723,16 +922,71 @@
             async function fetchTopUsers() {
                 try {
                     const response = await fetch('/api/transcriptions/top-users');
+                    if (!response.ok) throw new Error('Error al obtener los top usuarios');
                     const data = await response.json();
-                    if (response.ok) {
-                        renderTopUsers(data);
-                    } else {
-                        throw new Error(data.error || 'Error al obtener los top usuarios');
-                    }
+                    renderTopUsers(data);
                 } catch (err) {
                     console.error('Error fetching top users:', err);
                     showAlert('Error al cargar los top usuarios');
                     renderTopUsers([]);
+                }
+            }
+
+            // Fetch all users
+            async function fetchUsers() {
+                try {
+                    loadingSpinner.classList.remove('hidden');
+                    const response = await fetch('/api/users');
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || errorData.error || 'Error al obtener usuarios');
+                    }
+                    const data = await response.json();
+                    allUsers = data;
+                    renderUsers(data);
+                } catch (err) {
+                    console.error('Error fetching users:', err);
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">Error al cargar usuarios: ' + err.message + '</td></tr>';
+                    showAlert('Error al cargar los usuarios: ' + err.message);
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                }
+            }
+
+            // Render users in the table
+            function renderUsers(users) {
+                usersTableBody.innerHTML = '';
+                if (users.length === 0) {
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No hay usuarios disponibles</td></tr>';
+                    return;
+                }
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.Id}</td>
+                        <td>${user.Nombre}</td>
+                        <td>${user.Email}</td>
+                        <td>${user.PasswordHash}</td>
+                        <td>${user.FechaRegistro}</td>
+                    `;
+                    usersTableBody.appendChild(row);
+                });
+            }
+
+            // Filter users based on search input (by Id, Nombre, or Email only)
+            function filterUsers(searchTerm) {
+                if (!searchTerm) {
+                    renderUsers(allUsers);
+                    return;
+                }
+                const filteredUsers = allUsers.filter(user =>
+                    user.Id.toString().toLowerCase().includes(searchTerm) ||
+                    user.Nombre.toLowerCase().includes(searchTerm) ||
+                    user.Email.toLowerCase().includes(searchTerm)
+                );
+                renderUsers(filteredUsers);
+                if (filteredUsers.length === 0) {
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No se encontraron resultados</td></tr>';
                 }
             }
 
@@ -766,10 +1020,8 @@
             async function renderCharts() {
                 try {
                     const response = await fetch('/api/transcriptions/daily');
+                    if (!response.ok) throw new Error('Error al obtener transcripciones por día');
                     const data = await response.json();
-                    if (!response.ok) {
-                        throw new Error(data.error || 'Error al obtener transcripciones por día');
-                    }
 
                     const days = data.map(item => item.day);
                     const counts = data.map(item => item.count);
@@ -963,7 +1215,7 @@
                                                 text: `${label}: 0%`,
                                                 fillStyle: chart.data.datasets[0].backgroundColor[i],
                                                 strokeStyle: chart.data.datasets[0].borderColor[i],
-                                                lineWidth: data.datasets[0].borderWidth,
+                                                lineWidth: chart.data.datasets[0].borderWidth,
                                                 index: i
                                             }));
                                         }
@@ -1005,6 +1257,7 @@
             logoutBtn.addEventListener('click', async () => {
                 try {
                     const response = await fetch('/api/user');
+                    if (!response.ok) throw new Error('Error al obtener datos del usuario');
                     const data = await response.json();
                     const nombre = data.nombre || 'Administrador';
                     const logoutResponse = await fetch('/api/logout', {
@@ -1057,11 +1310,27 @@
                 }
             });
 
+            // Search input and button event listeners
+            filterBtn.addEventListener('click', () => {
+                const searchTerm = userSearch.value.trim().toLowerCase();
+                if (!searchTerm) {
+                    showAlert('Ingresa un valor para filtrar');
+                    return;
+                }
+                filterUsers(searchTerm);
+            });
+
+            userSearch.addEventListener('input', () => {
+                const searchTerm = userSearch.value.trim().toLowerCase();
+                filterUsers(searchTerm);
+            });
+
             // Initial data fetches
             fetchAdminName();
             fetchUserCount();
             fetchTranscriptionCount();
             fetchLatestTranscription();
+            fetchUsers();
             renderCharts();
         })();
     </script>

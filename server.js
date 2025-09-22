@@ -80,8 +80,30 @@ app.get("/api/users/count", async (req, res) => {
     const result = await pool.request().query("SELECT COUNT(*) AS count FROM usuariosMuni");
     res.json({ count: result.recordset[0].count });
   } catch (error) {
-    console.error("Error al obtener conteo de usuarios:", error);
+    console.error("Error al obtener conteo de usuarios:", error.message, error.stack);
     res.status(500).json({ error: "Error al obtener conteo de usuarios" });
+  }
+});
+
+// Ruta para obtener todos los usuarios
+app.get("/api/users", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .query("SELECT Id, Nombre, Email, PasswordHash, FechaRegistro FROM usuariosMuni");
+    if (result.recordset.length === 0) {
+      console.log("No se encontraron usuarios en usuariosMuni");
+      return res.json([]);
+    }
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error al obtener usuarios:", error.message, error.stack);
+    res.status(500).json({ error: "Error al obtener usuarios", details: error.message });
   }
 });
 
@@ -96,7 +118,7 @@ app.get("/api/transcriptions/count", async (req, res) => {
     const result = await pool.request().query("SELECT COUNT(*) AS count FROM Historial_transcripciones");
     res.json({ count: result.recordset[0].count });
   } catch (error) {
-    console.error("Error al obtener conteo de transcripciones:", error);
+    console.error("Error al obtener conteo de transcripciones:", error.message, error.stack);
     res.status(500).json({ error: "Error al obtener conteo de transcripciones" });
   }
 });
@@ -119,7 +141,7 @@ app.get("/api/transcriptions/latest", async (req, res) => {
     
     res.json({ nombre_archivo: result.recordset[0].nombre_archivo });
   } catch (error) {
-    console.error("Error al obtener la última transcripción:", error);
+    console.error("Error al obtener la última transcripción:", error.message, error.stack);
     res.status(500).json({ error: "Error al obtener la última transcripción" });
   }
 });
@@ -143,7 +165,7 @@ app.get("/api/transcriptions/top-users", async (req, res) => {
     
     res.json(result.recordset);
   } catch (error) {
-    console.error("Error al obtener los top usuarios:", error);
+    console.error("Error al obtener los top usuarios:", error.message, error.stack);
     res.status(500).json({ error: "Error al obtener los top usuarios" });
   }
 });
@@ -186,7 +208,7 @@ app.get("/api/transcriptions/daily", async (req, res) => {
 
     res.json(days);
   } catch (error) {
-    console.error("Error al obtener transcripciones por día:", error);
+    console.error("Error al obtener transcripciones por día:", error.message, error.stack);
     res.status(500).json({ error: "Error al obtener transcripciones por día" });
   }
 });
@@ -226,13 +248,13 @@ app.post("/api/transcribe", upload.single("audio"), async (req, res) => {
 
     res.json({ transcript, id_transcripcion: result.recordset[0].id_transcripcion });
   } catch (error) {
-    console.error("Error en Python o base de datos:", error.stderr || error);
+    console.error("Error en Python o base de datos:", error.stderr || error.message, error.stack);
     res.status(500).json({ error: "Error al transcribir audio" });
   } finally {
     try {
       await fs.unlink(inputPath);
     } catch (err) {
-      console.error("Error al borrar el archivo:", err);
+      console.error("Error al borrar el archivo:", err.message, err.stack);
     }
   }
 });
@@ -251,7 +273,7 @@ app.get("/api/transcriptions", async (req, res) => {
       .query("SELECT id_transcripcion, nombre_archivo, fecha_subida, texto_transcrito FROM Historial_transcripciones WHERE nombre_usuario = @nombre_usuario");
     res.json(result.recordset);
   } catch (error) {
-    console.error("Error al obtener transcripciones:", error);
+    console.error("Error al obtener transcripciones:", error.message, error.stack);
     res.status(500).json({ error: "Error al obtener transcripciones" });
   }
 });
@@ -274,7 +296,7 @@ app.get("/api/transcriptions/:id", async (req, res) => {
     }
     res.json(result.recordset[0]);
   } catch (error) {
-    console.error("Error al obtener transcripción:", error);
+    console.error("Error al obtener transcripción:", error.message, error.stack);
     res.status(500).json({ error: "Error al obtener transcripción" });
   }
 });
@@ -308,7 +330,7 @@ app.put("/api/transcriptions/:id", async (req, res) => {
     await request.query(query);
     res.json({ message: "Actualizado correctamente" });
   } catch (error) {
-    console.error("Error al actualizar:", error);
+    console.error("Error al actualizar:", error.message, error.stack);
     res.status(500).json({ error: "Error al actualizar" });
   }
 });
@@ -328,7 +350,7 @@ app.delete("/api/transcriptions/:id", async (req, res) => {
       .query("DELETE FROM Historial_transcripciones WHERE id_transcripcion = @id_transcripcion AND nombre_usuario = @nombre_usuario");
     res.json({ message: "Transcripción borrada" });
   } catch (error) {
-    console.error("Error al borrar transcripción:", error);
+    console.error("Error al borrar transcripción:", error.message, error.stack);
     res.status(500).json({ error: "Error al borrar transcripción" });
   }
 });
@@ -353,8 +375,8 @@ app.post("/api/register", async (req, res) => {
 
     res.json({ message: "👍 Usuario registrado correctamente" });
   } catch (err) {
-    console.error("Error al registrar:", err);
-    res.status(500).json({ error: "Error al registrar usuario" });
+    console.error("Error al registrar:", err.message, err.stack);
+    res.status(500).json({ error: "Error al registrar usuario", details: err.message });
   }
 });
 
@@ -406,8 +428,8 @@ app.post("/api/login", async (req, res) => {
 
     res.json({ success: true, message: `Bienvenido de nuevo, ${user.Nombre}`, redirect: "/main" });
   } catch (err) {
-    console.error("Error al iniciar sesión:", err);
-    res.status(500).json({ error: "Error al iniciar sesión" });
+    console.error("Error al iniciar sesión:", err.message, err.stack);
+    res.status(500).json({ error: "Error al iniciar sesión", details: err.message });
   }
 });
 
@@ -417,7 +439,7 @@ app.post("/api/logout", (req, res) => {
     const nombre = req.session.user.nombre;
     req.session.destroy((err) => {
       if (err) {
-        console.error("Error al cerrar sesión:", err);
+        console.error("Error al cerrar sesión:", err.message, err.stack);
         return res.status(500).json({ error: "Error al cerrar sesión" });
       }
       res.json({ message: `Sesión cerrada, ${nombre}` });
