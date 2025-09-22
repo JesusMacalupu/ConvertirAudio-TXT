@@ -179,7 +179,6 @@
             box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.05);
         }
 
-        /* Ensure chart titles are black */
         .chart-container h3 {
             color: #000000;
         }
@@ -292,14 +291,14 @@
         }
 
         /* Table styles */
-        .users-table-container {
+        .users-table-container, .transcriptions-table-container {
             overflow-x: auto;
             position: relative;
             max-height: 400px;
             overflow-y: auto;
         }
 
-        .users-table {
+        .users-table, .transcriptions-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
@@ -308,7 +307,7 @@
             overflow: hidden;
         }
 
-        .users-table th {
+        .users-table th, .transcriptions-table th {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -322,7 +321,7 @@
             text-transform: uppercase;
         }
 
-        .users-table td {
+        .users-table td, .transcriptions-table td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -330,47 +329,51 @@
             font-size: 1rem;
         }
 
-        .users-table tr:nth-child(even) {
+        .users-table tr:nth-child(even), .transcriptions-table tr:nth-child(even) {
             background: rgba(45, 55, 72, 0.8);
         }
 
-        .users-table tr:hover {
+        .users-table tr:hover, .transcriptions-table tr:hover {
             background: rgba(249, 115, 22, 0.2);
             transition: background 0.3s ease;
         }
 
         .users-table th:first-child,
-        .users-table td:first-child {
+        .users-table td:first-child,
+        .transcriptions-table th:first-child,
+        .transcriptions-table td:first-child {
             border-top-left-radius: 0.5rem;
             border-bottom-left-radius: 0.5rem;
         }
 
         .users-table th:last-child,
-        .users-table td:last-child {
+        .users-table td:last-child,
+        .transcriptions-table th:last-child,
+        .transcriptions-table td:last-child {
             border-top-right-radius: 0.5rem;
             border-bottom-right-radius: 0.5rem;
         }
 
         /* Scrollbar for table */
-        .users-table-container::-webkit-scrollbar {
+        .users-table-container::-webkit-scrollbar, .transcriptions-table-container::-webkit-scrollbar {
             width: 8px;
         }
 
-        .users-table-container::-webkit-scrollbar-track {
+        .users-table-container::-webkit-scrollbar-track, .transcriptions-table-container::-webkit-scrollbar-track {
             background: #1E293B;
         }
 
-        .users-table-container::-webkit-scrollbar-thumb {
+        .users-table-container::-webkit-scrollbar-thumb, .transcriptions-table-container::-webkit-scrollbar-thumb {
             background: #F97316;
             border-radius: 4px;
         }
 
-        .users-table-container::-webkit-scrollbar-thumb:hover {
+        .users-table-container::-webkit-scrollbar-thumb:hover, .transcriptions-table-container::-webkit-scrollbar-thumb:hover {
             background: #EA580C;
         }
 
-        /* Search bar styles */
-        .search-container {
+        /* Search bar and filter styles */
+        .search-container, .filter-container {
             margin-bottom: 1.5rem;
             display: flex;
             gap: 1rem;
@@ -390,11 +393,29 @@
             transition: all 0.3s ease;
         }
 
-        .search-input::placeholder {
+        .filter-select {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #F97316;
+            border-radius: 0.5rem;
+            background: #1E293B;
+            color: #FFFFFF;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23F97316" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5rem;
+        }
+
+        .search-input::placeholder, .filter-select::placeholder {
             color: #6B7280;
         }
 
-        .search-input:focus {
+        .search-input:focus, .filter-select:focus {
             border-color: #EA580C;
             box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
         }
@@ -414,6 +435,12 @@
 
         .filter-btn:hover {
             background: #EA580C;
+        }
+
+        /* Estilo para las opciones del select */
+        .filter-select option {
+            background: #1E293B;
+            color: #FFFFFF;
         }
 
         /* Responsive adjustments */
@@ -468,14 +495,20 @@
             }
 
             .users-table th,
-            .users-table td {
+            .users-table td,
+            .transcriptions-table th,
+            .transcriptions-table td {
                 padding: 0.75rem;
                 font-size: 0.875rem;
             }
 
-            .search-input {
+            .search-input, .filter-select {
                 padding: 0.5rem 0.75rem;
                 font-size: 0.875rem;
+            }
+
+            .filter-select {
+                background-position: right 0.25rem center;
             }
 
             .filter-btn {
@@ -484,12 +517,12 @@
                 width: auto;
             }
 
-            .search-container {
+            .search-container, .filter-container {
                 flex-direction: row;
                 gap: 0.5rem;
             }
 
-            .users-table-container {
+            .users-table-container, .transcriptions-table-container {
                 max-height: 300px;
             }
         }
@@ -527,13 +560,19 @@
             }
 
             .users-table th,
-            .users-table td {
+            .users-table td,
+            .transcriptions-table th,
+            .transcriptions-table td {
                 padding: 0.875rem;
             }
 
-            .search-input {
+            .search-input, .filter-select {
                 padding: 0.625rem 0.875rem;
                 font-size: 1rem;
+            }
+
+            .filter-select {
+                background-position: right 0.5rem center;
             }
 
             .filter-btn {
@@ -541,7 +580,7 @@
                 font-size: 1rem;
             }
 
-            .users-table-container {
+            .users-table-container, .transcriptions-table-container {
                 max-height: 350px;
             }
         }
@@ -574,7 +613,7 @@
                 max-height: 300px;
             }
 
-            .users-table-container {
+            .users-table-container, .transcriptions-table-container {
                 max-height: 400px;
             }
         }
@@ -624,10 +663,6 @@
                 order: 3;
                 text-align: left;
                 margin-bottom: 0;
-            }
-
-            #topUsersModalContent .grid {
-                grid-template-columns: 1fr;
             }
 
             .charts-grid {
@@ -813,6 +848,37 @@
                         </table>
                     </div>
                 </div>
+                <!-- Transcriptions History Section -->
+                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Historial de Transcripciones en el Sistema</h3>
+                    <div class="filter-container">
+                        <select id="transcriptionFilter" class="filter-select">
+                            <option value="">Selecciona un filtro</option>
+                            <option value="recent">Transcripción más reciente</option>
+                            <option value="oldest">Transcripción más antigua</option>
+                            <option value="longest">Transcripción más larga</option>
+                            <option value="mostTranscriptions">Usuario con más transcripciones</option>
+                        </select>
+                        <button class="filter-btn" id="applyTranscriptionFilter">Filtrar</button>
+                    </div>
+                    <div class="transcriptions-table-container">
+                        <div id="transcriptionLoadingSpinner" class="spinner hidden"></div>
+                        <table class="transcriptions-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre del Archivo</th>
+                                    <th>Fecha de Subida</th>
+                                    <th>Texto Transcrito</th>
+                                    <th>Nombre del Usuario</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transcriptionsTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -854,9 +920,14 @@
             const filterBtn = document.querySelector('.filter-btn');
             const usersTableBody = document.getElementById('usersTableBody');
             const loadingSpinner = document.getElementById('loadingSpinner');
+            const transcriptionFilter = document.getElementById('transcriptionFilter');
+            const applyTranscriptionFilter = document.getElementById('applyTranscriptionFilter');
+            const transcriptionsTableBody = document.getElementById('transcriptionsTableBody');
+            const transcriptionLoadingSpinner = document.getElementById('transcriptionLoadingSpinner');
 
-            // Store original user data for filtering
+            // Store original data for filtering
             let allUsers = [];
+            let allTranscriptions = [];
 
             // Fetch admin name and set welcome message
             async function fetchAdminName() {
@@ -953,6 +1024,61 @@
                 }
             }
 
+            // Fetch all transcriptions with optional filter
+            async function fetchTranscriptions(filter = '') {
+                try {
+                    transcriptionLoadingSpinner.classList.remove('hidden');
+                    const response = await fetch(`/api/transcriptions/all?filter=${filter}`);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || errorData.error || 'Error al obtener transcripciones');
+                    }
+                    let data = await response.json();
+
+                    // Store all transcriptions for "Selecciona un filtro"
+                    if (filter === '') {
+                        allTranscriptions = data;
+                        renderTranscriptions(data);
+                        return;
+                    }
+
+                    // Apply client-side filtering for specific cases
+                    if (filter === 'recent' && data.length > 0) {
+                        // Most recent: take the first after server-side sort by fecha_subida DESC
+                        data = [data[0]];
+                    } else if (filter === 'oldest' && data.length > 0) {
+                        // Oldest: take the first after server-side sort by fecha_subida ASC
+                        data = [data[0]];
+                    } else if (filter === 'longest' && data.length > 0) {
+                        // Longest: find the transcription with the most words
+                        const longest = data.reduce((max, curr) => {
+                            const maxWords = max.texto_transcrito.trim().split(/\s+/).length;
+                            const currWords = curr.texto_transcrito.trim().split(/\s+/).length;
+                            return currWords > maxWords ? curr : max;
+                        }, data[0]);
+                        data = [longest];
+                    } else if (filter === 'mostTranscriptions' && data.length > 0) {
+                        // Most transcriptions: filter for the user with the most transcriptions
+                        const userCounts = data.reduce((acc, curr) => {
+                            acc[curr.nombre_usuario] = (acc[curr.nombre_usuario] || 0) + 1;
+                            return acc;
+                        }, {});
+                        const topUser = Object.keys(userCounts).reduce((a, b) =>
+                            userCounts[a] > userCounts[b] ? a : b
+                        );
+                        data = data.filter(t => t.nombre_usuario === topUser);
+                    }
+
+                    renderTranscriptions(data);
+                } catch (err) {
+                    console.error('Error fetching transcriptions:', err);
+                    transcriptionsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">Error al cargar transcripciones: ' + err.message + '</td></tr>';
+                    showAlert('Error al cargar las transcripciones: ' + err.message);
+                } finally {
+                    transcriptionLoadingSpinner.classList.add('hidden');
+                }
+            }
+
             // Render users in the table
             function renderUsers(users) {
                 usersTableBody.innerHTML = '';
@@ -970,6 +1096,26 @@
                         <td>${user.FechaRegistro}</td>
                     `;
                     usersTableBody.appendChild(row);
+                });
+            }
+
+            // Render transcriptions in the table
+            function renderTranscriptions(transcriptions) {
+                transcriptionsTableBody.innerHTML = '';
+                if (transcriptions.length === 0) {
+                    transcriptionsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No hay transcripciones disponibles</td></tr>';
+                    return;
+                }
+                transcriptions.forEach(transcription => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transcription.id_transcripcion}</td>
+                        <td>${transcription.nombre_archivo}</td>
+                        <td>${transcription.fecha_subida}</td>
+                        <td class="card-info">${transcription.texto_transcrito}</td>
+                        <td>${transcription.nombre_usuario}</td>
+                    `;
+                    transcriptionsTableBody.appendChild(row);
                 });
             }
 
@@ -1325,12 +1471,23 @@
                 filterUsers(searchTerm);
             });
 
+            // Transcription filter event listener
+            applyTranscriptionFilter.addEventListener('click', () => {
+                const filterValue = transcriptionFilter.value;
+                if (!filterValue && filterValue !== '') {
+                    showAlert('Selecciona un filtro');
+                    return;
+                }
+                fetchTranscriptions(filterValue);
+            });
+
             // Initial data fetches
             fetchAdminName();
             fetchUserCount();
             fetchTranscriptionCount();
             fetchLatestTranscription();
             fetchUsers();
+            fetchTranscriptions();
             renderCharts();
         })();
     </script>

@@ -213,6 +213,49 @@ app.get("/api/transcriptions/daily", async (req, res) => {
   }
 });
 
+// Nueva ruta para obtener todas las transcripciones con filtros
+app.get("/api/transcriptions/all", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  const filter = req.query.filter || '';
+  let query = `
+    SELECT id_transcripcion, nombre_archivo, fecha_subida, texto_transcrito, nombre_usuario
+    FROM Historial_transcripciones
+  `;
+
+  if (filter === 'recent') {
+    query += ' ORDER BY fecha_subida DESC';
+  } else if (filter === 'oldest') {
+    query += ' ORDER BY fecha_subida ASC';
+  } else if (filter === 'longest') {
+    query += ' ORDER BY LEN(texto_transcrito) DESC';
+  } else if (filter === 'mostTranscriptions') {
+    query = `
+      SELECT ht.id_transcripcion, ht.nombre_archivo, ht.fecha_subida, ht.texto_transcrito, ht.nombre_usuario
+      FROM Historial_transcripciones ht
+      JOIN (
+        SELECT nombre_usuario, COUNT(*) as transcription_count
+        FROM Historial_transcripciones
+        GROUP BY nombre_usuario
+      ) counts ON ht.nombre_usuario = counts.nombre_usuario
+      ORDER BY counts.transcription_count DESC, ht.fecha_subida DESC
+    `;
+  } else {
+    query += ' ORDER BY id_transcripcion ASC';
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(query);
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error al obtener transcripciones:", error.message, error.stack);
+    res.status(500).json({ error: "Error al obtener transcripciones", details: error.message });
+  }
+});
+
 // Ruta para transcripción
 app.post("/api/transcribe", upload.single("audio"), async (req, res) => {
   if (!req.file) {
