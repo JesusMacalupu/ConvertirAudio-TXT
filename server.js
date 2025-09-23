@@ -19,6 +19,7 @@ const dbConfig = {
   options: {
     encrypt: false,
     trustServerCertificate: true,
+    useUTC: false,
   },
 };
 
@@ -95,7 +96,7 @@ app.get("/api/users", async (req, res) => {
     const pool = await sql.connect(dbConfig);
     const result = await pool
       .request()
-      .query("SELECT Id, Nombre, Email, PasswordHash, FechaRegistro FROM usuariosMuni");
+      .query("SELECT Id, Nombre, Email, PasswordHash, CONVERT(varchar, FechaRegistro, 120) AS FechaRegistro FROM usuariosMuni");
     if (result.recordset.length === 0) {
       console.log("No se encontraron usuarios en usuariosMuni");
       return res.json([]);
@@ -189,7 +190,6 @@ app.get("/api/transcriptions/daily", async (req, res) => {
         ORDER BY day_of_week
       `);
 
-    // Mapear los días de la semana (SQL Server: 1=Domingo, 2=Lunes, ..., 7=Sábado)
     const days = [
       { day: "Lunes", count: 0 },
       { day: "Martes", count: 0 },
@@ -201,7 +201,6 @@ app.get("/api/transcriptions/daily", async (req, res) => {
     ];
 
     result.recordset.forEach(row => {
-      // Mapear 2(Lunes) -> 0, 3(Martes) -> 1, ..., 1(Domingo) -> 6
       const index = row.day_of_week === 1 ? 6 : row.day_of_week - 2;
       days[index].count = row.transcription_count;
     });
@@ -213,7 +212,7 @@ app.get("/api/transcriptions/daily", async (req, res) => {
   }
 });
 
-// Nueva ruta para obtener todas las transcripciones con filtros
+// Ruta para obtener todas las transcripciones con filtros
 app.get("/api/transcriptions/all", async (req, res) => {
   if (!req.session.user || !req.session.isAdmin) {
     return res.status(401).json({ error: "No autorizado" });
@@ -221,7 +220,9 @@ app.get("/api/transcriptions/all", async (req, res) => {
 
   const filter = req.query.filter || '';
   let query = `
-    SELECT id_transcripcion, nombre_archivo, fecha_subida, texto_transcrito, nombre_usuario
+    SELECT id_transcripcion, nombre_archivo, 
+           CONVERT(varchar, fecha_subida, 120) AS fecha_subida, 
+           texto_transcrito, nombre_usuario
     FROM Historial_transcripciones
   `;
 
@@ -233,7 +234,9 @@ app.get("/api/transcriptions/all", async (req, res) => {
     query += ' ORDER BY LEN(texto_transcrito) DESC';
   } else if (filter === 'mostTranscriptions') {
     query = `
-      SELECT ht.id_transcripcion, ht.nombre_archivo, ht.fecha_subida, ht.texto_transcrito, ht.nombre_usuario
+      SELECT ht.id_transcripcion, ht.nombre_archivo, 
+             CONVERT(varchar, ht.fecha_subida, 120) AS fecha_subida, 
+             ht.texto_transcrito, ht.nombre_usuario
       FROM Historial_transcripciones ht
       JOIN (
         SELECT nombre_usuario, COUNT(*) as transcription_count
@@ -313,7 +316,7 @@ app.get("/api/transcriptions", async (req, res) => {
     const result = await pool
       .request()
       .input("nombre_usuario", sql.NVarChar(150), req.session.user.nombre)
-      .query("SELECT id_transcripcion, nombre_archivo, fecha_subida, texto_transcrito FROM Historial_transcripciones WHERE nombre_usuario = @nombre_usuario");
+      .query("SELECT id_transcripcion, nombre_archivo, CONVERT(varchar, fecha_subida, 120) AS fecha_subida, texto_transcrito FROM Historial_transcripciones WHERE nombre_usuario = @nombre_usuario");
     res.json(result.recordset);
   } catch (error) {
     console.error("Error al obtener transcripciones:", error.message, error.stack);
