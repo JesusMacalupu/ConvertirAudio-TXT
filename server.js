@@ -259,6 +259,99 @@ app.get("/api/transcriptions/all", async (req, res) => {
   }
 });
 
+// Función para actualizar la tabla Datos_TiempoReal
+async function updateRealtimeData() {
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    // total_usuarios
+    const totalUsersRes = await pool.request().query("SELECT COUNT(*) AS count FROM usuariosMuni");
+    const total_usuarios = totalUsersRes.recordset[0].count;
+
+    // numero_transcripciones
+    const totalTransRes = await pool.request().query("SELECT COUNT(*) AS count FROM Historial_transcripciones");
+    const numero_transcripciones = totalTransRes.recordset[0].count;
+
+    // usuario_MasTranscripciones (solo el primero con más transcripciones)
+    const topUserRes = await pool.request().query(`
+      SELECT TOP 1 nombre_usuario, COUNT(*) as count
+      FROM Historial_transcripciones
+      GROUP BY nombre_usuario
+      ORDER BY count DESC
+    `);
+    let usuario_MasTranscripciones = 'Ninguno';
+    if (topUserRes.recordset.length > 0) {
+      usuario_MasTranscripciones = topUserRes.recordset[0].nombre_usuario;
+    }
+
+    // ultima_transcripcion (nombre del archivo de la última transcripción)
+    const latestRes = await pool.request().query(`
+      SELECT TOP 1 nombre_archivo
+      FROM Historial_transcripciones
+      ORDER BY fecha_subida DESC
+    `);
+    let ultima_transcripcion = 'Ninguna';
+    if (latestRes.recordset.length > 0) {
+      ultima_transcripcion = latestRes.recordset[0].nombre_archivo;
+    }
+
+    // dia_MasTranscripciones (día con más transcripciones en español con cantidad en paréntesis)
+    const dailyRes = await pool.request().query(`
+      SELECT 
+        DATEPART(WEEKDAY, fecha_subida) AS day_of_week,
+        COUNT(*) AS count
+      FROM Historial_transcripciones
+      GROUP BY DATEPART(WEEKDAY, fecha_subida)
+      ORDER BY day_of_week
+    `);
+
+    // Mapa explícito de días en español
+    const spanishDays = {
+      1: 'Domingo',
+      2: 'Lunes',
+      3: 'Martes',
+      4: 'Miércoles',
+      5: 'Jueves',
+      6: 'Viernes',
+      7: 'Sábado'
+    };
+
+    let dia_MasTranscripciones = 'Ninguno';
+    let maxCount = 0;
+    dailyRes.recordset.forEach(row => {
+      if (row.count > maxCount) {
+        maxCount = row.count;
+        const dayIndex = row.day_of_week;
+        const dayName = spanishDays[dayIndex] || 'Desconocido';
+        dia_MasTranscripciones = `${dayName} (${row.count})`;
+      }
+    });
+
+    // Actualizar o insertar en Datos_TiempoReal (asumiendo id_tiempoReal = 1)
+    await pool.request()
+      .input('total_usuarios', sql.Int, total_usuarios)
+      .input('numero_transcripciones', sql.Int, numero_transcripciones)
+      .input('usuario_MasTranscripciones', sql.VarChar(255), usuario_MasTranscripciones)
+      .input('ultima_transcripcion', sql.Text, ultima_transcripcion)
+      .input('dia_MasTranscripciones', sql.Text, dia_MasTranscripciones)
+      .query(`
+        IF EXISTS (SELECT * FROM Datos_TiempoReal WHERE id_tiempoReal = 1)
+          UPDATE Datos_TiempoReal
+          SET total_usuarios = @total_usuarios,
+              numero_transcripciones = @numero_transcripciones,
+              usuario_MasTranscripciones = @usuario_MasTranscripciones,
+              ultima_transcripcion = @ultima_transcripcion,
+              dia_MasTranscripciones = @dia_MasTranscripciones
+          WHERE id_tiempoReal = 1
+        ELSE
+          INSERT INTO Datos_TiempoReal (id_tiempoReal, total_usuarios, numero_transcripciones, usuario_MasTranscripciones, ultima_transcripcion, dia_MasTranscripciones)
+          VALUES (1, @total_usuarios, @numero_transcripciones, @usuario_MasTranscripciones, @ultima_transcripcion, @dia_MasTranscripciones)
+      `);
+  } catch (err) {
+    console.error('Error actualizando datos en tiempo real:', err.message, err.stack);
+  }
+}
+
 // Ruta para transcripción
 app.post("/api/transcribe", upload.single("audio"), async (req, res) => {
   if (!req.file) {
@@ -291,6 +384,8 @@ app.post("/api/transcribe", upload.single("audio"), async (req, res) => {
       .query(
         "INSERT INTO Historial_transcripciones (nombre_archivo, fecha_subida, texto_transcrito, nombre_usuario) OUTPUT INSERTED.id_transcripcion VALUES (@nombre_archivo, @fecha_subida, @texto_transcrito, @nombre_usuario)"
       );
+
+    await updateRealtimeData(); // Actualizar tabla de datos en tiempo real después de la inserción
 
     res.json({ transcript, id_transcripcion: result.recordset[0].id_transcripcion });
   } catch (error) {
@@ -374,6 +469,9 @@ app.put("/api/transcriptions/:id", async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
     await request.query(query);
+
+    await updateRealtimeData(); // Actualizar si el edit afecta (por seguridad, aunque edit no siempre afecta counts)
+
     res.json({ message: "Actualizado correctamente" });
   } catch (error) {
     console.error("Error al actualizar:", error.message, error.stack);
@@ -394,6 +492,9 @@ app.delete("/api/transcriptions/:id", async (req, res) => {
       .input("id_transcripcion", sql.Int, req.params.id)
       .input("nombre_usuario", sql.NVarChar(150), req.session.user.nombre)
       .query("DELETE FROM Historial_transcripciones WHERE id_transcripcion = @id_transcripcion AND nombre_usuario = @nombre_usuario");
+
+    await updateRealtimeData(); // Actualizar tabla de datos en tiempo real después de la eliminación
+
     res.json({ message: "Transcripción borrada" });
   } catch (error) {
     console.error("Error al borrar transcripción:", error.message, error.stack);
@@ -418,6 +519,8 @@ app.post("/api/register", async (req, res) => {
       .query(
         "INSERT INTO usuariosMuni (Nombre, Email, PasswordHash) VALUES (@Nombre, @Email, @PasswordHash)"
       );
+
+    await updateRealtimeData(); // Actualizar tabla de datos en tiempo real después del registro
 
     res.json({ message: "👍 Usuario registrado correctamente" });
   } catch (err) {
@@ -495,7 +598,8 @@ app.post("/api/logout", (req, res) => {
   }
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
+// Iniciar servidor y actualizar datos en tiempo real al inicio
+app.listen(PORT, async () => {
   console.log(`Servidor corriendo en 👉 http://localhost:${PORT}`);
+  await updateRealtimeData();
 });
