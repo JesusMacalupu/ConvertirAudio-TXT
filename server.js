@@ -15,7 +15,7 @@ const dbConfig = {
   user: "sa",
   password: "12345",
   server: "localhost",
-  database: "MuniConversionBD",
+  database: "HRLatam_BD",
   options: {
     encrypt: false,
     trustServerCertificate: true,
@@ -78,7 +78,7 @@ app.get("/api/users/count", async (req, res) => {
 
   try {
     const pool = await sql.connect(dbConfig);
-    const result = await pool.request().query("SELECT COUNT(*) AS count FROM usuariosMuni");
+    const result = await pool.request().query("SELECT COUNT(*) AS count FROM UsuariosHRL");
     res.json({ count: result.recordset[0].count });
   } catch (error) {
     console.error("Error al obtener conteo de usuarios:", error.message, error.stack);
@@ -96,9 +96,9 @@ app.get("/api/users", async (req, res) => {
     const pool = await sql.connect(dbConfig);
     const result = await pool
       .request()
-      .query("SELECT Id, Nombre, Email, PasswordHash, CONVERT(varchar, FechaRegistro, 120) AS FechaRegistro FROM usuariosMuni");
+      .query("SELECT Id, Nombre, Email, PasswordHash, CONVERT(varchar, FechaRegistro, 120) AS FechaRegistro FROM UsuariosHRL");
     if (result.recordset.length === 0) {
-      console.log("No se encontraron usuarios en usuariosMuni");
+      console.log("No se encontraron usuarios en UsuariosHRL");
       return res.json([]);
     }
     res.json(result.recordset);
@@ -265,7 +265,7 @@ async function updateRealtimeData() {
     const pool = await sql.connect(dbConfig);
 
     // total_usuarios
-    const totalUsersRes = await pool.request().query("SELECT COUNT(*) AS count FROM usuariosMuni");
+    const totalUsersRes = await pool.request().query("SELECT COUNT(*) AS count FROM UsuariosHRL");
     const total_usuarios = totalUsersRes.recordset[0].count;
 
     // numero_transcripciones
@@ -517,7 +517,7 @@ app.post("/api/register", async (req, res) => {
       .input("Email", sql.NVarChar(150), email)
       .input("PasswordHash", sql.NVarChar(255), password)
       .query(
-        "INSERT INTO usuariosMuni (Nombre, Email, PasswordHash) VALUES (@Nombre, @Email, @PasswordHash)"
+        "INSERT INTO UsuariosHRL (Nombre, Email, PasswordHash) VALUES (@Nombre, @Email, @PasswordHash)"
       );
 
     await updateRealtimeData(); // Actualizar tabla de datos en tiempo real después del registro
@@ -539,11 +539,11 @@ app.post("/api/login", async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
 
-    // Check administradoresMuni table
+    // Check AdministradoresHRL table
     const adminResult = await pool
       .request()
       .input("Email", sql.NVarChar(150), email)
-      .query("SELECT Nombre, PasswordAdmin FROM administradoresMuni WHERE Email = @Email");
+      .query("SELECT Nombre, PasswordAdmin FROM AdministradoresHRL WHERE Email = @Email");
 
     if (adminResult.recordset.length > 0) {
       const admin = adminResult.recordset[0];
@@ -556,11 +556,11 @@ app.post("/api/login", async (req, res) => {
       }
     }
 
-    // Check usuariosMuni table
+    // Check UsuariosHRL table
     const userResult = await pool
       .request()
       .input("Email", sql.NVarChar(150), email)
-      .query("SELECT Nombre, PasswordHash FROM usuariosMuni WHERE Email = @Email");
+      .query("SELECT Nombre, PasswordHash FROM UsuariosHRL WHERE Email = @Email");
 
     if (userResult.recordset.length === 0) {
       return res.json({ success: false, message: "Usuario no encontrado" });
