@@ -598,6 +598,79 @@ app.post("/api/logout", (req, res) => {
   }
 });
 
+/************ ACCIONES CRUD PARA EL ADMINISTRADOR **************/
+
+// Ruta para actualizar un usuario
+app.put("/api/users/:id", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  const { Nombre, Email, PasswordHash } = req.body;
+  if (!Nombre && !Email && !PasswordHash) {
+    return res.status(400).json({ error: "No se proporcionó ningún dato para actualizar" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const request = pool.request();
+    let query = "UPDATE UsuariosHRL SET ";
+    const updates = [];
+    
+    if (Nombre) {
+      updates.push("Nombre = @Nombre");
+      request.input("Nombre", sql.NVarChar(150), Nombre);
+    }
+    if (Email) {
+      updates.push("Email = @Email");
+      request.input("Email", sql.NVarChar(150), Email);
+    }
+    if (PasswordHash) {
+      updates.push("PasswordHash = @PasswordHash");
+      request.input("PasswordHash", sql.NVarChar(255), PasswordHash);
+    }
+
+    query += updates.join(", ") + " WHERE Id = @Id";
+    request.input("Id", sql.Int, req.params.id);
+
+    const result = await request.query(query);
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    await updateRealtimeData(); // Update real-time data
+    res.json({ message: "Usuario actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error.message, error.stack);
+    res.status(500).json({ error: "Error al actualizar usuario", details: error.message });
+  }
+});
+
+// Ruta para eliminar un usuario
+app.delete("/api/users/:id", async (req, res) => {
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("Id", sql.Int, req.params.id)
+      .query("DELETE FROM UsuariosHRL WHERE Id = @Id");
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    await updateRealtimeData(); // Update real-time data
+    res.json({ message: "Usuario eliminado correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error.message, error.stack);
+    res.status(500).json({ error: "Error al eliminar usuario", details: error.message });
+  }
+});
+
 // Iniciar servidor y actualizar datos en tiempo real al inicio
 app.listen(PORT, async () => {
   console.log(`Servidor corriendo en 👉 http://localhost:${PORT}`);

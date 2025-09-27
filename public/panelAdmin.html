@@ -49,7 +49,6 @@
             }
         }
 
-        /* Spinner */
         .spinner {
             border: 6px solid rgba(255, 255, 255, 0.989);
             border-top: 6px solid #F97316;
@@ -60,7 +59,6 @@
             margin: 1rem auto;
         }
 
-        /* Efecto neumórfico mejorado */
         .neumorphic-card {
             background: #1E293B;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.4),
@@ -70,7 +68,6 @@
             transition: none;
         }
 
-        /* Botones */
         .btn {
             transition: all 0.3s ease;
         }
@@ -87,14 +84,12 @@
             background-color: #B91C1C;
         }
 
-        /* Fondo */
         body {
             background: linear-gradient(135deg, #0F172A 0%, #9A3412 100%);
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Partículas decorativas */
         .particles {
             position: absolute;
             top: 0;
@@ -114,8 +109,7 @@
             }
         }
 
-        /* Modal de alertas */
-        #alertModal, #topUsersModal, #transcriptionModal {
+        #alertModal, #topUsersModal, #transcriptionModal, #userModal, #deleteConfirmModal {
             position: fixed;
             top: 0;
             left: 0;
@@ -142,24 +136,40 @@
             white-space: pre-wrap;
         }
 
-        /* Transcription Modal */
         #transcriptionModalContent {
+            background: #1E293B;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
+            border: 3px solid #F97316;
+            max-width: 90%;
+            width: 500px;
+            position: relative;
+        }
+
+        #userModalContent, #deleteConfirmModalContent {
             background: linear-gradient(145deg, #1E293B 0%, #2D3748 100%);
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 1rem;
             box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5), -10px -10px 20px rgba(255, 255, 255, 0.05);
             border: 3px solid #F97316;
             width: 90%;
-            max-width: 600px;
+            max-width: 500px;
             max-height: 80vh;
             display: flex;
             flex-direction: column;
             gap: 1rem;
             animation: fadeInScale 0.3s ease-out;
             position: relative;
+            overflow-y: auto;
         }
 
-        #transcriptionModalContent h3 {
+        #deleteConfirmModalContent {
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #transcriptionModalContent h3, #userModalContent h3, #deleteConfirmModalContent h3 {
             color: #F97316;
             font-size: 1.5rem;
             font-weight: bold;
@@ -167,11 +177,46 @@
             margin-bottom: 0.5rem;
         }
 
-        #transcriptionTextArea {
+        #transcriptionText {
             width: 100%;
-            min-height: 300px;
+            min-height: 200px;
+            padding: 0.75rem;
+            border: 2px solid #F97316;
+            border-radius: 0.5rem;
+            background: #2D3748;
+            color: #D1D5DB;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
             resize: none;
-            padding: 1rem;
+        }
+
+        #transcriptionText:focus {
+            border-color: #EA580C;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+        }
+
+        #transcriptionText::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #transcriptionText::-webkit-scrollbar-track {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+
+        #transcriptionText::-webkit-scrollbar-thumb {
+            background: #F97316;
+            border-radius: 4px;
+        }
+
+        #transcriptionText::-webkit-scrollbar-thumb:hover {
+            background: #EA580C;
+        }
+
+        #userNameInput, #userEmailInput, #userPasswordInput {
+            width: 100%;
+            padding: 0.75rem;
             border: 2px solid #F97316;
             border-radius: 0.75rem;
             background: linear-gradient(145deg, #2D3748 0%, #1E293B 100%);
@@ -180,41 +225,31 @@
             font-family: 'Inter', sans-serif;
             outline: none;
             box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
-            line-height: 1.5;
             transition: border-color 0.3s ease;
         }
 
-        #transcriptionTextArea:focus {
+        #userNameInput.editing, #userEmailInput.editing, #userPasswordInput.editing {
+            border-color: #10B981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        #userNameInput:focus, #userEmailInput:focus, #userPasswordInput:focus {
             border-color: #EA580C;
             box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
         }
 
-        #transcriptionTextArea::-webkit-scrollbar {
-            width: 8px;
+        #userNameInput.editing:focus, #userEmailInput.editing:focus, #userPasswordInput.editing:focus {
+            border-color: #10B981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
 
-        #transcriptionTextArea::-webkit-scrollbar-track {
-            background: #1E293B;
-            border-radius: 4px;
-        }
-
-        #transcriptionTextArea::-webkit-scrollbar-thumb {
-            background: #F97316;
-            border-radius: 4px;
-        }
-
-        #transcriptionTextArea::-webkit-scrollbar-thumb:hover {
-            background: #EA580C;
-        }
-
-        /* Prevent any highlight or underline on text selection */
-        #transcriptionTextArea::selection {
+        #userNameInput::selection, #userEmailInput::selection, #userPasswordInput::selection {
             background: transparent;
             color: inherit;
             text-decoration: none;
         }
 
-        #transcriptionTextArea::-moz-selection {
+        #userNameInput::-moz-selection, #userEmailInput::-moz-selection, #userPasswordInput::-moz-selection {
             background: transparent;
             color: inherit;
             text-decoration: none;
@@ -222,8 +257,9 @@
 
         .modal-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .modal-btn {
@@ -235,25 +271,44 @@
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.05);
         }
 
-        .copy-btn {
+        .copy-btn, .edit-btn, .save-btn {
             background: #F97316;
             color: black;
             border: none;
         }
 
-        .copy-btn:hover {
+        .save-btn {
+            background: #10B981;
+        }
+
+        .copy-btn:hover, .edit-btn:hover, .save-btn:hover {
             background: #EA580C;
             transform: translateY(-2px);
         }
 
-        .close-transcription-btn {
+        .save-btn:hover {
+            background: #059669;
+        }
+
+        .delete-btn, .confirm-delete-btn {
             background: #B91C1C;
             color: white;
             border: none;
         }
 
-        .close-transcription-btn:hover {
+        .delete-btn:hover, .confirm-delete-btn:hover {
             background: #991B1B;
+            transform: translateY(-2px);
+        }
+
+        .close-btn, .cancel-delete-btn {
+            background: #6B7280;
+            color: white;
+            border: none;
+        }
+
+        .close-btn:hover, .cancel-delete-btn:hover {
+            background: #4B5563;
             transform: translateY(-2px);
         }
 
@@ -273,7 +328,6 @@
             animation: scaleIn 0.3s ease-out;
         }
 
-        /* Top Users Modal */
         #topUsersModalContent {
             background: linear-gradient(145deg, #1E293B 0%, #2D3748 100%);
             padding: 1.5rem;
@@ -317,7 +371,6 @@
             margin: 0 auto 1rem;
         }
 
-        /* Chart Container */
         .chart-container {
             background: linear-gradient(145deg, #F5F5F5 0%, #FFF7ED 100%);
             border: 2px solid #F97316;
@@ -330,7 +383,6 @@
             color: #000000;
         }
 
-        /* Sidebar */
         .sidebar {
             transition: transform 0.3s ease;
         }
@@ -424,7 +476,6 @@
             text-align: center;
         }
 
-        /* Truncate long text in cards */
         .card-info {
             max-width: 200px;
             text-overflow: ellipsis;
@@ -432,12 +483,10 @@
             overflow: hidden;
         }
 
-        /* Clickable card */
         .clickable-card {
             cursor: pointer;
         }
 
-        /* Table styles */
         .users-table-container, .transcriptions-table-container {
             overflow-x: auto;
             position: relative;
@@ -483,6 +532,7 @@
         .users-table tr:hover, .transcriptions-table tr:hover {
             background: rgba(249, 115, 22, 0.2);
             transition: background 0.3s ease;
+            cursor: pointer;
         }
 
         .users-table th:first-child,
@@ -501,7 +551,6 @@
             border-bottom-right-radius: 0.5rem;
         }
 
-        /* Scrollbar for table */
         .users-table-container::-webkit-scrollbar, .transcriptions-table-container::-webkit-scrollbar {
             width: 8px;
         }
@@ -519,7 +568,6 @@
             background: #EA580C;
         }
 
-        /* Search bar and filter styles */
         .search-container, .filter-container {
             margin-bottom: 1.5rem;
             display: flex;
@@ -584,13 +632,11 @@
             background: #EA580C;
         }
 
-        /* Estilo para las opciones del select */
         .filter-select option {
             background: #1E293B;
             color: #FFFFFF;
         }
 
-        /* Estilo para la columna texto_transcrito */
         .transcriptions-table td:nth-child(4) {
             max-width: 200px;
             white-space: nowrap;
@@ -602,7 +648,6 @@
             cursor: pointer;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 640px) {
             .sidebar {
                 position: fixed;
@@ -612,14 +657,59 @@
                 z-index: 1000;
             }
 
-            #alertMessage {
-                padding: 1.5rem 2rem;
+            #alertMessage, #deleteConfirmModalContent {
+                padding: 1rem 1.5rem;
                 width: 90%;
+                max-width: 350px;
+                font-size: 1rem;
             }
 
-            #topUsersModalContent, #transcriptionModalContent {
+            #topUsersModalContent {
                 width: 95%;
                 padding: 1rem;
+            }
+
+            #transcriptionModalContent {
+                width: 95%;
+                padding: 1rem;
+                max-width: 90%;
+            }
+
+            #userModalContent {
+                width: 95%;
+                padding: 1rem;
+                max-width: 360px;
+                gap: 0.75rem;
+            }
+
+            #userModalContent h3 {
+                font-size: 1.25rem;
+            }
+
+            #userId, #userCreated {
+                font-size: 0.875rem;
+            }
+
+            #userNameInput, #userEmailInput, #userPasswordInput {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+                border-radius: 0.5rem;
+            }
+
+            .form-group label {
+                font-size: 0.875rem;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .modal-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                width: 100%;
+                text-align: center;
             }
 
             .top-user-card {
@@ -685,20 +775,61 @@
                 max-height: 300px;
             }
 
-            #transcriptionTextArea {
-                min-height: 200px;
+            #transcriptionText {
+                min-height: 150px;
+                font-size: 0.875rem;
             }
         }
 
         @media (min-width: 640px) and (max-width: 768px) {
-            #alertMessage {
-                padding: 1.5rem 2rem;
+            #alertMessage, #deleteConfirmModalContent {
+                padding: 1.25rem 1.75rem;
                 width: 80%;
+                max-width: 400px;
             }
 
-            #topUsersModalContent, #transcriptionModalContent {
+            #topUsersModalContent {
                 width: 90%;
                 padding: 1.25rem;
+            }
+
+            #transcriptionModalContent {
+                width: 90%;
+                padding: 1.25rem;
+                max-width: 500px;
+            }
+
+            #userModalContent {
+                width: 90%;
+                padding: 1.25rem;
+                max-width: 450px;
+            }
+
+            #userModalContent h3 {
+                font-size: 1.375rem;
+            }
+
+            #userId, #userCreated {
+                font-size: 0.9375rem;
+            }
+
+            #userNameInput, #userEmailInput, #userPasswordInput {
+                padding: 0.625rem;
+                font-size: 0.9375rem;
+            }
+
+            .form-group label {
+                font-size: 0.9375rem;
+            }
+
+            .modal-buttons {
+                flex-direction: row;
+                gap: 0.75rem;
+            }
+
+            .modal-btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.9375rem;
             }
 
             .top-user-image {
@@ -747,13 +878,13 @@
                 max-height: 350px;
             }
 
-            #transcriptionTextArea {
-                min-height: 250px;
+            #transcriptionText {
+                min-height: 180px;
             }
         }
 
         @media (min-width: 768px) {
-            #alertMessage {
+            #alertMessage, #deleteConfirmModalContent {
                 padding: 1.5rem 2rem;
                 width: 400px;
             }
@@ -764,8 +895,13 @@
             }
 
             #transcriptionModalContent {
-                width: 600px;
-                padding: 2rem;
+                width: 500px;
+                padding: 1.5rem;
+            }
+
+            #userModalContent {
+                width: 500px;
+                padding: 1.5rem;
             }
 
             .top-user-image {
@@ -797,8 +933,13 @@
             }
 
             #transcriptionModalContent {
-                width: 600px;
-                padding: 2rem;
+                width: 500px;
+                padding: 1.5rem;
+            }
+
+            #userModalContent {
+                width: 500px;
+                padding: 1.5rem;
             }
 
             .sidebar-logo {
@@ -814,7 +955,6 @@
             }
         }
 
-        /* Horizontal layout for mobile and tablet */
         @media (max-width: 1023px) {
             .neumorphic-card {
                 flex-direction: row;
@@ -853,20 +993,12 @@
             }
         }
 
-        /* Body ya tiene background, etc. */
-        body {
-            background: linear-gradient(135deg, #0F172A 0%, #9A3412 100%);
-            position: relative;
-        }
-
-        /* Main: Asegura que ocupe todo y scrollee solo internamente */
         main {
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #F97316 #1E293B;
         }
 
-        /* Para Webkit (Chrome/Safari): personaliza scrollbar */
         main::-webkit-scrollbar {
             width: 8px;
         }
@@ -881,12 +1013,10 @@
             background: #EA580C;
         }
 
-        /* Asegura que el contenedor de charts y cards no desborde horizontalmente */
         .charts-grid, .grid {
             overflow: hidden;
         }
 
-        /* Responsive: En mobile, main ocupa todo */
         @media (max-width: 767px) {
             main {
                 padding: 1rem;
@@ -895,7 +1025,6 @@
     </style>
 </head>
 <body class="h-screen overflow-hidden flex">
-    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar fixed md:static top-0 left-0 h-full md:h-auto w-72 bg-gray-800/95 p-6 z-50 transform -translate-x-full md:translate-x-0 flex flex-col neumorphic">
         <div class="sidebar-header">
             <div id="welcomeMessage" class="welcome-text">Bienvenido</div>
@@ -937,12 +1066,9 @@
         </button>
     </aside>
 
-    <!-- Overlay -->
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
 
-    <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Header -->
         <header class="flex items-center justify-between bg-gray-800/90 px-4 py-3 shadow-md z-10">
             <button id="menuToggle" class="md:hidden text-white focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -953,43 +1079,36 @@
             <div class="w-6 h-6"></div>
         </header>
 
-        <!-- Content -->
         <main class="flex-1 overflow-auto p-4 sm:p-6 md:p-8 relative">
             <div class="particles"></div>
             <div class="container mx-auto max-w-5xl">
-                <!-- Statistics -->
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 sm:mb-6 animate-fadeInScale">
                     <center>Panel de Administrador</center>
                 </h2>
                 <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Estadísticas en Tiempo Real</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <!-- Card: Total de Usuarios -->
                         <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
                             <i class="fas fa-users text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
                             <h3 class="text-2xl sm:text-3xl font-bold text-white mb-2 card-info text-center" id="userCount">0</h3>
                             <p class="text-white text-sm sm:text-base text-center font-medium card-title">Total de Usuarios</p>
                         </div>
-                        <!-- Card: Número de Transcripciones -->
                         <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
                             <i class="fas fa-file-alt text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
                             <h3 class="text-2xl sm:text-3xl font-bold text-white mb-2 card-info text-center" id="transcriptionCount">0</h3>
                             <p class="text-white text-sm sm:text-base text-center font-medium card-title">Número de Transcripciones</p>
                         </div>
-                        <!-- Card: Usuarios con Más Transcripciones -->
                         <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center clickable-card" id="topUsersCard">
                             <i class="fas fa-star text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
                             <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 card-info text-center">Top 3 Usuarios</h3>
                             <p class="text-white text-sm sm:text-base text-center font-medium card-title">Usuarios con Más Transcripciones</p>
                         </div>
-                        <!-- Card: Última Transcripción -->
                         <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
                             <i class="fas fa-clock text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
                             <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 card-info text-center" id="latestTranscription">Cargando...</h3>
                             <p class="text-white text-sm sm:text-base text-center font-medium card-title">Última Transcripción</p>
                         </div>
                     </div>
-                    <!-- Charts -->
                     <div class="charts-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6">
                         <div class="chart-container neumorphic-card">
                             <h3 class="text-lg sm:text-xl font-bold text-center mb-4">Transcripciones por Día</h3>
@@ -1001,7 +1120,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Registered Users -->
                 <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Usuarios Registrados</h3>
                     <div class="search-container">
@@ -1021,12 +1139,10 @@
                                 </tr>
                             </thead>
                             <tbody id="usersTableBody">
-                                <!-- Data will be populated here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <!-- Transcriptions History -->
                 <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Historial de Transcripciones en el Sistema</h3>
                     <div class="filter-container">
@@ -1052,12 +1168,10 @@
                                 </tr>
                             </thead>
                             <tbody id="transcriptionsTableBody">
-                                <!-- Data will be populated here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <!-- Settings -->
                 <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones del Sistema</h3>
                     <p class="text-gray-300 text-center">Aquí puedes ajustar las configuraciones del sistema (en desarrollo).</p>
@@ -1066,31 +1180,66 @@
         </main>
     </div>
 
-    <!-- Alert Modal -->
     <div id="alertModal">
         <div id="alertMessage"></div>
     </div>
 
-    <!-- Top Users Modal -->
     <div id="topUsersModal">
         <div id="topUsersModalContent" class="relative">
             <i class="fas fa-times close-modal-btn"></i>
             <h3 class="text-white text-2xl sm:text-3xl font-extrabold text-center mb-8">Top 3 Usuarios con Más Transcripciones</h3>
             <div id="topUsersList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Contenido dinámico se llenará aquí -->
             </div>
         </div>
     </div>
 
-    <!-- Transcription Modal -->
     <div id="transcriptionModal">
         <div id="transcriptionModalContent">
-            <h3>Transcripción Completa</h3>
+            <h3 class="text-white font-bold text-center">Transcripción Completa</h3>
             <div id="copyMessage">Texto copiado al portapapeles</div>
-            <textarea id="transcriptionTextArea" readonly></textarea>
+            <div style="height: 0.5cm;"></div>
+            <textarea id="transcriptionText" readonly></textarea>
+            <div style="height: 0.5cm;"></div>
             <div class="modal-buttons">
                 <button class="modal-btn copy-btn" id="copyTranscriptionBtn">Copiar</button>
-                <button class="modal-btn close-transcription-btn" id="closeTranscriptionBtn">Cerrar</button>
+                <button class="modal-btn close-btn" id="closeTranscriptionBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="userModal">
+        <div id="userModalContent">
+            <h3>Usuario en el Sistema</h3>
+            <p id="userId" class="text-white text-sm sm:text-base text-center"></p>
+            <p id="userCreated" class="text-white text-sm sm:text-base text-center mb-4"></p>
+            <div class="form-group">
+                <label for="userNameInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Nombre</label>
+                <input id="userNameInput" type="text" readonly class="w-full">
+            </div>
+            <div class="form-group">
+                <label for="userEmailInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Correo</label>
+                <input id="userEmailInput" type="email" readonly class="w-full">
+            </div>
+            <div class="form-group">
+                <label for="userPasswordInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Contraseña</label>
+                <input id="userPasswordInput" type="text" readonly class="w-full">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn edit-btn" id="editUserBtn">Editar</button>
+                <button class="modal-btn delete-btn" id="deleteUserBtn">Eliminar</button>
+                <button class="modal-btn close-btn" id="closeUserBtn">Cerrar</button>
+                <div style="height: 0.1cm;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal">
+        <div id="deleteConfirmModalContent">
+            <h3>Confirmar Eliminación</h3>
+            <p id="deleteConfirmMessage" class="text-white text-sm sm:text-base text-center mb-4"></p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm-delete-btn" id="confirmDeleteBtn">Confirmar</button>
+                <button class="modal-btn cancel-delete-btn" id="cancelDeleteBtn">Cancelar</button>
             </div>
         </div>
     </div>
@@ -1121,16 +1270,28 @@
         const transcriptionsTableBody = document.getElementById('transcriptionsTableBody');
         const transcriptionLoadingSpinner = document.getElementById('transcriptionLoadingSpinner');
         const transcriptionModal = document.getElementById('transcriptionModal');
-        const transcriptionTextArea = document.getElementById('transcriptionTextArea');
+        const transcriptionText = document.getElementById('transcriptionText');
         const copyTranscriptionBtn = document.getElementById('copyTranscriptionBtn');
         const closeTranscriptionBtn = document.getElementById('closeTranscriptionBtn');
         const copyMessage = document.getElementById('copyMessage');
+        const userModal = document.getElementById('userModal');
+        const userIdElement = document.getElementById('userId');
+        const userCreatedElement = document.getElementById('userCreated');
+        const userNameInput = document.getElementById('userNameInput');
+        const userEmailInput = document.getElementById('userEmailInput');
+        const userPasswordInput = document.getElementById('userPasswordInput');
+        const editUserBtn = document.getElementById('editUserBtn');
+        const deleteUserBtn = document.getElementById('deleteUserBtn');
+        const closeUserBtn = document.getElementById('closeUserBtn');
+        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        const deleteConfirmMessage = document.getElementById('deleteConfirmMessage');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
-        // Store original data for filtering
         let allUsers = [];
         let allTranscriptions = [];
+        let selectedUser = null;
 
-        // Función para sanitizar HTML
         function escapeHTML(str) {
             return str.replace(/[&<>"']/g, match => ({
                 '&': '&amp;',
@@ -1141,7 +1302,6 @@
             }[match]));
         }
 
-        // Fetch admin name and set welcome message
         async function fetchAdminName() {
             try {
                 const response = await fetch('/api/user');
@@ -1159,7 +1319,6 @@
             }
         }
 
-        // Fetch user count
         async function fetchUserCount() {
             try {
                 const response = await fetch('/api/users/count');
@@ -1173,7 +1332,6 @@
             }
         }
 
-        // Fetch transcription count
         async function fetchTranscriptionCount() {
             try {
                 const response = await fetch('/api/transcriptions/count');
@@ -1187,7 +1345,6 @@
             }
         }
 
-        // Fetch latest transcription
         async function fetchLatestTranscription() {
             try {
                 const response = await fetch('/api/transcriptions/latest');
@@ -1201,7 +1358,6 @@
             }
         }
 
-        // Fetch top 3 users
         async function fetchTopUsers() {
             try {
                 const response = await fetch('/api/transcriptions/top-users');
@@ -1215,7 +1371,6 @@
             }
         }
 
-        // Fetch all users
         async function fetchUsers() {
             try {
                 loadingSpinner.classList.remove('hidden');
@@ -1236,7 +1391,6 @@
             }
         }
 
-        // Fetch all transcriptions with optional filter
         async function fetchTranscriptions(filter = '') {
             try {
                 transcriptionLoadingSpinner.classList.remove('hidden');
@@ -1247,14 +1401,11 @@
                     throw new Error(errorData.details || errorData.error || 'Error al obtener transcripciones');
                 }
                 let data = await response.json();
-                console.log('Datos recibidos:', data); // Depurar datos
 
-                // Store all transcriptions for "Selecciona un filtro" and "longest"
                 if (filter === '' || filter === 'longest') {
                     allTranscriptions = data;
                 }
 
-                // Apply client-side filtering for specific cases
                 if (filter === 'recent' && data.length > 0) {
                     data = [data[0]];
                 } else if (filter === 'oldest' && data.length > 0) {
@@ -1287,7 +1438,6 @@
             }
         }
 
-        // Render users in the table
         function renderUsers(users) {
             usersTableBody.innerHTML = '';
             if (users.length === 0) {
@@ -1303,11 +1453,28 @@
                     <td>${escapeHTML(user.PasswordHash)}</td>
                     <td>${escapeHTML(user.FechaRegistro)}</td>
                 `;
+                row.addEventListener('click', () => {
+                    selectedUser = user;
+                    userIdElement.textContent = `ID del usuario: ${escapeHTML(user.Id.toString())}`;
+                    userCreatedElement.textContent = `Cuenta creada: ${escapeHTML(user.FechaRegistro)}`;
+                    userNameInput.value = escapeHTML(user.Nombre);
+                    userEmailInput.value = escapeHTML(user.Email);
+                    userPasswordInput.value = escapeHTML(user.PasswordHash);
+                    userNameInput.setAttribute('readonly', true);
+                    userEmailInput.setAttribute('readonly', true);
+                    userPasswordInput.setAttribute('readonly', true);
+                    userNameInput.classList.remove('editing');
+                    userEmailInput.classList.remove('editing');
+                    userPasswordInput.classList.remove('editing');
+                    editUserBtn.textContent = 'Editar';
+                    editUserBtn.classList.remove('save-btn');
+                    editUserBtn.classList.add('edit-btn');
+                    userModal.style.display = 'flex';
+                });
                 usersTableBody.appendChild(row);
             });
         }
 
-        // Render transcriptions in the table
         function renderTranscriptions(transcriptions) {
             transcriptionsTableBody.innerHTML = '';
             if (transcriptions.length === 0) {
@@ -1329,18 +1496,16 @@
                 transcriptionsTableBody.appendChild(row);
             });
 
-            // Añadir evento para abrir modal con texto completo
             document.querySelectorAll('.transcriptions-table .clickable').forEach(cell => {
                 cell.addEventListener('click', () => {
                     const fullText = cell.getAttribute('data-text');
-                    transcriptionTextArea.value = fullText;
+                    transcriptionText.value = fullText;
                     transcriptionModal.style.display = 'flex';
-                    copyMessage.style.display = 'none'; // Reset copy message visibility
+                    copyMessage.style.display = 'none';
                 });
             });
         }
 
-        // Filter users based on search input
         function filterUsers(searchTerm) {
             if (!searchTerm) {
                 renderUsers(allUsers);
@@ -1357,7 +1522,6 @@
             }
         }
 
-        // Render top users in the modal
         function renderTopUsers(users) {
             topUsersList.innerHTML = '';
             const medals = [
@@ -1383,7 +1547,6 @@
             });
         }
 
-        // Fetch and render charts
         async function renderCharts() {
             try {
                 const response = await fetch('/api/transcriptions/daily');
@@ -1394,7 +1557,6 @@
                 const counts = data.map(item => item.count);
                 const total = counts.reduce((sum, count) => sum + count, 0);
 
-                // Bar Chart
                 const barChartCtx = document.getElementById('barChart').getContext('2d');
                 new Chart(barChartCtx, {
                     type: 'bar',
@@ -1440,7 +1602,6 @@
                     }
                 });
 
-                // Pie Chart with percentage in legend
                 const pieChartCtx = document.getElementById('pieChart').getContext('2d');
                 new Chart(pieChartCtx, {
                     type: 'pie',
@@ -1472,7 +1633,6 @@
                                     color: '#000000',
                                     font: { size: 12 },
                                     generateLabels: chart => {
-                                        console.log('Generating pie chart legend with color: #000000');
                                         const data = chart.data;
                                         const total = data.datasets[0].data.reduce((sum, val) => sum + val, 0);
                                         return data.labels.map((label, i) => {
@@ -1495,11 +1655,9 @@
             } catch (err) {
                 console.error('Error fetching daily transcription data:', err);
                 showAlert('Error al cargar los datos de los gráficos');
-                // Fallback data
                 const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
                 const counts = [0, 0, 0, 0, 0, 0, 0];
 
-                // Render bar chart with fallback
                 const barChartCtx = document.getElementById('barChart').getContext('2d');
                 new Chart(barChartCtx, {
                     type: 'bar',
@@ -1545,7 +1703,6 @@
                     }
                 });
 
-                // Render pie chart with fallback
                 const pieChartCtx = document.getElementById('pieChart').getContext('2d');
                 new Chart(pieChartCtx, {
                     type: 'pie',
@@ -1577,7 +1734,6 @@
                                     color: '#000000',
                                     font: { size: 12 },
                                     generateLabels: chart => {
-                                        console.log('Generating fallback pie chart legend with color: #000000');
                                         return chart.data.labels.map((label, i) => ({
                                             text: `${label}: 0%`,
                                             fillStyle: chart.data.datasets[0].backgroundColor[i],
@@ -1594,7 +1750,6 @@
             }
         }
 
-        // Sidebar toggle
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
@@ -1605,9 +1760,10 @@
             overlay.classList.add('hidden');
             topUsersModal.style.display = 'none';
             transcriptionModal.style.display = 'none';
+            userModal.style.display = 'none';
+            deleteConfirmModal.style.display = 'none';
         });
 
-        // Handle sidebar item clicks
         document.querySelectorAll('.sidebar-nav a').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1621,7 +1777,6 @@
             });
         });
 
-        // Logout
         logoutBtn.addEventListener('click', async () => {
             try {
                 const response = await fetch('/api/user');
@@ -1646,7 +1801,6 @@
             }
         });
 
-        // Alert function
         function showAlert(message) {
             alertMessage.textContent = message;
             alertModal.style.display = 'flex';
@@ -1655,30 +1809,25 @@
             }, 4000);
         }
 
-        // Close alert modal on click
         alertModal.addEventListener('click', () => {
             alertModal.style.display = 'none';
         });
 
-        // Open top users modal and fetch data
         topUsersCard.addEventListener('click', () => {
             topUsersModal.style.display = 'flex';
             fetchTopUsers();
         });
 
-        // Close top users modal on button click
         closeModalBtn.addEventListener('click', () => {
             topUsersModal.style.display = 'none';
         });
 
-        // Close top users modal on click outside
         topUsersModal.addEventListener('click', (e) => {
             if (e.target === topUsersModal) {
                 topUsersModal.style.display = 'none';
             }
         });
 
-        // Show copy message in transcription modal
         function showCopyMessage(message) {
             copyMessage.textContent = message;
             copyMessage.style.display = 'block';
@@ -1687,11 +1836,9 @@
             }, 2000);
         }
 
-        // Copy transcription text
-        copyTranscriptionBtn.addEventListener('click', () => {
-            transcriptionTextArea.select();
+        copyTranscriptionBtn.addEventListener('click', async () => {
             try {
-                document.execCommand('copy');
+                await navigator.clipboard.writeText(transcriptionText.value);
                 showCopyMessage('Texto copiado al portapapeles');
             } catch (err) {
                 console.error('Error al copiar texto:', err);
@@ -1699,19 +1846,147 @@
             }
         });
 
-        // Close transcription modal
         closeTranscriptionBtn.addEventListener('click', () => {
             transcriptionModal.style.display = 'none';
         });
 
-        // Close transcription modal on click outside
         transcriptionModal.addEventListener('click', (e) => {
             if (e.target === transcriptionModal) {
                 transcriptionModal.style.display = 'none';
             }
         });
 
-        // Search input and button event listeners
+        editUserBtn.addEventListener('click', async () => {
+            if (editUserBtn.textContent === 'Editar') {
+                userNameInput.removeAttribute('readonly');
+                userEmailInput.removeAttribute('readonly');
+                userPasswordInput.removeAttribute('readonly');
+                userNameInput.classList.add('editing');
+                userEmailInput.classList.add('editing');
+                userPasswordInput.classList.add('editing');
+                editUserBtn.textContent = 'Guardar';
+                editUserBtn.classList.remove('edit-btn');
+                editUserBtn.classList.add('save-btn');
+            } else {
+                userNameInput.classList.remove('editing');
+                userEmailInput.classList.remove('editing');
+                userPasswordInput.classList.remove('editing');
+                const updatedUser = {
+                    Nombre: userNameInput.value,
+                    Email: userEmailInput.value,
+                    PasswordHash: userPasswordInput.value
+                };
+
+                try {
+                    const response = await fetch(`/api/users/${selectedUser.Id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedUser)
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || errorData.error || 'Error al actualizar usuario');
+                    }
+                    const data = await response.json();
+                    showAlert(data.message);
+                    allUsers = allUsers.map(user => user.Id === selectedUser.Id ? { ...user, ...updatedUser } : user);
+                    renderUsers(allUsers);
+                    userNameInput.setAttribute('readonly', true);
+                    userEmailInput.setAttribute('readonly', true);
+                    userPasswordInput.setAttribute('readonly', true);
+                    editUserBtn.textContent = 'Editar';
+                    editUserBtn.classList.remove('save-btn');
+                    editUserBtn.classList.add('edit-btn');
+                    userModal.style.display = 'none';
+                } catch (err) {
+                    console.error('Error updating user:', err);
+                    showAlert('Error al actualizar usuario: ' + err.message);
+                }
+            }
+        });
+
+        // Add event listeners to remove editing class on blur
+        [userNameInput, userEmailInput, userPasswordInput].forEach(input => {
+            input.addEventListener('blur', () => {
+                if (!input.hasAttribute('readonly')) {
+                    input.classList.add('editing');
+                }
+            });
+            input.addEventListener('focus', () => {
+                if (!input.hasAttribute('readonly')) {
+                    input.classList.add('editing');
+                }
+            });
+        });
+
+        // Remove editing class when clicking outside the inputs
+        document.addEventListener('click', (e) => {
+            if (!userModal.contains(e.target) && userModal.style.display === 'flex') {
+                if (!userNameInput.hasAttribute('readonly')) {
+                    userNameInput.classList.remove('editing');
+                }
+                if (!userEmailInput.hasAttribute('readonly')) {
+                    userEmailInput.classList.remove('editing');
+                }
+                if (!userPasswordInput.hasAttribute('readonly')) {
+                    userPasswordInput.classList.remove('editing');
+                }
+            }
+        });
+
+        deleteUserBtn.addEventListener('click', () => {
+            deleteConfirmMessage.textContent = `¿Estás seguro de eliminar la cuenta del usuario ${selectedUser.Nombre}?`;
+            deleteConfirmModal.style.display = 'flex';
+        });
+
+        confirmDeleteBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/api/users/${selectedUser.Id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || errorData.error || 'Error al eliminar usuario');
+                }
+                const data = await response.json();
+                showAlert(data.message);
+                allUsers = allUsers.filter(user => user.Id !== selectedUser.Id);
+                renderUsers(allUsers);
+                deleteConfirmModal.style.display = 'none';
+                userModal.style.display = 'none';
+                fetchUserCount();
+            } catch (err) {
+                console.error('Error deleting user:', err);
+                showAlert('Error al eliminar usuario: ' + err.message);
+            }
+        });
+
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteConfirmModal.style.display = 'none';
+        });
+
+        closeUserBtn.addEventListener('click', () => {
+            userNameInput.classList.remove('editing');
+            userEmailInput.classList.remove('editing');
+            userPasswordInput.classList.remove('editing');
+            userModal.style.display = 'none';
+        });
+
+        userModal.addEventListener('click', (e) => {
+            if (e.target === userModal) {
+                userNameInput.classList.remove('editing');
+                userEmailInput.classList.remove('editing');
+                userPasswordInput.classList.remove('editing');
+                userModal.style.display = 'none';
+            }
+        });
+
+        deleteConfirmModal.addEventListener('click', (e) => {
+            if (e.target === deleteConfirmModal) {
+                deleteConfirmModal.style.display = 'none';
+            }
+        });
+
         filterBtn.addEventListener('click', () => {
             const searchTerm = userSearch.value.trim().toLowerCase();
             if (!searchTerm) {
@@ -1726,7 +2001,6 @@
             filterUsers(searchTerm);
         });
 
-        // Transcription filter event listener
         applyTranscriptionFilter.addEventListener('click', () => {
             const filterValue = transcriptionFilter.value;
             if (!filterValue && filterValue !== '') {
@@ -1736,7 +2010,6 @@
             fetchTranscriptions(filterValue);
         });
 
-        // Initial data fetches
         fetchAdminName();
         fetchUserCount();
         fetchTranscriptionCount();
