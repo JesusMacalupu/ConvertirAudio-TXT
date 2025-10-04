@@ -1054,6 +1054,12 @@
                 </li>
                 <li>
                     <a href="#">
+                        <i class="fas fa-chart-bar"></i>
+                        Generación de Reportes
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
                         <i class="fas fa-cog"></i>
                         Configuraciones
                     </a>
@@ -1085,7 +1091,7 @@
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 sm:mb-6 animate-fadeInScale">
                     <center>Panel de Administrador</center>
                 </h2>
-                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale">
+                <div id="estadisticas" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Estadísticas en Tiempo Real</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
@@ -1120,7 +1126,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                <div id="usuarios" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Usuarios Registrados</h3>
                     <div class="search-container">
                         <input type="text" id="userSearch" class="search-input" placeholder="Filtra por ID, Nombre o Correo...">
@@ -1143,7 +1149,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                <div id="historial-de-transcripciones" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Historial de Transcripciones en el Sistema</h3>
                     <div class="filter-container">
                         <select id="transcriptionFilter" class="filter-select">
@@ -1172,7 +1178,11 @@
                         </table>
                     </div>
                 </div>
-                <div class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                <div id="generacion-de-reportes" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Generación de Reportes</h3>
+                    <p class="text-gray-300 text-center">Aquí puedes generar reportes del sistema (en desarrollo).</p>
+                </div>
+                <div id="configuraciones" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones del Sistema</h3>
                     <p class="text-gray-300 text-center">Aquí puedes ajustar las configuraciones del sistema (en desarrollo).</p>
                 </div>
@@ -1291,6 +1301,14 @@
         let allUsers = [];
         let allTranscriptions = [];
         let selectedUser = null;
+
+        const sectionMap = {
+            'Estadísticas': 'estadisticas',
+            'Usuarios': 'usuarios',
+            'Historial de Transcripciones': 'historial-de-transcripciones',
+            'Generación de Reportes': 'generacion-de-reportes',
+            'Configuraciones': 'configuraciones'
+        };
 
         function escapeHTML(str) {
             return str.replace(/[&<>"']/g, match => ({
@@ -1769,7 +1787,13 @@
                 e.preventDefault();
                 document.querySelectorAll('.sidebar-nav a').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                showAlert(`Navegando a ${item.textContent.trim()}`);
+                const sectionId = sectionMap[item.textContent.trim()];
+                if (sectionId) {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        section.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
                 if (window.innerWidth < 768) {
                     sidebar.classList.add('-translate-x-full');
                     overlay.classList.add('hidden');
