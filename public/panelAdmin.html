@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Panel de administrador estático para pruebas de diseño, con opciones para gestionar usuarios, transcripciones y configuraciones.">
+    <meta name="description"
+        content="Panel de administrador estático para pruebas de diseño, con opciones para gestionar usuarios, transcripciones y configuraciones.">
     <title>Panel de Administrador</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -11,10 +13,11 @@
     <style>
         /* Animaciones */
         @keyframes fadeInScale {
-            from { 
+            from {
                 opacity: 0;
                 transform: scale(0.95);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -22,10 +25,11 @@
         }
 
         @keyframes scaleIn {
-            from { 
+            from {
                 opacity: 0;
                 transform: scale(0.8);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -44,6 +48,7 @@
             0% {
                 transform: rotate(0deg);
             }
+
             100% {
                 transform: rotate(360deg);
             }
@@ -62,7 +67,7 @@
         .neumorphic-card {
             background: #1E293B;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.4),
-                        -8px -8px 16px rgba(255, 255, 255, 0.05);
+                -8px -8px 16px rgba(255, 255, 255, 0.05);
             border: 2px solid #F97316;
             border-radius: 1rem;
             transition: none;
@@ -101,15 +106,22 @@
         }
 
         @keyframes float {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0);
             }
+
             50% {
                 transform: translateY(-20px);
             }
         }
 
-        #alertModal, #topUsersModal, #transcriptionModal, #userModal, #deleteConfirmModal {
+        #alertModal,
+        #topUsersModal,
+        #transcriptionModal,
+        #userModal,
+        #deleteConfirmModal {
             position: fixed;
             top: 0;
             left: 0;
@@ -147,7 +159,8 @@
             position: relative;
         }
 
-        #userModalContent, #deleteConfirmModalContent {
+        #userModalContent,
+        #deleteConfirmModalContent {
             background: linear-gradient(145deg, #1E293B 0%, #2D3748 100%);
             padding: 1.5rem;
             border-radius: 1rem;
@@ -169,7 +182,9 @@
             text-align: center;
         }
 
-        #transcriptionModalContent h3, #userModalContent h3, #deleteConfirmModalContent h3 {
+        #transcriptionModalContent h3,
+        #userModalContent h3,
+        #deleteConfirmModalContent h3 {
             color: #F97316;
             font-size: 1.5rem;
             font-weight: bold;
@@ -214,7 +229,9 @@
             background: #EA580C;
         }
 
-        #userNameInput, #userEmailInput, #userPasswordInput {
+        #userNameInput,
+        #userEmailInput,
+        #userPasswordInput {
             width: 100%;
             padding: 0.75rem;
             border: 2px solid #F97316;
@@ -228,28 +245,38 @@
             transition: border-color 0.3s ease;
         }
 
-        #userNameInput.editing, #userEmailInput.editing, #userPasswordInput.editing {
+        #userNameInput.editing,
+        #userEmailInput.editing,
+        #userPasswordInput.editing {
             border-color: #10B981;
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
 
-        #userNameInput:focus, #userEmailInput:focus, #userPasswordInput:focus {
+        #userNameInput:focus,
+        #userEmailInput:focus,
+        #userPasswordInput:focus {
             border-color: #EA580C;
             box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
         }
 
-        #userNameInput.editing:focus, #userEmailInput.editing:focus, #userPasswordInput.editing:focus {
+        #userNameInput.editing:focus,
+        #userEmailInput.editing:focus,
+        #userPasswordInput.editing:focus {
             border-color: #10B981;
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
 
-        #userNameInput::selection, #userEmailInput::selection, #userPasswordInput::selection {
+        #userNameInput::selection,
+        #userEmailInput::selection,
+        #userPasswordInput::selection {
             background: transparent;
             color: inherit;
             text-decoration: none;
         }
 
-        #userNameInput::-moz-selection, #userEmailInput::-moz-selection, #userPasswordInput::-moz-selection {
+        #userNameInput::-moz-selection,
+        #userEmailInput::-moz-selection,
+        #userPasswordInput::-moz-selection {
             background: transparent;
             color: inherit;
             text-decoration: none;
@@ -271,7 +298,9 @@
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.05);
         }
 
-        .copy-btn, .edit-btn, .save-btn {
+        .copy-btn,
+        .edit-btn,
+        .save-btn {
             background: #F97316;
             color: black;
             border: none;
@@ -281,7 +310,9 @@
             background: #10B981;
         }
 
-        .copy-btn:hover, .edit-btn:hover, .save-btn:hover {
+        .copy-btn:hover,
+        .edit-btn:hover,
+        .save-btn:hover {
             background: #EA580C;
             transform: translateY(-2px);
         }
@@ -290,24 +321,28 @@
             background: #059669;
         }
 
-        .delete-btn, .confirm-delete-btn {
+        .delete-btn,
+        .confirm-delete-btn {
             background: #B91C1C;
             color: white;
             border: none;
         }
 
-        .delete-btn:hover, .confirm-delete-btn:hover {
+        .delete-btn:hover,
+        .confirm-delete-btn:hover {
             background: #991B1B;
             transform: translateY(-2px);
         }
 
-        .close-btn, .cancel-delete-btn {
+        .close-btn,
+        .cancel-delete-btn {
             background: #6B7280;
             color: white;
             border: none;
         }
 
-        .close-btn:hover, .cancel-delete-btn:hover {
+        .close-btn:hover,
+        .cancel-delete-btn:hover {
             background: #4B5563;
             transform: translateY(-2px);
         }
@@ -487,14 +522,16 @@
             cursor: pointer;
         }
 
-        .users-table-container, .transcriptions-table-container {
+        .users-table-container,
+        .transcriptions-table-container {
             overflow-x: auto;
             position: relative;
             max-height: 400px;
             overflow-y: auto;
         }
 
-        .users-table, .transcriptions-table {
+        .users-table,
+        .transcriptions-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
@@ -503,7 +540,8 @@
             overflow: hidden;
         }
 
-        .users-table th, .transcriptions-table th {
+        .users-table th,
+        .transcriptions-table th {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -517,7 +555,8 @@
             text-transform: uppercase;
         }
 
-        .users-table td, .transcriptions-table td {
+        .users-table td,
+        .transcriptions-table td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -525,11 +564,13 @@
             font-size: 1rem;
         }
 
-        .users-table tr:nth-child(even), .transcriptions-table tr:nth-child(even) {
+        .users-table tr:nth-child(even),
+        .transcriptions-table tr:nth-child(even) {
             background: rgba(45, 55, 72, 0.8);
         }
 
-        .users-table tr:hover, .transcriptions-table tr:hover {
+        .users-table tr:hover,
+        .transcriptions-table tr:hover {
             background: rgba(249, 115, 22, 0.2);
             transition: background 0.3s ease;
             cursor: pointer;
@@ -551,24 +592,29 @@
             border-bottom-right-radius: 0.5rem;
         }
 
-        .users-table-container::-webkit-scrollbar, .transcriptions-table-container::-webkit-scrollbar {
+        .users-table-container::-webkit-scrollbar,
+        .transcriptions-table-container::-webkit-scrollbar {
             width: 8px;
         }
 
-        .users-table-container::-webkit-scrollbar-track, .transcriptions-table-container::-webkit-scrollbar-track {
+        .users-table-container::-webkit-scrollbar-track,
+        .transcriptions-table-container::-webkit-scrollbar-track {
             background: #1E293B;
         }
 
-        .users-table-container::-webkit-scrollbar-thumb, .transcriptions-table-container::-webkit-scrollbar-thumb {
+        .users-table-container::-webkit-scrollbar-thumb,
+        .transcriptions-table-container::-webkit-scrollbar-thumb {
             background: #F97316;
             border-radius: 4px;
         }
 
-        .users-table-container::-webkit-scrollbar-thumb:hover, .transcriptions-table-container::-webkit-scrollbar-thumb:hover {
+        .users-table-container::-webkit-scrollbar-thumb:hover,
+        .transcriptions-table-container::-webkit-scrollbar-thumb:hover {
             background: #EA580C;
         }
 
-        .search-container, .filter-container {
+        .search-container,
+        .filter-container {
             margin-bottom: 1.5rem;
             display: flex;
             gap: 1rem;
@@ -606,11 +652,13 @@
             background-size: 1.5rem;
         }
 
-        .search-input::placeholder, .filter-select::placeholder {
+        .search-input::placeholder,
+        .filter-select::placeholder {
             color: #6B7280;
         }
 
-        .search-input:focus, .filter-select:focus {
+        .search-input:focus,
+        .filter-select:focus {
             border-color: #EA580C;
             box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
         }
@@ -648,6 +696,142 @@
             cursor: pointer;
         }
 
+        /* Estilos para la sección de generación de reportes */
+        .report-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .report-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .report-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 2px solid #F97316;
+            border-radius: 0.75rem;
+            background: linear-gradient(145deg, #2D3748 0%, #1E293B 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .report-option:hover {
+            border-color: #EA580C;
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+        }
+
+        .report-option.selected {
+            border-color: #10B981;
+            background: linear-gradient(145deg, #2D3748 0%, #1E293B 100%);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .report-option input {
+            display: none;
+        }
+
+        .report-option label {
+            color: #D1D5DB;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0;
+            flex: 1;
+        }
+
+        .date-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .date-input {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .date-input label {
+            color: #D1D5DB;
+            font-weight: 500;
+        }
+
+        .date-input input {
+            padding: 0.75rem;
+            border: 2px solid #F97316;
+            border-radius: 0.5rem;
+            background: #1E293B;
+            color: #D1D5DB;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .date-input input:focus {
+            border-color: #EA580C;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+        }
+
+        /* Estilos para el icono del calendario en los inputs de fecha */
+        .date-input input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(0deg) brightness(100%) contrast(100%);
+            /* Hace el icono blanco */
+            cursor: pointer;
+        }
+
+        .date-input input[type="date"]::-moz-calendar-picker-indicator {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/><path d="M6.5 7a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z"/></svg>') no-repeat center;
+            cursor: pointer;
+        }
+
+        /* Estilos para el botón de generar reporte */
+        .generate-report-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: #B91C1C;
+            /* Color rojo consistente con el panel */
+            color: white;
+            /* Texto blanco */
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.05);
+            font-size: 1rem;
+            margin-top: 1rem;
+            margin-left: auto;
+            /* Centra el botón horizontalmente */
+            margin-right: auto;
+            /* Centra el botón horizontalmente */
+            width: 100%;
+            max-width: 300px;
+            /* Limita el ancho en pantallas grandes */
+        }
+
+        .generate-report-btn:hover {
+            background: #991B1B;
+            /* Tono más oscuro para el hover, consistente con logout-btn */
+            transform: translateY(-2px);
+        }
+
+        .generate-report-btn i.fa-file-pdf {
+            font-size: 1.5rem;
+            /* Tamaño del ícono, equivalente a 24px */
+            color: white;
+            /* Color blanco para coincidir con el texto */
+        }
+
         @media (max-width: 640px) {
             .sidebar {
                 position: fixed;
@@ -657,7 +841,8 @@
                 z-index: 1000;
             }
 
-            #alertMessage, #deleteConfirmModalContent {
+            #alertMessage,
+            #deleteConfirmModalContent {
                 padding: 1rem 1.5rem;
                 width: 90%;
                 max-width: 350px;
@@ -686,11 +871,14 @@
                 font-size: 1.25rem;
             }
 
-            #userId, #userCreated {
+            #userId,
+            #userCreated {
                 font-size: 0.875rem;
             }
 
-            #userNameInput, #userEmailInput, #userPasswordInput {
+            #userNameInput,
+            #userEmailInput,
+            #userPasswordInput {
                 padding: 0.5rem;
                 font-size: 0.875rem;
                 border-radius: 0.5rem;
@@ -751,7 +939,8 @@
                 font-size: 0.875rem;
             }
 
-            .search-input, .filter-select {
+            .search-input,
+            .filter-select {
                 padding: 0.5rem 0.75rem;
                 font-size: 0.875rem;
             }
@@ -766,12 +955,14 @@
                 width: auto;
             }
 
-            .search-container, .filter-container {
+            .search-container,
+            .filter-container {
                 flex-direction: row;
                 gap: 0.5rem;
             }
 
-            .users-table-container, .transcriptions-table-container {
+            .users-table-container,
+            .transcriptions-table-container {
                 max-height: 300px;
             }
 
@@ -779,10 +970,26 @@
                 min-height: 150px;
                 font-size: 0.875rem;
             }
+
+            /* Responsive para generación de reportes */
+            .report-options {
+                grid-template-columns: 1fr;
+            }
+
+            .date-range {
+                grid-template-columns: 1fr;
+            }
+
+            .generate-report-btn i.fa-file-pdf {
+                font-size: 1.25rem;
+                /* Tamaño más pequeño para pantallas pequeñas */
+            }
         }
 
         @media (min-width: 640px) and (max-width: 768px) {
-            #alertMessage, #deleteConfirmModalContent {
+
+            #alertMessage,
+            #deleteConfirmModalContent {
                 padding: 1.25rem 1.75rem;
                 width: 80%;
                 max-width: 400px;
@@ -809,11 +1016,14 @@
                 font-size: 1.375rem;
             }
 
-            #userId, #userCreated {
+            #userId,
+            #userCreated {
                 font-size: 0.9375rem;
             }
 
-            #userNameInput, #userEmailInput, #userPasswordInput {
+            #userNameInput,
+            #userEmailInput,
+            #userPasswordInput {
                 padding: 0.625rem;
                 font-size: 0.9375rem;
             }
@@ -860,7 +1070,8 @@
                 padding: 0.875rem;
             }
 
-            .search-input, .filter-select {
+            .search-input,
+            .filter-select {
                 padding: 0.625rem 0.875rem;
                 font-size: 1rem;
             }
@@ -874,17 +1085,29 @@
                 font-size: 1rem;
             }
 
-            .users-table-container, .transcriptions-table-container {
+            .users-table-container,
+            .transcriptions-table-container {
                 max-height: 350px;
             }
 
             #transcriptionText {
                 min-height: 180px;
             }
+
+            /* Responsive para generación de reportes */
+            .report-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .date-range {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         @media (min-width: 768px) {
-            #alertMessage, #deleteConfirmModalContent {
+
+            #alertMessage,
+            #deleteConfirmModalContent {
                 padding: 1.5rem 2rem;
                 width: 400px;
             }
@@ -921,8 +1144,18 @@
                 max-height: 300px;
             }
 
-            .users-table-container, .transcriptions-table-container {
+            .users-table-container,
+            .transcriptions-table-container {
                 max-height: 400px;
+            }
+
+            /* Responsive para generación de reportes */
+            .report-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .date-range {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
@@ -952,6 +1185,11 @@
 
             .chart-container canvas {
                 max-height: 350px;
+            }
+
+            /* Responsive para generación de reportes */
+            .report-options {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
 
@@ -1002,18 +1240,22 @@
         main::-webkit-scrollbar {
             width: 8px;
         }
+
         main::-webkit-scrollbar-track {
             background: #1E293B;
         }
+
         main::-webkit-scrollbar-thumb {
             background: #F97316;
             border-radius: 4px;
         }
+
         main::-webkit-scrollbar-thumb:hover {
             background: #EA580C;
         }
 
-        .charts-grid, .grid {
+        .charts-grid,
+        .grid {
             overflow: hidden;
         }
 
@@ -1024,12 +1266,15 @@
         }
     </style>
 </head>
+
 <body class="h-screen overflow-hidden flex">
-    <aside id="sidebar" class="sidebar fixed md:static top-0 left-0 h-full md:h-auto w-72 bg-gray-800/95 p-6 z-50 transform -translate-x-full md:translate-x-0 flex flex-col neumorphic">
+    <aside id="sidebar"
+        class="sidebar fixed md:static top-0 left-0 h-full md:h-auto w-72 bg-gray-800/95 p-6 z-50 transform -translate-x-full md:translate-x-0 flex flex-col neumorphic">
         <div class="sidebar-header">
             <div id="welcomeMessage" class="welcome-text">Bienvenido</div>
             <div class="sidebar-logo-container">
-                <img src="https://hrlatam.com/wp-content/uploads/2020/12/Logo-HR-LATAM-Horizontaltransparente.png" alt="HR Latam Logo" class="sidebar-logo">
+                <img src="https://hrlatam.com/wp-content/uploads/2020/12/Logo-HR-LATAM-Horizontaltransparente.png"
+                    alt="HR Latam Logo" class="sidebar-logo">
             </div>
         </div>
         <nav class="sidebar-nav">
@@ -1066,7 +1311,8 @@
                 </li>
             </ul>
         </nav>
-        <button type="button" class="logout-btn w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold mt-6" id="logoutBtn">
+        <button type="button" class="logout-btn w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold mt-6"
+            id="logoutBtn">
             <i class="fas fa-sign-out-alt mr-2"></i>
             Cerrar Sesión
         </button>
@@ -1092,27 +1338,40 @@
                     <center>Panel de Administrador</center>
                 </h2>
                 <div id="estadisticas" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale">
-                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Estadísticas en Tiempo Real</h3>
+                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Estadísticas en Tiempo Real
+                    </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
+                        <div
+                            class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
                             <i class="fas fa-users text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
-                            <h3 class="text-2xl sm:text-3xl font-bold text-white mb-2 card-info text-center" id="userCount">0</h3>
-                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Total de Usuarios</p>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white mb-2 card-info text-center"
+                                id="userCount">0</h3>
+                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Total de
+                                Usuarios</p>
                         </div>
-                        <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
+                        <div
+                            class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
                             <i class="fas fa-file-alt text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
-                            <h3 class="text-2xl sm:text-3xl font-bold text-white mb-2 card-info text-center" id="transcriptionCount">0</h3>
-                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Número de Transcripciones</p>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white mb-2 card-info text-center"
+                                id="transcriptionCount">0</h3>
+                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Número de
+                                Transcripciones</p>
                         </div>
-                        <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center clickable-card" id="topUsersCard">
+                        <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center clickable-card"
+                            id="topUsersCard">
                             <i class="fas fa-star text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
-                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 card-info text-center">Top 3 Usuarios</h3>
-                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Usuarios con Más Transcripciones</p>
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 card-info text-center">Top 3
+                                Usuarios</h3>
+                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Usuarios con
+                                Más Transcripciones</p>
                         </div>
-                        <div class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
+                        <div
+                            class="bg-gray-900/50 p-5 sm:p-6 rounded-lg neumorphic-card flex flex-col items-center justify-center">
                             <i class="fas fa-clock text-orange-500 text-3xl sm:text-4xl mb-3 card-icon"></i>
-                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 card-info text-center" id="latestTranscription">Cargando...</h3>
-                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Última Transcripción</p>
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 card-info text-center"
+                                id="latestTranscription">Cargando...</h3>
+                            <p class="text-white text-sm sm:text-base text-center font-medium card-title">Última
+                                Transcripción</p>
                         </div>
                     </div>
                     <div class="charts-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6">
@@ -1121,15 +1380,18 @@
                             <canvas id="barChart"></canvas>
                         </div>
                         <div class="chart-container neumorphic-card">
-                            <h3 class="text-lg sm:text-xl font-bold text-center mb-4">Distribución de Transcripciones</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-center mb-4">Distribución de Transcripciones
+                            </h3>
                             <canvas id="pieChart"></canvas>
                         </div>
                     </div>
                 </div>
-                <div id="usuarios" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                <div id="usuarios"
+                    class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Usuarios Registrados</h3>
                     <div class="search-container">
-                        <input type="text" id="userSearch" class="search-input" placeholder="Filtra por ID, Nombre o Correo...">
+                        <input type="text" id="userSearch" class="search-input"
+                            placeholder="Filtra por ID, Nombre o Correo...">
                         <button class="filter-btn">Filtrar</button>
                     </div>
                     <div class="users-table-container">
@@ -1149,8 +1411,10 @@
                         </table>
                     </div>
                 </div>
-                <div id="historial-de-transcripciones" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
-                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Historial de Transcripciones en el Sistema</h3>
+                <div id="historial-de-transcripciones"
+                    class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Historial de Transcripciones
+                        en el Sistema</h3>
                     <div class="filter-container">
                         <select id="transcriptionFilter" class="filter-select">
                             <option value="">Selecciona un filtro</option>
@@ -1178,13 +1442,55 @@
                         </table>
                     </div>
                 </div>
-                <div id="generacion-de-reportes" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                <div id="generacion-de-reportes"
+                    class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
                     <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Generación de Reportes</h3>
-                    <p class="text-gray-300 text-center">Aquí puedes generar reportes del sistema (en desarrollo).</p>
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label class="block text-sm sm:text-base font-medium text-gray-200 mb-3">Tipo de
+                                Reporte</label>
+                            <div class="report-options">
+                                <div class="report-option">
+                                    <input type="radio" id="reportType1" name="reportType" value="estadisticas">
+                                    <label for="reportType1">Estadísticas</label>
+                                </div>
+                                <div class="report-option">
+                                    <input type="radio" id="reportType2" name="reportType" value="usuarios">
+                                    <label for="reportType2">Usuarios</label>
+                                </div>
+                                <div class="report-option">
+                                    <input type="radio" id="reportType3" name="reportType"
+                                        value="historial-transcripciones">
+                                    <label for="reportType3">Hist. de Transcripciones</label>
+                                </div>
+                                <div class="report-option">
+                                    <input type="radio" id="reportType4" name="reportType" value="general">
+                                    <label for="reportType4">General</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="date-range">
+                            <div class="date-input">
+                                <label for="startDate">Fecha de Inicio</label>
+                                <input type="date" id="startDate" class="w-full">
+                            </div>
+                            <div class="date-input">
+                                <label for="endDate">Fecha de Fin</label>
+                                <input type="date" id="endDate" class="w-full">
+                            </div>
+                        </div>
+                        <button class="generate-report-btn" id="generateReportBtn">
+                            <i class="fas fa-file-pdf"></i>
+                            Generar Reporte
+                        </button>
+                    </div>
                 </div>
-                <div id="configuraciones" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
-                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones del Sistema</h3>
-                    <p class="text-gray-300 text-center">Aquí puedes ajustar las configuraciones del sistema (en desarrollo).</p>
+                <div id="configuraciones"
+                    class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones del Sistema
+                    </h3>
+                    <p class="text-gray-300 text-center">Aquí puedes ajustar las configuraciones del sistema (en
+                        desarrollo).</p>
                 </div>
             </div>
         </main>
@@ -1197,7 +1503,8 @@
     <div id="topUsersModal">
         <div id="topUsersModalContent" class="relative">
             <i class="fas fa-times close-modal-btn"></i>
-            <h3 class="text-white text-2xl sm:text-3xl font-extrabold text-center mb-8">Top 3 Usuarios con Más Transcripciones</h3>
+            <h3 class="text-white text-2xl sm:text-3xl font-extrabold text-center mb-8">Top 3 Usuarios con Más
+                Transcripciones</h3>
             <div id="topUsersList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             </div>
         </div>
@@ -1223,15 +1530,18 @@
             <p id="userId" class="text-white text-sm sm:text-base text-center"></p>
             <p id="userCreated" class="text-white text-sm sm:text-base text-center mb-4"></p>
             <div class="form-group">
-                <label for="userNameInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Nombre</label>
+                <label for="userNameInput"
+                    class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Nombre</label>
                 <input id="userNameInput" type="text" readonly class="w-full">
             </div>
             <div class="form-group">
-                <label for="userEmailInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Correo</label>
+                <label for="userEmailInput"
+                    class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Correo</label>
                 <input id="userEmailInput" type="email" readonly class="w-full">
             </div>
             <div class="form-group">
-                <label for="userPasswordInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Contraseña</label>
+                <label for="userPasswordInput"
+                    class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Contraseña</label>
                 <input id="userPasswordInput" type="text" readonly class="w-full">
             </div>
             <div class="modal-buttons">
@@ -1255,794 +1565,858 @@
     </div>
 
     <script>
-    (function () {
-        const sidebar = document.getElementById('sidebar');
-        const menuToggle = document.getElementById('menuToggle');
-        const overlay = document.getElementById('overlay');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const alertModal = document.getElementById('alertModal');
-        const alertMessage = document.getElementById('alertMessage');
-        const welcomeMessage = document.getElementById('welcomeMessage');
-        const userCountElement = document.getElementById('userCount');
-        const transcriptionCountElement = document.getElementById('transcriptionCount');
-        const latestTranscriptionElement = document.getElementById('latestTranscription');
-        const topUsersCard = document.getElementById('topUsersCard');
-        const topUsersModal = document.getElementById('topUsersModal');
-        const topUsersModalContent = document.getElementById('topUsersModalContent');
-        const topUsersList = document.getElementById('topUsersList');
-        const closeModalBtn = document.querySelector('.close-modal-btn');
-        const userSearch = document.getElementById('userSearch');
-        const filterBtn = document.querySelector('.filter-btn');
-        const usersTableBody = document.getElementById('usersTableBody');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const transcriptionFilter = document.getElementById('transcriptionFilter');
-        const applyTranscriptionFilter = document.getElementById('applyTranscriptionFilter');
-        const transcriptionsTableBody = document.getElementById('transcriptionsTableBody');
-        const transcriptionLoadingSpinner = document.getElementById('transcriptionLoadingSpinner');
-        const transcriptionModal = document.getElementById('transcriptionModal');
-        const transcriptionText = document.getElementById('transcriptionText');
-        const copyTranscriptionBtn = document.getElementById('copyTranscriptionBtn');
-        const closeTranscriptionBtn = document.getElementById('closeTranscriptionBtn');
-        const copyMessage = document.getElementById('copyMessage');
-        const userModal = document.getElementById('userModal');
-        const userIdElement = document.getElementById('userId');
-        const userCreatedElement = document.getElementById('userCreated');
-        const userNameInput = document.getElementById('userNameInput');
-        const userEmailInput = document.getElementById('userEmailInput');
-        const userPasswordInput = document.getElementById('userPasswordInput');
-        const editUserBtn = document.getElementById('editUserBtn');
-        const deleteUserBtn = document.getElementById('deleteUserBtn');
-        const closeUserBtn = document.getElementById('closeUserBtn');
-        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
-        const deleteConfirmMessage = document.getElementById('deleteConfirmMessage');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        (function () {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            const overlay = document.getElementById('overlay');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const alertModal = document.getElementById('alertModal');
+            const alertMessage = document.getElementById('alertMessage');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            const userCountElement = document.getElementById('userCount');
+            const transcriptionCountElement = document.getElementById('transcriptionCount');
+            const latestTranscriptionElement = document.getElementById('latestTranscription');
+            const topUsersCard = document.getElementById('topUsersCard');
+            const topUsersModal = document.getElementById('topUsersModal');
+            const topUsersModalContent = document.getElementById('topUsersModalContent');
+            const topUsersList = document.getElementById('topUsersList');
+            const closeModalBtn = document.querySelector('.close-modal-btn');
+            const userSearch = document.getElementById('userSearch');
+            const filterBtn = document.querySelector('.filter-btn');
+            const usersTableBody = document.getElementById('usersTableBody');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const transcriptionFilter = document.getElementById('transcriptionFilter');
+            const applyTranscriptionFilter = document.getElementById('applyTranscriptionFilter');
+            const transcriptionsTableBody = document.getElementById('transcriptionsTableBody');
+            const transcriptionLoadingSpinner = document.getElementById('transcriptionLoadingSpinner');
+            const transcriptionModal = document.getElementById('transcriptionModal');
+            const transcriptionText = document.getElementById('transcriptionText');
+            const copyTranscriptionBtn = document.getElementById('copyTranscriptionBtn');
+            const closeTranscriptionBtn = document.getElementById('closeTranscriptionBtn');
+            const copyMessage = document.getElementById('copyMessage');
+            const userModal = document.getElementById('userModal');
+            const userIdElement = document.getElementById('userId');
+            const userCreatedElement = document.getElementById('userCreated');
+            const userNameInput = document.getElementById('userNameInput');
+            const userEmailInput = document.getElementById('userEmailInput');
+            const userPasswordInput = document.getElementById('userPasswordInput');
+            const editUserBtn = document.getElementById('editUserBtn');
+            const deleteUserBtn = document.getElementById('deleteUserBtn');
+            const closeUserBtn = document.getElementById('closeUserBtn');
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const deleteConfirmMessage = document.getElementById('deleteConfirmMessage');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            const reportOptions = document.querySelectorAll('.report-option');
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
 
-        let allUsers = [];
-        let allTranscriptions = [];
-        let selectedUser = null;
+            let allUsers = [];
+            let allTranscriptions = [];
+            let selectedUser = null;
 
-        const sectionMap = {
-            'Estadísticas': 'estadisticas',
-            'Usuarios': 'usuarios',
-            'Historial de Transcripciones': 'historial-de-transcripciones',
-            'Generación de Reportes': 'generacion-de-reportes',
-            'Configuraciones': 'configuraciones'
-        };
+            const sectionMap = {
+                'Estadísticas': 'estadisticas',
+                'Usuarios': 'usuarios',
+                'Historial de Transcripciones': 'historial-de-transcripciones',
+                'Generación de Reportes': 'generacion-de-reportes',
+                'Configuraciones': 'configuraciones'
+            };
 
-        function escapeHTML(str) {
-            return str.replace(/[&<>"']/g, match => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            }[match]));
-        }
+            function escapeHTML(str) {
+                return str.replace(/[&<>"']/g, match => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match]));
+            }
 
-        async function fetchAdminName() {
-            try {
-                const response = await fetch('/api/user');
-                if (!response.ok) throw new Error('Error al obtener datos del usuario');
-                const data = await response.json();
-                if (data.nombre && data.isAdmin) {
-                    welcomeMessage.textContent = `Bienvenid@, ${data.nombre}`;
-                } else {
+            // Función para manejar la selección de tipo de reporte
+            function handleReportOptionSelection() {
+                reportOptions.forEach(option => {
+                    const radio = option.querySelector('input[type="radio"]');
+                    option.addEventListener('click', () => {
+                        // Desmarcar todas las opciones
+                        reportOptions.forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+
+                        // Marcar la opción seleccionada
+                        option.classList.add('selected');
+                        radio.checked = true;
+                    });
+                });
+            }
+
+            // Función para generar reporte
+            function generateReport() {
+                const selectedReportType = document.querySelector('input[name="reportType"]:checked');
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+
+                if (!selectedReportType) {
+                    showAlert('Por favor, selecciona un tipo de reporte');
+                    return;
+                }
+
+                if (!startDate || !endDate) {
+                    showAlert('Por favor, selecciona un rango de fechas válido');
+                    return;
+                }
+
+                if (new Date(startDate) > new Date(endDate)) {
+                    showAlert('La fecha de inicio no puede ser mayor que la fecha de fin');
+                    return;
+                }
+
+                // Aquí iría la lógica para generar el reporte
+                showAlert(`Generando reporte ${selectedReportType.value} para el período ${startDate} - ${endDate}`);
+
+                // Simular generación de reporte
+                setTimeout(() => {
+                    showAlert('Reporte generado exitosamente');
+                }, 2000);
+            }
+
+            async function fetchAdminName() {
+                try {
+                    const response = await fetch('/api/user');
+                    if (!response.ok) throw new Error('Error al obtener datos del usuario');
+                    const data = await response.json();
+                    if (data.nombre && data.isAdmin) {
+                        welcomeMessage.textContent = `Bienvenid@, ${data.nombre}`;
+                    } else {
+                        welcomeMessage.textContent = 'Bienvenido';
+                    }
+                } catch (err) {
+                    console.error('Error fetching admin name:', err);
                     welcomeMessage.textContent = 'Bienvenido';
+                    showAlert('Error al cargar el nombre del administrador');
                 }
-            } catch (err) {
-                console.error('Error fetching admin name:', err);
-                welcomeMessage.textContent = 'Bienvenido';
-                showAlert('Error al cargar el nombre del administrador');
             }
-        }
 
-        async function fetchUserCount() {
-            try {
-                const response = await fetch('/api/users/count');
-                if (!response.ok) throw new Error('Error al obtener conteo de usuarios');
-                const data = await response.json();
-                userCountElement.textContent = data.count;
-            } catch (err) {
-                console.error('Error fetching user count:', err);
-                userCountElement.textContent = 'Error';
-                showAlert('Error al cargar el conteo de usuarios');
-            }
-        }
-
-        async function fetchTranscriptionCount() {
-            try {
-                const response = await fetch('/api/transcriptions/count');
-                if (!response.ok) throw new Error('Error al obtener conteo de transcripciones');
-                const data = await response.json();
-                transcriptionCountElement.textContent = data.count;
-            } catch (err) {
-                console.error('Error fetching transcription count:', err);
-                transcriptionCountElement.textContent = 'Error';
-                showAlert('Error al cargar el conteo de transcripciones');
-            }
-        }
-
-        async function fetchLatestTranscription() {
-            try {
-                const response = await fetch('/api/transcriptions/latest');
-                if (!response.ok) throw new Error('Error al obtener la última transcripción');
-                const data = await response.json();
-                latestTranscriptionElement.textContent = data.nombre_archivo;
-            } catch (err) {
-                console.error('Error fetching latest transcription:', err);
-                latestTranscriptionElement.textContent = 'Error';
-                showAlert('Error al cargar la última transcripción');
-            }
-        }
-
-        async function fetchTopUsers() {
-            try {
-                const response = await fetch('/api/transcriptions/top-users');
-                if (!response.ok) throw new Error('Error al obtener los top usuarios');
-                const data = await response.json();
-                renderTopUsers(data);
-            } catch (err) {
-                console.error('Error fetching top users:', err);
-                showAlert('Error al cargar los top usuarios');
-                renderTopUsers([]);
-            }
-        }
-
-        async function fetchUsers() {
-            try {
-                loadingSpinner.classList.remove('hidden');
-                const response = await fetch('/api/users');
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.details || errorData.error || 'Error al obtener usuarios');
+            async function fetchUserCount() {
+                try {
+                    const response = await fetch('/api/users/count');
+                    if (!response.ok) throw new Error('Error al obtener conteo de usuarios');
+                    const data = await response.json();
+                    userCountElement.textContent = data.count;
+                } catch (err) {
+                    console.error('Error fetching user count:', err);
+                    userCountElement.textContent = 'Error';
+                    showAlert('Error al cargar el conteo de usuarios');
                 }
-                const data = await response.json();
-                allUsers = data;
-                renderUsers(data);
-            } catch (err) {
-                console.error('Error fetching users:', err);
-                usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">Error al cargar usuarios: ' + err.message + '</td></tr>';
-                showAlert('Error al cargar los usuarios: ' + err.message);
-            } finally {
-                loadingSpinner.classList.add('hidden');
             }
-        }
 
-        async function fetchTranscriptions(filter = '') {
-            try {
-                transcriptionLoadingSpinner.classList.remove('hidden');
-                const backendFilter = filter === 'longest' ? '' : filter;
-                const response = await fetch(`/api/transcriptions/all?filter=${backendFilter}`);
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.details || errorData.error || 'Error al obtener transcripciones');
+            async function fetchTranscriptionCount() {
+                try {
+                    const response = await fetch('/api/transcriptions/count');
+                    if (!response.ok) throw new Error('Error al obtener conteo de transcripciones');
+                    const data = await response.json();
+                    transcriptionCountElement.textContent = data.count;
+                } catch (err) {
+                    console.error('Error fetching transcription count:', err);
+                    transcriptionCountElement.textContent = 'Error';
+                    showAlert('Error al cargar el conteo de transcripciones');
                 }
-                let data = await response.json();
-
-                if (filter === '' || filter === 'longest') {
-                    allTranscriptions = data;
-                }
-
-                if (filter === 'recent' && data.length > 0) {
-                    data = [data[0]];
-                } else if (filter === 'oldest' && data.length > 0) {
-                    data = [data[0]];
-                } else if (filter === 'longest' && data.length > 0) {
-                    const longest = data.reduce((max, curr) => {
-                        const maxLength = max.texto_transcrito ? max.texto_transcrito.length : 0;
-                        const currLength = curr.texto_transcrito ? curr.texto_transcrito.length : 0;
-                        return currLength > maxLength ? curr : max;
-                    }, { texto_transcrito: '' });
-                    data = longest.texto_transcrito ? [longest] : [];
-                } else if (filter === 'mostTranscriptions' && data.length > 0) {
-                    const userCounts = data.reduce((acc, curr) => {
-                        acc[curr.nombre_usuario] = (acc[curr.nombre_usuario] || 0) + 1;
-                        return acc;
-                    }, {});
-                    const topUser = Object.keys(userCounts).reduce((a, b) =>
-                        userCounts[a] > userCounts[b] ? a : b
-                    );
-                    data = data.filter(t => t.nombre_usuario === topUser);
-                }
-
-                renderTranscriptions(data);
-            } catch (err) {
-                console.error('Error fetching transcriptions:', err);
-                transcriptionsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">Error al cargar transcripciones: ' + err.message + '</td></tr>';
-                showAlert('Error al cargar las transcripciones: ' + err.message);
-            } finally {
-                transcriptionLoadingSpinner.classList.add('hidden');
             }
-        }
 
-        function renderUsers(users) {
-            usersTableBody.innerHTML = '';
-            if (users.length === 0) {
-                usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No hay usuarios disponibles</td></tr>';
-                return;
+            async function fetchLatestTranscription() {
+                try {
+                    const response = await fetch('/api/transcriptions/latest');
+                    if (!response.ok) throw new Error('Error al obtener la última transcripción');
+                    const data = await response.json();
+                    latestTranscriptionElement.textContent = data.nombre_archivo;
+                } catch (err) {
+                    console.error('Error fetching latest transcription:', err);
+                    latestTranscriptionElement.textContent = 'Error';
+                    showAlert('Error al cargar la última transcripción');
+                }
             }
-            users.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+
+            async function fetchTopUsers() {
+                try {
+                    const response = await fetch('/api/transcriptions/top-users');
+                    if (!response.ok) throw new Error('Error al obtener los top usuarios');
+                    const data = await response.json();
+                    renderTopUsers(data);
+                } catch (err) {
+                    console.error('Error fetching top users:', err);
+                    showAlert('Error al cargar los top usuarios');
+                    renderTopUsers([]);
+                }
+            }
+
+            async function fetchUsers() {
+                try {
+                    loadingSpinner.classList.remove('hidden');
+                    const response = await fetch('/api/users');
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || errorData.error || 'Error al obtener usuarios');
+                    }
+                    const data = await response.json();
+                    allUsers = data;
+                    renderUsers(data);
+                } catch (err) {
+                    console.error('Error fetching users:', err);
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">Error al cargar usuarios: ' + err.message + '</td></tr>';
+                    showAlert('Error al cargar los usuarios: ' + err.message);
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                }
+            }
+
+            async function fetchTranscriptions(filter = '') {
+                try {
+                    transcriptionLoadingSpinner.classList.remove('hidden');
+                    const backendFilter = filter === 'longest' ? '' : filter;
+                    const response = await fetch(`/api/transcriptions/all?filter=${backendFilter}`);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || errorData.error || 'Error al obtener transcripciones');
+                    }
+                    let data = await response.json();
+
+                    if (filter === '' || filter === 'longest') {
+                        allTranscriptions = data;
+                    }
+
+                    if (filter === 'recent' && data.length > 0) {
+                        data = [data[0]];
+                    } else if (filter === 'oldest' && data.length > 0) {
+                        data = [data[0]];
+                    } else if (filter === 'longest' && data.length > 0) {
+                        const longest = data.reduce((max, curr) => {
+                            const maxLength = max.texto_transcrito ? max.texto_transcrito.length : 0;
+                            const currLength = curr.texto_transcrito ? curr.texto_transcrito.length : 0;
+                            return currLength > maxLength ? curr : max;
+                        }, { texto_transcrito: '' });
+                        data = longest.texto_transcrito ? [longest] : [];
+                    } else if (filter === 'mostTranscriptions' && data.length > 0) {
+                        const userCounts = data.reduce((acc, curr) => {
+                            acc[curr.nombre_usuario] = (acc[curr.nombre_usuario] || 0) + 1;
+                            return acc;
+                        }, {});
+                        const topUser = Object.keys(userCounts).reduce((a, b) =>
+                            userCounts[a] > userCounts[b] ? a : b
+                        );
+                        data = data.filter(t => t.nombre_usuario === topUser);
+                    }
+
+                    renderTranscriptions(data);
+                } catch (err) {
+                    console.error('Error fetching transcriptions:', err);
+                    transcriptionsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">Error al cargar transcripciones: ' + err.message + '</td></tr>';
+                    showAlert('Error al cargar las transcripciones: ' + err.message);
+                } finally {
+                    transcriptionLoadingSpinner.classList.add('hidden');
+                }
+            }
+
+            function renderUsers(users) {
+                usersTableBody.innerHTML = '';
+                if (users.length === 0) {
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No hay usuarios disponibles</td></tr>';
+                    return;
+                }
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                     <td>${escapeHTML(user.Id.toString())}</td>
                     <td>${escapeHTML(user.Nombre)}</td>
                     <td>${escapeHTML(user.Email)}</td>
                     <td>${escapeHTML(user.PasswordHash)}</td>
                     <td>${escapeHTML(user.FechaRegistro)}</td>
                 `;
-                row.addEventListener('click', () => {
-                    selectedUser = user;
-                    userIdElement.textContent = `ID del usuario: ${escapeHTML(user.Id.toString())}`;
-                    userCreatedElement.textContent = `Cuenta creada: ${escapeHTML(user.FechaRegistro)}`;
-                    userNameInput.value = escapeHTML(user.Nombre);
-                    userEmailInput.value = escapeHTML(user.Email);
-                    userPasswordInput.value = escapeHTML(user.PasswordHash);
-                    userNameInput.setAttribute('readonly', true);
-                    userEmailInput.setAttribute('readonly', true);
-                    userPasswordInput.setAttribute('readonly', true);
-                    userNameInput.classList.remove('editing');
-                    userEmailInput.classList.remove('editing');
-                    userPasswordInput.classList.remove('editing');
-                    editUserBtn.textContent = 'Editar';
-                    editUserBtn.classList.remove('save-btn');
-                    editUserBtn.classList.add('edit-btn');
-                    userModal.style.display = 'flex';
+                    row.addEventListener('click', () => {
+                        selectedUser = user;
+                        userIdElement.textContent = `ID del usuario: ${escapeHTML(user.Id.toString())}`;
+                        userCreatedElement.textContent = `Cuenta creada: ${escapeHTML(user.FechaRegistro)}`;
+                        userNameInput.value = escapeHTML(user.Nombre);
+                        userEmailInput.value = escapeHTML(user.Email);
+                        userPasswordInput.value = escapeHTML(user.PasswordHash);
+                        userNameInput.setAttribute('readonly', true);
+                        userEmailInput.setAttribute('readonly', true);
+                        userPasswordInput.setAttribute('readonly', true);
+                        userNameInput.classList.remove('editing');
+                        userEmailInput.classList.remove('editing');
+                        userPasswordInput.classList.remove('editing');
+                        editUserBtn.textContent = 'Editar';
+                        editUserBtn.classList.remove('save-btn');
+                        editUserBtn.classList.add('edit-btn');
+                        userModal.style.display = 'flex';
+                    });
+                    usersTableBody.appendChild(row);
                 });
-                usersTableBody.appendChild(row);
-            });
-        }
-
-        function renderTranscriptions(transcriptions) {
-            transcriptionsTableBody.innerHTML = '';
-            if (transcriptions.length === 0) {
-                transcriptionsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No hay transcripciones disponibles</td></tr>';
-                return;
             }
-            transcriptions.forEach(transcription => {
-                const truncatedText = transcription.texto_transcrito && transcription.texto_transcrito.length > 50 
-                    ? escapeHTML(transcription.texto_transcrito.substring(0, 50)) + '...' 
-                    : escapeHTML(transcription.texto_transcrito || '');
-                const row = document.createElement('tr');
-                row.innerHTML = `
+
+            function renderTranscriptions(transcriptions) {
+                transcriptionsTableBody.innerHTML = '';
+                if (transcriptions.length === 0) {
+                    transcriptionsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No hay transcripciones disponibles</td></tr>';
+                    return;
+                }
+                transcriptions.forEach(transcription => {
+                    const truncatedText = transcription.texto_transcrito && transcription.texto_transcrito.length > 50
+                        ? escapeHTML(transcription.texto_transcrito.substring(0, 50)) + '...'
+                        : escapeHTML(transcription.texto_transcrito || '');
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                     <td>${escapeHTML(transcription.id_transcripcion.toString())}</td>
                     <td>${escapeHTML(transcription.nombre_archivo || '')}</td>
                     <td>${escapeHTML(transcription.fecha_subida || '')}</td>
                     <td class="clickable" data-text="${escapeHTML(transcription.texto_transcrito || '')}">${truncatedText}</td>
                     <td>${escapeHTML(transcription.nombre_usuario || '')}</td>
                 `;
-                transcriptionsTableBody.appendChild(row);
-            });
-
-            document.querySelectorAll('.transcriptions-table .clickable').forEach(cell => {
-                cell.addEventListener('click', () => {
-                    const fullText = cell.getAttribute('data-text');
-                    transcriptionText.value = fullText;
-                    transcriptionModal.style.display = 'flex';
-                    copyMessage.style.display = 'none';
+                    transcriptionsTableBody.appendChild(row);
                 });
-            });
-        }
 
-        function filterUsers(searchTerm) {
-            if (!searchTerm) {
-                renderUsers(allUsers);
-                return;
+                document.querySelectorAll('.transcriptions-table .clickable').forEach(cell => {
+                    cell.addEventListener('click', () => {
+                        const fullText = cell.getAttribute('data-text');
+                        transcriptionText.value = fullText;
+                        transcriptionModal.style.display = 'flex';
+                        copyMessage.style.display = 'none';
+                    });
+                });
             }
-            const filteredUsers = allUsers.filter(user =>
-                user.Id.toString().toLowerCase().includes(searchTerm) ||
-                user.Nombre.toLowerCase().includes(searchTerm) ||
-                user.Email.toLowerCase().includes(searchTerm)
-            );
-            renderUsers(filteredUsers);
-            if (filteredUsers.length === 0) {
-                usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No se encontraron resultados</td></tr>';
-            }
-        }
 
-        function renderTopUsers(users) {
-            topUsersList.innerHTML = '';
-            const medals = [
-                'img/medalla-de-oro.png',
-                'img/medalla-de-plata.png',
-                'img/medalla-de-bronce.png'
-            ];
-            if (users.length === 0) {
-                topUsersList.innerHTML = '<p class="text-gray-300 text-center">No hay datos disponibles</p>';
-                return;
+            function filterUsers(searchTerm) {
+                if (!searchTerm) {
+                    renderUsers(allUsers);
+                    return;
+                }
+                const filteredUsers = allUsers.filter(user =>
+                    user.Id.toString().toLowerCase().includes(searchTerm) ||
+                    user.Nombre.toLowerCase().includes(searchTerm) ||
+                    user.Email.toLowerCase().includes(searchTerm)
+                );
+                renderUsers(filteredUsers);
+                if (filteredUsers.length === 0) {
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-300">No se encontraron resultados</td></tr>';
+                }
             }
-            users.forEach((user, index) => {
-                if (index < 3) {
-                    const card = document.createElement('div');
-                    card.className = 'top-user-card';
-                    card.innerHTML = `
+
+            function renderTopUsers(users) {
+                topUsersList.innerHTML = '';
+                const medals = [
+                    'img/medalla-de-oro.png',
+                    'img/medalla-de-plata.png',
+                    'img/medalla-de-bronce.png'
+                ];
+                if (users.length === 0) {
+                    topUsersList.innerHTML = '<p class="text-gray-300 text-center">No hay datos disponibles</p>';
+                    return;
+                }
+                users.forEach((user, index) => {
+                    if (index < 3) {
+                        const card = document.createElement('div');
+                        card.className = 'top-user-card';
+                        card.innerHTML = `
                         <img src="${medals[index]}" alt="Medalla ${index + 1}" class="top-user-image">
                         <h4 class="text-white font-extrabold text-xl mb-2">${escapeHTML(user.nombre_usuario)}</h4>
                         <p class="text-gray-300 text-base">Transcripciones: ${user.transcription_count}</p>
                     `;
-                    topUsersList.appendChild(card);
-                }
-            });
-        }
-
-        async function renderCharts() {
-            try {
-                const response = await fetch('/api/transcriptions/daily');
-                if (!response.ok) throw new Error('Error al obtener transcripciones por día');
-                const data = await response.json();
-
-                const days = data.map(item => item.day);
-                const counts = data.map(item => item.count);
-                const total = counts.reduce((sum, count) => sum + count, 0);
-
-                const barChartCtx = document.getElementById('barChart').getContext('2d');
-                new Chart(barChartCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: days,
-                        datasets: [{
-                            label: 'Transcripciones por Día',
-                            data: counts,
-                            backgroundColor: '#F97316',
-                            borderColor: '#EA580C',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Número de Transcripciones',
-                                    color: '#000000',
-                                    font: { size: 12 }
-                                },
-                                ticks: { color: '#000000' }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Días de la Semana',
-                                    color: '#000000',
-                                    font: { size: 12 }
-                                },
-                                ticks: { color: '#000000' }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: { color: '#000000' }
-                            }
-                        }
+                        topUsersList.appendChild(card);
                     }
                 });
+            }
 
-                const pieChartCtx = document.getElementById('pieChart').getContext('2d');
-                new Chart(pieChartCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: days,
-                        datasets: [{
-                            label: 'Distribución de Transcripciones',
-                            data: counts,
-                            backgroundColor: [
-                                '#F97316',
-                                '#EA580C',
-                                '#D1D5DB',
-                                '#9A3412',
-                                '#2D3748',
-                                '#1E293B',
-                                '#4B5563'
-                            ],
-                            borderColor: '#FFFFFF',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    color: '#000000',
-                                    font: { size: 12 },
-                                    generateLabels: chart => {
-                                        const data = chart.data;
-                                        const total = data.datasets[0].data.reduce((sum, val) => sum + val, 0);
-                                        return data.labels.map((label, i) => {
-                                            const value = data.datasets[0].data[i];
-                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                            return {
-                                                text: `${label}: ${percentage}%`,
-                                                fillStyle: data.datasets[0].backgroundColor[i],
-                                                strokeStyle: data.datasets[0].borderColor[i],
-                                                lineWidth: data.datasets[0].borderWidth,
+            async function renderCharts() {
+                try {
+                    const response = await fetch('/api/transcriptions/daily');
+                    if (!response.ok) throw new Error('Error al obtener transcripciones por día');
+                    const data = await response.json();
+
+                    const days = data.map(item => item.day);
+                    const counts = data.map(item => item.count);
+                    const total = counts.reduce((sum, count) => sum + count, 0);
+
+                    const barChartCtx = document.getElementById('barChart').getContext('2d');
+                    new Chart(barChartCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Transcripciones por Día',
+                                data: counts,
+                                backgroundColor: '#F97316',
+                                borderColor: '#EA580C',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Número de Transcripciones',
+                                        color: '#000000',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#000000' }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Días de la Semana',
+                                        color: '#000000',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#000000' }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#000000' }
+                                }
+                            }
+                        }
+                    });
+
+                    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+                    new Chart(pieChartCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Distribución de Transcripciones',
+                                data: counts,
+                                backgroundColor: [
+                                    '#F97316',
+                                    '#EA580C',
+                                    '#D1D5DB',
+                                    '#9A3412',
+                                    '#2D3748',
+                                    '#1E293B',
+                                    '#4B5563'
+                                ],
+                                borderColor: '#FFFFFF',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        color: '#000000',
+                                        font: { size: 12 },
+                                        generateLabels: chart => {
+                                            const data = chart.data;
+                                            const total = data.datasets[0].data.reduce((sum, val) => sum + val, 0);
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: `${label}: ${percentage}%`,
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    strokeStyle: data.datasets[0].borderColor[i],
+                                                    lineWidth: data.datasets[0].borderWidth,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } catch (err) {
+                    console.error('Error fetching daily transcription data:', err);
+                    showAlert('Error al cargar los datos de los gráficos');
+                    const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+                    const counts = [0, 0, 0, 0, 0, 0, 0];
+
+                    const barChartCtx = document.getElementById('barChart').getContext('2d');
+                    new Chart(barChartCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Transcripciones por Día',
+                                data: counts,
+                                backgroundColor: '#F97316',
+                                borderColor: '#EA580C',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Número de Transcripciones',
+                                        color: '#000000',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#000000' }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Días de la Semana',
+                                        color: '#000000',
+                                        font: { size: 12 }
+                                    },
+                                    ticks: { color: '#000000' }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#000000' }
+                                }
+                            }
+                        }
+                    });
+
+                    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+                    new Chart(pieChartCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                label: 'Distribución de Transcripciones',
+                                data: counts,
+                                backgroundColor: [
+                                    '#F97316',
+                                    '#EA580C',
+                                    '#D1D5DB',
+                                    '#9A3412',
+                                    '#2D3748',
+                                    '#1E293B',
+                                    '#4B5563'
+                                ],
+                                borderColor: '#FFFFFF',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        color: '#000000',
+                                        font: { size: 12 },
+                                        generateLabels: chart => {
+                                            return chart.data.labels.map((label, i) => ({
+                                                text: `${label}: 0%`,
+                                                fillStyle: chart.data.datasets[0].backgroundColor[i],
+                                                strokeStyle: chart.data.datasets[0].borderColor[i],
+                                                lineWidth: chart.data.datasets[0].borderWidth,
                                                 index: i
-                                            };
-                                        });
+                                            }));
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                });
-            } catch (err) {
-                console.error('Error fetching daily transcription data:', err);
-                showAlert('Error al cargar los datos de los gráficos');
-                const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-                const counts = [0, 0, 0, 0, 0, 0, 0];
-
-                const barChartCtx = document.getElementById('barChart').getContext('2d');
-                new Chart(barChartCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: days,
-                        datasets: [{
-                            label: 'Transcripciones por Día',
-                            data: counts,
-                            backgroundColor: '#F97316',
-                            borderColor: '#EA580C',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Número de Transcripciones',
-                                    color: '#000000',
-                                    font: { size: 12 }
-                                },
-                                ticks: { color: '#000000' }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Días de la Semana',
-                                    color: '#000000',
-                                    font: { size: 12 }
-                                },
-                                ticks: { color: '#000000' }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: { color: '#000000' }
-                            }
-                        }
-                    }
-                });
-
-                const pieChartCtx = document.getElementById('pieChart').getContext('2d');
-                new Chart(pieChartCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: days,
-                        datasets: [{
-                            label: 'Distribución de Transcripciones',
-                            data: counts,
-                            backgroundColor: [
-                                '#F97316',
-                                '#EA580C',
-                                '#D1D5DB',
-                                '#9A3412',
-                                '#2D3748',
-                                '#1E293B',
-                                '#4B5563'
-                            ],
-                            borderColor: '#FFFFFF',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    color: '#000000',
-                                    font: { size: 12 },
-                                    generateLabels: chart => {
-                                        return chart.data.labels.map((label, i) => ({
-                                            text: `${label}: 0%`,
-                                            fillStyle: chart.data.datasets[0].backgroundColor[i],
-                                            strokeStyle: chart.data.datasets[0].borderColor[i],
-                                            lineWidth: chart.data.datasets[0].borderWidth,
-                                            index: i
-                                        }));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        });
-
-        overlay.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-            topUsersModal.style.display = 'none';
-            transcriptionModal.style.display = 'none';
-            userModal.style.display = 'none';
-            deleteConfirmModal.style.display = 'none';
-        });
-
-        document.querySelectorAll('.sidebar-nav a').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.sidebar-nav a').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const sectionId = sectionMap[item.textContent.trim()];
-                if (sectionId) {
-                    const section = document.getElementById(sectionId);
-                    if (section) {
-                        section.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    });
                 }
-                if (window.innerWidth < 768) {
-                    sidebar.classList.add('-translate-x-full');
-                    overlay.classList.add('hidden');
+            }
+
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                topUsersModal.style.display = 'none';
+                transcriptionModal.style.display = 'none';
+                userModal.style.display = 'none';
+                deleteConfirmModal.style.display = 'none';
+            });
+
+            document.querySelectorAll('.sidebar-nav a').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.sidebar-nav a').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const sectionId = sectionMap[item.textContent.trim()];
+                    if (sectionId) {
+                        const section = document.getElementById(sectionId);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('-translate-x-full');
+                        overlay.classList.add('hidden');
+                    }
+                });
+            });
+
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/user');
+                    if (!response.ok) throw new Error('Error al obtener datos del usuario');
+                    const data = await response.json();
+                    const nombre = data.nombre || 'Administrador';
+                    const logoutResponse = await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const logoutData = await logoutResponse.json();
+                    showAlert(logoutData.message || `Sesión cerrada correctamente, ${nombre}`);
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Error during logout:', err);
+                    showAlert('Error al cerrar sesión');
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
                 }
             });
-        });
 
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch('/api/user');
-                if (!response.ok) throw new Error('Error al obtener datos del usuario');
-                const data = await response.json();
-                const nombre = data.nombre || 'Administrador';
-                const logoutResponse = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const logoutData = await logoutResponse.json();
-                showAlert(logoutData.message || `Sesión cerrada correctamente, ${nombre}`);
+            function showAlert(message) {
+                alertMessage.textContent = message;
+                alertModal.style.display = 'flex';
                 setTimeout(() => {
-                    window.location.href = '/login.html';
-                }, 2000);
-            } catch (err) {
-                console.error('Error during logout:', err);
-                showAlert('Error al cerrar sesión');
-                setTimeout(() => {
-                    window.location.href = '/login.html';
-                }, 2000);
+                    alertModal.style.display = 'none';
+                }, 4000);
             }
-        });
 
-        function showAlert(message) {
-            alertMessage.textContent = message;
-            alertModal.style.display = 'flex';
-            setTimeout(() => {
+            alertModal.addEventListener('click', () => {
                 alertModal.style.display = 'none';
-            }, 4000);
-        }
+            });
 
-        alertModal.addEventListener('click', () => {
-            alertModal.style.display = 'none';
-        });
+            topUsersCard.addEventListener('click', () => {
+                topUsersModal.style.display = 'flex';
+                fetchTopUsers();
+            });
 
-        topUsersCard.addEventListener('click', () => {
-            topUsersModal.style.display = 'flex';
-            fetchTopUsers();
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            topUsersModal.style.display = 'none';
-        });
-
-        topUsersModal.addEventListener('click', (e) => {
-            if (e.target === topUsersModal) {
+            closeModalBtn.addEventListener('click', () => {
                 topUsersModal.style.display = 'none';
+            });
+
+            topUsersModal.addEventListener('click', (e) => {
+                if (e.target === topUsersModal) {
+                    topUsersModal.style.display = 'none';
+                }
+            });
+
+            function showCopyMessage(message) {
+                copyMessage.textContent = message;
+                copyMessage.style.display = 'block';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 2000);
             }
-        });
 
-        function showCopyMessage(message) {
-            copyMessage.textContent = message;
-            copyMessage.style.display = 'block';
-            setTimeout(() => {
-                copyMessage.style.display = 'none';
-            }, 2000);
-        }
+            copyTranscriptionBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(transcriptionText.value);
+                    showCopyMessage('Texto copiado al portapapeles');
+                } catch (err) {
+                    console.error('Error al copiar texto:', err);
+                    showCopyMessage('Error al copiar el texto');
+                }
+            });
 
-        copyTranscriptionBtn.addEventListener('click', async () => {
-            try {
-                await navigator.clipboard.writeText(transcriptionText.value);
-                showCopyMessage('Texto copiado al portapapeles');
-            } catch (err) {
-                console.error('Error al copiar texto:', err);
-                showCopyMessage('Error al copiar el texto');
-            }
-        });
-
-        closeTranscriptionBtn.addEventListener('click', () => {
-            transcriptionModal.style.display = 'none';
-        });
-
-        transcriptionModal.addEventListener('click', (e) => {
-            if (e.target === transcriptionModal) {
+            closeTranscriptionBtn.addEventListener('click', () => {
                 transcriptionModal.style.display = 'none';
-            }
-        });
+            });
 
-        editUserBtn.addEventListener('click', async () => {
-            if (editUserBtn.textContent === 'Editar') {
-                userNameInput.removeAttribute('readonly');
-                userEmailInput.removeAttribute('readonly');
-                userPasswordInput.removeAttribute('readonly');
-                userNameInput.classList.add('editing');
-                userEmailInput.classList.add('editing');
-                userPasswordInput.classList.add('editing');
-                editUserBtn.textContent = 'Guardar';
-                editUserBtn.classList.remove('edit-btn');
-                editUserBtn.classList.add('save-btn');
-            } else {
-                userNameInput.classList.remove('editing');
-                userEmailInput.classList.remove('editing');
-                userPasswordInput.classList.remove('editing');
-                const updatedUser = {
-                    Nombre: userNameInput.value,
-                    Email: userEmailInput.value,
-                    PasswordHash: userPasswordInput.value
-                };
+            transcriptionModal.addEventListener('click', (e) => {
+                if (e.target === transcriptionModal) {
+                    transcriptionModal.style.display = 'none';
+                }
+            });
 
+            editUserBtn.addEventListener('click', async () => {
+                if (editUserBtn.textContent === 'Editar') {
+                    userNameInput.removeAttribute('readonly');
+                    userEmailInput.removeAttribute('readonly');
+                    userPasswordInput.removeAttribute('readonly');
+                    userNameInput.classList.add('editing');
+                    userEmailInput.classList.add('editing');
+                    userPasswordInput.classList.add('editing');
+                    editUserBtn.textContent = 'Guardar';
+                    editUserBtn.classList.remove('edit-btn');
+                    editUserBtn.classList.add('save-btn');
+                } else {
+                    userNameInput.classList.remove('editing');
+                    userEmailInput.classList.remove('editing');
+                    userPasswordInput.classList.remove('editing');
+                    const updatedUser = {
+                        Nombre: userNameInput.value,
+                        Email: userEmailInput.value,
+                        PasswordHash: userPasswordInput.value
+                    };
+
+                    try {
+                        const response = await fetch(`/api/users/${selectedUser.Id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updatedUser)
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.details || errorData.error || 'Error al actualizar usuario');
+                        }
+                        const data = await response.json();
+                        showAlert(data.message);
+                        allUsers = allUsers.map(user => user.Id === selectedUser.Id ? { ...user, ...updatedUser } : user);
+                        renderUsers(allUsers);
+                        userNameInput.setAttribute('readonly', true);
+                        userEmailInput.setAttribute('readonly', true);
+                        userPasswordInput.setAttribute('readonly', true);
+                        editUserBtn.textContent = 'Editar';
+                        editUserBtn.classList.remove('save-btn');
+                        editUserBtn.classList.add('edit-btn');
+                        userModal.style.display = 'none';
+                    } catch (err) {
+                        console.error('Error updating user:', err);
+                        showAlert('Error al actualizar usuario: ' + err.message);
+                    }
+                }
+            });
+
+            // Add event listeners to remove editing class on blur
+            [userNameInput, userEmailInput, userPasswordInput].forEach(input => {
+                input.addEventListener('blur', () => {
+                    if (!input.hasAttribute('readonly')) {
+                        input.classList.add('editing');
+                    }
+                });
+                input.addEventListener('focus', () => {
+                    if (!input.hasAttribute('readonly')) {
+                        input.classList.add('editing');
+                    }
+                });
+            });
+
+            // Remove editing class when clicking outside the inputs
+            document.addEventListener('click', (e) => {
+                if (!userModal.contains(e.target) && userModal.style.display === 'flex') {
+                    if (!userNameInput.hasAttribute('readonly')) {
+                        userNameInput.classList.remove('editing');
+                    }
+                    if (!userEmailInput.hasAttribute('readonly')) {
+                        userEmailInput.classList.remove('editing');
+                    }
+                    if (!userPasswordInput.hasAttribute('readonly')) {
+                        userPasswordInput.classList.remove('editing');
+                    }
+                }
+            });
+
+            deleteUserBtn.addEventListener('click', () => {
+                deleteConfirmMessage.textContent = `¿Estás seguro de eliminar la cuenta del usuario ${selectedUser.Nombre}?`;
+                deleteConfirmModal.style.display = 'flex';
+            });
+
+            confirmDeleteBtn.addEventListener('click', async () => {
                 try {
                     const response = await fetch(`/api/users/${selectedUser.Id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedUser)
+                        method: 'DELETE'
                     });
                     if (!response.ok) {
                         const errorData = await response.json();
-                        throw new Error(errorData.details || errorData.error || 'Error al actualizar usuario');
+                        throw new Error(errorData.details || errorData.error || 'Error al eliminar usuario');
                     }
                     const data = await response.json();
                     showAlert(data.message);
-                    allUsers = allUsers.map(user => user.Id === selectedUser.Id ? { ...user, ...updatedUser } : user);
+                    allUsers = allUsers.filter(user => user.Id !== selectedUser.Id);
                     renderUsers(allUsers);
-                    userNameInput.setAttribute('readonly', true);
-                    userEmailInput.setAttribute('readonly', true);
-                    userPasswordInput.setAttribute('readonly', true);
-                    editUserBtn.textContent = 'Editar';
-                    editUserBtn.classList.remove('save-btn');
-                    editUserBtn.classList.add('edit-btn');
+                    deleteConfirmModal.style.display = 'none';
                     userModal.style.display = 'none';
+                    fetchUserCount();
                 } catch (err) {
-                    console.error('Error updating user:', err);
-                    showAlert('Error al actualizar usuario: ' + err.message);
-                }
-            }
-        });
-
-        // Add event listeners to remove editing class on blur
-        [userNameInput, userEmailInput, userPasswordInput].forEach(input => {
-            input.addEventListener('blur', () => {
-                if (!input.hasAttribute('readonly')) {
-                    input.classList.add('editing');
+                    console.error('Error deleting user:', err);
+                    showAlert('Error al eliminar usuario: ' + err.message);
                 }
             });
-            input.addEventListener('focus', () => {
-                if (!input.hasAttribute('readonly')) {
-                    input.classList.add('editing');
-                }
-            });
-        });
 
-        // Remove editing class when clicking outside the inputs
-        document.addEventListener('click', (e) => {
-            if (!userModal.contains(e.target) && userModal.style.display === 'flex') {
-                if (!userNameInput.hasAttribute('readonly')) {
-                    userNameInput.classList.remove('editing');
-                }
-                if (!userEmailInput.hasAttribute('readonly')) {
-                    userEmailInput.classList.remove('editing');
-                }
-                if (!userPasswordInput.hasAttribute('readonly')) {
-                    userPasswordInput.classList.remove('editing');
-                }
-            }
-        });
-
-        deleteUserBtn.addEventListener('click', () => {
-            deleteConfirmMessage.textContent = `¿Estás seguro de eliminar la cuenta del usuario ${selectedUser.Nombre}?`;
-            deleteConfirmModal.style.display = 'flex';
-        });
-
-        confirmDeleteBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`/api/users/${selectedUser.Id}`, {
-                    method: 'DELETE'
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.details || errorData.error || 'Error al eliminar usuario');
-                }
-                const data = await response.json();
-                showAlert(data.message);
-                allUsers = allUsers.filter(user => user.Id !== selectedUser.Id);
-                renderUsers(allUsers);
+            cancelDeleteBtn.addEventListener('click', () => {
                 deleteConfirmModal.style.display = 'none';
-                userModal.style.display = 'none';
-                fetchUserCount();
-            } catch (err) {
-                console.error('Error deleting user:', err);
-                showAlert('Error al eliminar usuario: ' + err.message);
-            }
-        });
+            });
 
-        cancelDeleteBtn.addEventListener('click', () => {
-            deleteConfirmModal.style.display = 'none';
-        });
-
-        closeUserBtn.addEventListener('click', () => {
-            userNameInput.classList.remove('editing');
-            userEmailInput.classList.remove('editing');
-            userPasswordInput.classList.remove('editing');
-            userModal.style.display = 'none';
-        });
-
-        userModal.addEventListener('click', (e) => {
-            if (e.target === userModal) {
+            closeUserBtn.addEventListener('click', () => {
                 userNameInput.classList.remove('editing');
                 userEmailInput.classList.remove('editing');
                 userPasswordInput.classList.remove('editing');
                 userModal.style.display = 'none';
-            }
-        });
+            });
 
-        deleteConfirmModal.addEventListener('click', (e) => {
-            if (e.target === deleteConfirmModal) {
-                deleteConfirmModal.style.display = 'none';
-            }
-        });
+            userModal.addEventListener('click', (e) => {
+                if (e.target === userModal) {
+                    userNameInput.classList.remove('editing');
+                    userEmailInput.classList.remove('editing');
+                    userPasswordInput.classList.remove('editing');
+                    userModal.style.display = 'none';
+                }
+            });
 
-        filterBtn.addEventListener('click', () => {
-            const searchTerm = userSearch.value.trim().toLowerCase();
-            if (!searchTerm) {
-                showAlert('Ingresa un valor para filtrar');
-                return;
-            }
-            filterUsers(searchTerm);
-        });
+            deleteConfirmModal.addEventListener('click', (e) => {
+                if (e.target === deleteConfirmModal) {
+                    deleteConfirmModal.style.display = 'none';
+                }
+            });
 
-        userSearch.addEventListener('input', () => {
-            const searchTerm = userSearch.value.trim().toLowerCase();
-            filterUsers(searchTerm);
-        });
+            filterBtn.addEventListener('click', () => {
+                const searchTerm = userSearch.value.trim().toLowerCase();
+                if (!searchTerm) {
+                    showAlert('Ingresa un valor para filtrar');
+                    return;
+                }
+                filterUsers(searchTerm);
+            });
 
-        applyTranscriptionFilter.addEventListener('click', () => {
-            const filterValue = transcriptionFilter.value;
-            if (!filterValue && filterValue !== '') {
-                showAlert('Selecciona un filtro');
-                return;
-            }
-            fetchTranscriptions(filterValue);
-        });
+            userSearch.addEventListener('input', () => {
+                const searchTerm = userSearch.value.trim().toLowerCase();
+                filterUsers(searchTerm);
+            });
 
-        fetchAdminName();
-        fetchUserCount();
-        fetchTranscriptionCount();
-        fetchLatestTranscription();
-        fetchTopUsers();
-        fetchUsers();
-        fetchTranscriptions();
-        renderCharts();
-    })();
+            applyTranscriptionFilter.addEventListener('click', () => {
+                const filterValue = transcriptionFilter.value;
+                if (!filterValue && filterValue !== '') {
+                    showAlert('Selecciona un filtro');
+                    return;
+                }
+                fetchTranscriptions(filterValue);
+            });
+
+            // Inicializar funcionalidad de generación de reportes
+            handleReportOptionSelection();
+            generateReportBtn.addEventListener('click', generateReport);
+
+            // Establecer fechas por defecto (hoy y hace una semana)
+            const today = new Date();
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(today.getDate() - 7);
+
+            startDateInput.valueAsDate = oneWeekAgo;
+            endDateInput.valueAsDate = today;
+
+            fetchAdminName();
+            fetchUserCount();
+            fetchTranscriptionCount();
+            fetchLatestTranscription();
+            fetchTopUsers();
+            fetchUsers();
+            fetchTranscriptions();
+            renderCharts();
+        })();
     </script>
 </body>
+
 </html>
