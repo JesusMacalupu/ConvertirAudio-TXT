@@ -5,6 +5,7 @@ const { exec } = require("child_process");
 const fs = require("fs").promises;
 const sql = require("mssql");
 const session = require("express-session");
+const PDFDocument = require('pdfkit');
 require("dotenv").config();
 
 const app = express();
@@ -670,6 +671,289 @@ app.delete("/api/users/:id", async (req, res) => {
     res.status(500).json({ error: "Error al eliminar usuario", details: error.message });
   }
 });
+
+// Generar reportes en PDF
+app.post('/api/generate-report', async (req, res) => {
+  const { type } = req.body;
+  if (!req.session.user || !req.session.isAdmin) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  if (!['estadisticas', 'usuarios', 'historial-transcripciones', 'general'].includes(type)) {
+    return res.status(400).json({ error: "Tipo de reporte inválido" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    // Fetch data based on type
+    let data = {};
+    if (type === 'estadisticas' || type === 'general') {
+      const userCountRes = await pool.request().query("SELECT COUNT(*) AS count FROM UsuariosHRL");
+      data.totalUsers = userCountRes.recordset[0].count;
+
+      const transCountRes = await pool.request().query("SELECT COUNT(*) AS count FROM Historial_transcripciones");
+      data.transCount = transCountRes.recordset[0].count;
+
+      const latestTransRes = await pool.request().query("SELECT TOP 1 nombre_archivo FROM Historial_transcripciones ORDER BY fecha_subida DESC");
+      data.latestTrans = latestTransRes.recordset.length > 0 ? latestTransRes.recordset[0].nombre_archivo : 'Ninguna';
+
+      const topUsersRes = await pool.request().query(`
+        SELECT TOP 3 nombre_usuario, COUNT(*) as count
+        FROM Historial_transcripciones
+        GROUP BY nombre_usuario
+        ORDER BY count DESC
+      `);
+      data.topUsers = topUsersRes.recordset;
+
+      const dailyRes = await pool.request().query(`
+        SELECT DATEPART(WEEKDAY, fecha_subida) AS day_of_week, COUNT(*) AS count
+        FROM Historial_transcripciones
+        GROUP BY DATEPART(WEEKDAY, fecha_subida)
+      `);
+      const daysMap = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo' };
+      const totalDaily = dailyRes.recordset.reduce((sum, row) => sum + row.count, 0);
+      data.dailyCounts = Object.keys(daysMap).map(dayNum => {
+        const row = dailyRes.recordset.find(r => r.day_of_week === parseInt(dayNum)) || { count: 0 };
+        const percentage = totalDaily > 0 ? ((row.count / totalDaily) * 100).toFixed(1) : 0;
+        return { day: daysMap[dayNum], count: row.count, percentage };
+      }).sort((a, b) => {
+        const order = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        return order.indexOf(a.day) - order.indexOf(b.day);
+      });
+    }
+
+    if (type === 'usuarios' || type === 'general') {
+      const usersRes = await pool.request().query("SELECT Id, Nombre, Email, PasswordHash, CONVERT(varchar, FechaRegistro, 120) AS FechaRegistro FROM UsuariosHRL ORDER BY Id");
+      data.users = usersRes.recordset;
+    }
+
+    if (type === 'historial-transcripciones' || type === 'general') {
+      const transRes = await pool.request().query(`
+        SELECT id_transcripcion, nombre_archivo, CONVERT(varchar, fecha_subida, 120) AS fecha_subida,
+               LEN(CAST(texto_transcrito AS NVARCHAR(MAX))) AS char_count, nombre_usuario
+        FROM Historial_transcripciones
+        ORDER BY id_transcripcion
+      `);
+      data.transcriptions = transRes.recordset;
+    }
+
+    // Generate PDF with proper margins
+    const margin = 50;
+    const doc = new PDFDocument({ margin });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=reporte_${type}.pdf`);
+    doc.pipe(res);
+
+    // Headers mapping
+    const headers = {
+      estadisticas: 'Reporte de Estadísticas',
+      usuarios: 'Reporte de Usuarios',
+      'historial-transcripciones': 'Reporte de Historial de Transcripciones',
+      general: 'Reporte General'
+    };
+
+    // Header Section
+    const pageWidth = doc.page.width - 2 * margin;
+    try {
+      doc.image('public/img/Logo-HR-LATAM.png', margin, margin, { width: 150 });
+    } catch (err) {
+      console.warn('Logo no encontrado, omitiendo:', err.message);
+      doc.text('Logo no disponible', margin, margin, { align: 'left' });
+    }
+    const generationDate = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    doc.fontSize(10).fillColor('#000000').font('Helvetica').text(`Generado el: ${generationDate}`, margin + pageWidth - 150, margin, { align: 'right', width: 150 });
+    
+    // Calculate header height dynamically
+    const headerText = headers[type] || 'Reporte General';
+    const headerFontSize = 20;
+    doc.fontSize(headerFontSize).font('Helvetica-Bold').fillColor('#F97316');
+    const headerHeight = doc.heightOfString(headerText, { width: pageWidth });
+    const headerY = margin + 80;
+    doc.text(headerText, margin, headerY, { align: 'center', width: pageWidth });
+    doc.moveDown(2);
+
+    // Draw sections based on type
+    let yPos = doc.y;
+    if (type === 'estadisticas' || type === 'general') {
+      if (type === 'general') {
+        doc.fontSize(16).fillColor('#000000').text('Sección: Estadísticas', margin, yPos, { underline: true });
+        doc.moveDown(1);
+        yPos = doc.y;
+      }
+      drawTable(doc, yPos, [
+        ['Métrica', 'Valor'],
+        ['Total de Usuarios', data.totalUsers.toString()],
+        ['Número de Transcripciones', data.transCount.toString()],
+        ['Última Transcripción', data.latestTrans]
+      ], 'Resumen de Estadísticas', [250, 250], margin, pageWidth);
+
+      yPos = doc.y + 20;
+
+      const topUsersRows = [['Usuario', 'Transcripciones'], ...data.topUsers.map(u => [u.nombre_usuario, u.count.toString()])];
+      drawTable(doc, yPos, topUsersRows, 'Top 3 Usuarios con Más Transcripciones', [250, 250], margin, pageWidth);
+
+      yPos = doc.y + 20;
+
+      const dailyRows = [['Día', 'Conteo', 'Porcentaje'], ...data.dailyCounts.map(d => [d.day, d.count.toString(), `${d.percentage}%`])];
+      drawTable(doc, yPos, dailyRows, 'Transcripciones por Día de la Semana', [166, 167, 167], margin, pageWidth);
+
+      doc.moveDown(2);
+    }
+
+    if (type === 'usuarios' || type === 'general') {
+      if (type === 'general') {
+        doc.addPage();
+        doc.fontSize(16).fillColor('#000000').text('Sección: Usuarios', margin, margin, { underline: true });
+        doc.moveDown(1);
+      }
+      const usersRows = [['ID', 'Nombre', 'Email', 'Contraseña', 'Fecha de Registro'], ...data.users.map(u => [u.Id.toString(), u.Nombre, u.Email, u.PasswordHash, u.FechaRegistro])];
+      drawTable(doc, doc.y, usersRows, 'Lista de Usuarios Registrados', [50, 100, 150, 150, 100], margin, pageWidth);
+      doc.moveDown(2);
+    }
+
+    if (type === 'historial-transcripciones' || type === 'general') {
+      if (type === 'general') {
+        doc.addPage();
+        doc.fontSize(16).fillColor('#000000').text('Sección: Historial de Transcripciones', margin, margin, { underline: true });
+        doc.moveDown(1);
+      }
+      const transRows = [['ID', 'Nombre del Archivo', 'Fecha de Subida', 'Texto Transcrito (Caracteres)', 'Nombre del Usuario'], ...data.transcriptions.map(t => [t.id_transcripcion.toString(), t.nombre_archivo, t.fecha_subida, `${t.char_count || 0} caracteres`, t.nombre_usuario])];
+      drawTable(doc, doc.y, transRows, 'Historial de Transcripciones', [50, 150, 100, 100, 100], margin, pageWidth);
+    }
+
+    doc.end();
+  } catch (error) {
+    console.error("Error generando reporte PDF:", error.message, error.stack);
+    res.status(500).json({ error: "Error al generar reporte PDF", details: error.message });
+  }
+});
+
+// Helper function to draw tables
+function drawTable(doc, startY, rows, title, colWidths, margin, pageWidth) {
+  const cellPadding = 10;
+  const fontSize = 10;
+  const headerTextColor = '#FFFFFF'; // White color for header text
+  const headerBgColor = '#F97316'; // Orange background for header
+  const alternateRowColor = '#F9F9F9'; // Light gray for alternating rows
+  const borderColor = '#000000'; // Black for borders
+  const rowHeight = 20;
+  const headerHeightReduction = 11.34; // 0.4 cm ≈ 11.34 points
+  let tableWidth = sumArray(colWidths);
+  let y = startY;
+
+  // Ensure table fits within page margins
+  if (tableWidth > pageWidth) {
+    const scaleFactor = pageWidth / tableWidth;
+    colWidths = colWidths.map(width => width * scaleFactor);
+    tableWidth = sumArray(colWidths);
+  }
+
+  // Title
+  doc.fontSize(14).fillColor('#000000').font('Helvetica-Bold').text(title, margin, y, { width: pageWidth });
+  y += 20;
+  let tableTop = y;
+
+  // Calculate header height dynamically based on text content
+  let headerRowHeight = rowHeight;
+  doc.fontSize(fontSize).font('Helvetica-Bold');
+  rows[0].forEach((cell, i) => {
+    const cellWidth = colWidths[i] - 2 * cellPadding;
+    const textHeight = doc.heightOfString(cell, { width: cellWidth, align: 'left' });
+    headerRowHeight = Math.max(headerRowHeight, Math.ceil(textHeight / (fontSize * 1.2)) * rowHeight + cellPadding);
+  });
+  headerRowHeight = Math.max(rowHeight, headerRowHeight - headerHeightReduction); // Reduce header height by 0.4 cm
+
+  // Draw header background with solid orange color, covering full header height
+  doc.rect(margin, tableTop, tableWidth, headerRowHeight).fill(headerBgColor);
+  doc.fillColor(headerTextColor); // Set text color for headers to white
+
+  // Draw headers
+  rows[0].forEach((cell, i) => {
+    doc.text(cell, margin + sumArray(colWidths.slice(0, i)) + cellPadding, tableTop + cellPadding / 2, { width: colWidths[i] - 2 * cellPadding, align: 'left' });
+  });
+  y = tableTop + headerRowHeight;
+
+  // Draw header borders
+  doc.lineWidth(1).strokeColor(borderColor)
+    .moveTo(margin, tableTop)
+    .lineTo(margin + tableWidth, tableTop)
+    .stroke();
+  doc.moveTo(margin, tableTop + headerRowHeight)
+    .lineTo(margin + tableWidth, tableTop + headerRowHeight)
+    .stroke();
+
+  // Store x-positions for vertical lines
+  const verticalLineX = [margin];
+  for (let i = 0; i < colWidths.length; i++) {
+    verticalLineX.push(margin + sumArray(colWidths.slice(0, i + 1)));
+  }
+
+  // Draw rows
+  doc.font('Helvetica').fillColor('#000000');
+  for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+    // Calculate required height for row based on longest wrapped text
+    let maxRowHeight = rowHeight;
+    rows[rowIndex].forEach((cell, i) => {
+      const cellWidth = colWidths[i] - 2 * cellPadding;
+      const textHeight = doc.heightOfString(cell.toString(), { width: cellWidth, align: 'left' });
+      maxRowHeight = Math.max(maxRowHeight, Math.ceil(textHeight / (fontSize * 1.2)) * rowHeight + cellPadding);
+    });
+
+    // Check for page overflow
+    if (y + maxRowHeight > doc.page.height - margin) {
+      // Draw vertical lines up to current y-position before page break
+      verticalLineX.forEach(x => {
+        doc.moveTo(x, tableTop)
+          .lineTo(x, y)
+          .stroke();
+      });
+      doc.addPage();
+      y = margin;
+      tableTop = y; // Update tableTop for vertical lines on new page
+    }
+
+    // Draw row background (alternating)
+    if (rowIndex % 2 === 0) {
+      doc.rect(margin, y, tableWidth, maxRowHeight).fill(alternateRowColor);
+      doc.fillColor('#000000'); // Reset text color
+    }
+
+    // Draw cells with word wrap
+    doc.fontSize(fontSize);
+    rows[rowIndex].forEach((cell, i) => {
+      doc.text(cell.toString(), margin + sumArray(colWidths.slice(0, i)) + cellPadding, y + cellPadding / 2, { width: colWidths[i] - 2 * cellPadding, align: 'left' });
+    });
+
+    // Draw row border for EVERY row
+    doc.strokeColor(borderColor)
+      .moveTo(margin, y)
+      .lineTo(margin + tableWidth, y)
+      .stroke();
+
+    y += maxRowHeight;
+  }
+
+  // Draw final bottom border
+  doc.strokeColor(borderColor)
+    .moveTo(margin, y)
+    .lineTo(margin + tableWidth, y)
+    .stroke();
+
+  // Draw vertical lines across entire table height
+  verticalLineX.forEach(x => {
+    doc.moveTo(x, tableTop)
+      .lineTo(x, y)
+      .stroke();
+  });
+
+  doc.y = y + 20;
+}
+
+// Helper to sum array
+function sumArray(arr) {
+  return arr.reduce((a, b) => a + b, 0);
+}
 
 // Iniciar servidor y actualizar datos en tiempo real al inicio
 app.listen(PORT, async () => {

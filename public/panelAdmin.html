@@ -1568,7 +1568,7 @@
             }
 
             // Función para generar reporte
-            function generateReport() {
+            async function generateReport() {
                 const selectedReportType = document.querySelector('input[name="reportType"]:checked');
 
                 if (!selectedReportType) {
@@ -1576,11 +1576,44 @@
                     return;
                 }
 
-                showAlert(`Generando reporte ${selectedReportType.value}`);
-                setTimeout(() => {
+                try {
+                    const response = await fetch('/api/generate-report', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: selectedReportType.value })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Error al generar reporte');
+                    }
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `reporte_${selectedReportType.value}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+
                     showAlert('Reporte generado exitosamente');
-                }, 2000);
+                } catch (err) {
+                    console.error('Error generando reporte:', err);
+                    showAlert('Error al generar el reporte: ' + err.message);
+                }
             }
+
+            // Vincular la función al botón
+            document.addEventListener('DOMContentLoaded', () => {
+                const generateReportBtn = document.getElementById('generateReportBtn');
+                if (generateReportBtn) {
+                    generateReportBtn.addEventListener('click', generateReport);
+                } else {
+                    console.error('Botón generateReportBtn no encontrado');
+                }
+            });
 
             async function fetchAdminName() {
                 try {
@@ -2353,6 +2386,21 @@
                 fetchTranscriptions(filterValue);
             });
 
+            function handleReportOptionSelection() {
+                const reportOptions = document.querySelectorAll('.report-option');
+                reportOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        // Remove 'selected' class from all options
+                        reportOptions.forEach(opt => opt.classList.remove('selected'));
+                        // Add 'selected' class to the clicked option
+                        option.classList.add('selected');
+                        // Check the corresponding radio input
+                        const radio = option.querySelector('input[type="radio"]');
+                        radio.checked = true;
+                    });
+                });
+            }
+
             fetchAdminName();
             fetchUserCount();
             fetchTranscriptionCount();
@@ -2361,6 +2409,7 @@
             fetchUsers();
             fetchTranscriptions();
             renderCharts();
+            handleReportOptionSelection();
         })();
     </script>
 </body>
