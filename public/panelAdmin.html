@@ -745,52 +745,6 @@
             flex: 1;
         }
 
-        .date-range {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .date-input {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .date-input label {
-            color: #D1D5DB;
-            font-weight: 500;
-        }
-
-        .date-input input {
-            padding: 0.75rem;
-            border: 2px solid #F97316;
-            border-radius: 0.5rem;
-            background: #1E293B;
-            color: #D1D5DB;
-            font-size: 1rem;
-            outline: none;
-            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .date-input input:focus {
-            border-color: #EA580C;
-            box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
-        }
-
-        /* Estilos para el icono del calendario en los inputs de fecha */
-        .date-input input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(0deg) brightness(100%) contrast(100%);
-            /* Hace el icono blanco */
-            cursor: pointer;
-        }
-
-        .date-input input[type="date"]::-moz-calendar-picker-indicator {
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/><path d="M6.5 7a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z"/></svg>') no-repeat center;
-            cursor: pointer;
-        }
-
         /* Estilos para el botón de generar reporte */
         .generate-report-btn {
             display: flex;
@@ -798,9 +752,7 @@
             justify-content: center;
             gap: 0.75rem;
             background: #B91C1C;
-            /* Color rojo consistente con el panel */
             color: white;
-            /* Texto blanco */
             font-weight: 600;
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
@@ -811,25 +763,19 @@
             font-size: 1rem;
             margin-top: 1rem;
             margin-left: auto;
-            /* Centra el botón horizontalmente */
             margin-right: auto;
-            /* Centra el botón horizontalmente */
             width: 100%;
             max-width: 300px;
-            /* Limita el ancho en pantallas grandes */
         }
 
         .generate-report-btn:hover {
             background: #991B1B;
-            /* Tono más oscuro para el hover, consistente con logout-btn */
             transform: translateY(-2px);
         }
 
         .generate-report-btn i.fa-file-pdf {
             font-size: 1.5rem;
-            /* Tamaño del ícono, equivalente a 24px */
             color: white;
-            /* Color blanco para coincidir con el texto */
         }
 
         @media (max-width: 640px) {
@@ -976,13 +922,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .date-range {
-                grid-template-columns: 1fr;
-            }
-
             .generate-report-btn i.fa-file-pdf {
                 font-size: 1.25rem;
-                /* Tamaño más pequeño para pantallas pequeñas */
             }
         }
 
@@ -1098,10 +1039,6 @@
             .report-options {
                 grid-template-columns: repeat(2, 1fr);
             }
-
-            .date-range {
-                grid-template-columns: 1fr 1fr;
-            }
         }
 
         @media (min-width: 768px) {
@@ -1152,10 +1089,6 @@
             /* Responsive para generación de reportes */
             .report-options {
                 grid-template-columns: repeat(2, 1fr);
-            }
-
-            .date-range {
-                grid-template-columns: 1fr 1fr;
             }
         }
 
@@ -1469,16 +1402,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="date-range">
-                            <div class="date-input">
-                                <label for="startDate">Fecha de Inicio</label>
-                                <input type="date" id="startDate" class="w-full">
-                            </div>
-                            <div class="date-input">
-                                <label for="endDate">Fecha de Fin</label>
-                                <input type="date" id="endDate" class="w-full">
-                            </div>
-                        </div>
                         <button class="generate-report-btn" id="generateReportBtn">
                             <i class="fas fa-file-pdf"></i>
                             Generar Reporte
@@ -1609,8 +1532,6 @@
             const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
             const generateReportBtn = document.getElementById('generateReportBtn');
             const reportOptions = document.querySelectorAll('.report-option');
-            const startDateInput = document.getElementById('startDate');
-            const endDateInput = document.getElementById('endDate');
 
             let allUsers = [];
             let allTranscriptions = [];
@@ -1639,12 +1560,7 @@
                 reportOptions.forEach(option => {
                     const radio = option.querySelector('input[type="radio"]');
                     option.addEventListener('click', () => {
-                        // Desmarcar todas las opciones
-                        reportOptions.forEach(opt => {
-                            opt.classList.remove('selected');
-                        });
-
-                        // Marcar la opción seleccionada
+                        reportOptions.forEach(opt => opt.classList.remove('selected'));
                         option.classList.add('selected');
                         radio.checked = true;
                     });
@@ -1654,28 +1570,13 @@
             // Función para generar reporte
             function generateReport() {
                 const selectedReportType = document.querySelector('input[name="reportType"]:checked');
-                const startDate = startDateInput.value;
-                const endDate = endDateInput.value;
 
                 if (!selectedReportType) {
                     showAlert('Por favor, selecciona un tipo de reporte');
                     return;
                 }
 
-                if (!startDate || !endDate) {
-                    showAlert('Por favor, selecciona un rango de fechas válido');
-                    return;
-                }
-
-                if (new Date(startDate) > new Date(endDate)) {
-                    showAlert('La fecha de inicio no puede ser mayor que la fecha de fin');
-                    return;
-                }
-
-                // Aquí iría la lógica para generar el reporte
-                showAlert(`Generando reporte ${selectedReportType.value} para el período ${startDate} - ${endDate}`);
-
-                // Simular generación de reporte
+                showAlert(`Generando reporte ${selectedReportType.value}`);
                 setTimeout(() => {
                     showAlert('Reporte generado exitosamente');
                 }, 2000);
@@ -2129,6 +2030,63 @@
                 }
             }
 
+            async function updateUser() {
+                if (!selectedUser) return;
+
+                const updatedUser = {
+                    Id: selectedUser.Id,
+                    Nombre: userNameInput.value.trim(),
+                    Email: userEmailInput.value.trim(),
+                    PasswordHash: userPasswordInput.value.trim()
+                };
+
+                try {
+                    const response = await fetch(`/api/users/${selectedUser.Id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedUser)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || errorData.error || 'Error al actualizar usuario');
+                    }
+
+                    const data = await response.json();
+                    showAlert(data.message || 'Usuario actualizado correctamente');
+                    selectedUser = updatedUser;
+                    await fetchUsers();
+                } catch (err) {
+                    console.error('Error updating user:', err);
+                    showAlert('Error al actualizar el usuario: ' + err.message);
+                }
+            }
+
+            async function deleteUser() {
+                if (!selectedUser) return;
+
+                try {
+                    const response = await fetch(`/api/users/${selectedUser.Id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || errorData.error || 'Error al eliminar usuario');
+                    }
+
+                    const data = await response.json();
+                    showAlert(data.message || 'Usuario eliminado correctamente');
+                    userModal.style.display = 'none';
+                    deleteConfirmModal.style.display = 'none';
+                    await fetchUsers();
+                    selectedUser = null;
+                } catch (err) {
+                    console.error('Error deleting user:', err);
+                    showAlert('Error al eliminar el usuario: ' + err.message);
+                }
+            }
+
             menuToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('-translate-x-full');
                 overlay.classList.toggle('hidden');
@@ -2394,18 +2352,6 @@
                 }
                 fetchTranscriptions(filterValue);
             });
-
-            // Inicializar funcionalidad de generación de reportes
-            handleReportOptionSelection();
-            generateReportBtn.addEventListener('click', generateReport);
-
-            // Establecer fechas por defecto (hoy y hace una semana)
-            const today = new Date();
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(today.getDate() - 7);
-
-            startDateInput.valueAsDate = oneWeekAgo;
-            endDateInput.valueAsDate = today;
 
             fetchAdminName();
             fetchUserCount();
