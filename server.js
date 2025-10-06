@@ -707,16 +707,16 @@ app.post('/api/generate-report', async (req, res) => {
       data.topUsers = topUsersRes.recordset;
 
       const dailyRes = await pool.request().query(`
-        SELECT DATEPART(WEEKDAY, fecha_subida) AS day_of_week, COUNT(*) AS count
+        SELECT DATENAME(WEEKDAY, fecha_subida) AS day_of_week, COUNT(*) AS count
         FROM Historial_transcripciones
-        GROUP BY DATEPART(WEEKDAY, fecha_subida)
+        GROUP BY DATENAME(WEEKDAY, fecha_subida)
       `);
-      const daysMap = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo' };
+      const daysMap = { 'Monday': 'Lunes', 'Tuesday': 'Martes', 'Wednesday': 'Miércoles', 'Thursday': 'Jueves', 'Friday': 'Viernes', 'Saturday': 'Sábado', 'Sunday': 'Domingo' };
       const totalDaily = dailyRes.recordset.reduce((sum, row) => sum + row.count, 0);
-      data.dailyCounts = Object.keys(daysMap).map(dayNum => {
-        const row = dailyRes.recordset.find(r => r.day_of_week === parseInt(dayNum)) || { count: 0 };
+      data.dailyCounts = Object.values(daysMap).map(day => {
+        const row = dailyRes.recordset.find(r => daysMap[r.day_of_week] === day) || { count: 0 };
         const percentage = totalDaily > 0 ? ((row.count / totalDaily) * 100).toFixed(1) : 0;
-        return { day: daysMap[dayNum], count: row.count, percentage };
+        return { day, count: row.count, percentage };
       }).sort((a, b) => {
         const order = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
         return order.indexOf(a.day) - order.indexOf(b.day);
@@ -837,8 +837,8 @@ function drawTable(doc, startY, rows, title, colWidths, margin, pageWidth) {
   const headerBgColor = '#F97316'; // Orange background for header
   const alternateRowColor = '#F9F9F9'; // Light gray for alternating rows
   const borderColor = '#000000'; // Black for borders
-  const rowHeight = 20;
-  const headerHeightReduction = 11.34; // 0.4 cm ≈ 11.34 points
+  const rowHeight = 20 - 8.505; // Reduced by 0.3 cm ≈ 8.505 points for data rows
+  const headerHeightReduction = 11.34; // Original 0.4 cm ≈ 11.34 points for header
   let tableWidth = sumArray(colWidths);
   let y = startY;
 
@@ -855,14 +855,14 @@ function drawTable(doc, startY, rows, title, colWidths, margin, pageWidth) {
   let tableTop = y;
 
   // Calculate header height dynamically based on text content
-  let headerRowHeight = rowHeight;
+  let headerRowHeight = 20; // Base header height before reduction
   doc.fontSize(fontSize).font('Helvetica-Bold');
   rows[0].forEach((cell, i) => {
     const cellWidth = colWidths[i] - 2 * cellPadding;
     const textHeight = doc.heightOfString(cell, { width: cellWidth, align: 'left' });
-    headerRowHeight = Math.max(headerRowHeight, Math.ceil(textHeight / (fontSize * 1.2)) * rowHeight + cellPadding);
+    headerRowHeight = Math.max(headerRowHeight, Math.ceil(textHeight / (fontSize * 1.2)) * 20 + cellPadding);
   });
-  headerRowHeight = Math.max(rowHeight, headerRowHeight - headerHeightReduction); // Reduce header height by 0.4 cm
+  headerRowHeight = Math.max(20, headerRowHeight - headerHeightReduction); // Apply original header reduction
 
   // Draw header background with solid orange color, covering full header height
   doc.rect(margin, tableTop, tableWidth, headerRowHeight).fill(headerBgColor);
