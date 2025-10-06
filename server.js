@@ -771,7 +771,7 @@ app.post('/api/generate-report', async (req, res) => {
     const headerHeight = doc.heightOfString(headerText, { width: pageWidth });
     const headerY = margin + 80;
     doc.text(headerText, margin, headerY, { align: 'center', width: pageWidth });
-    doc.moveDown(2);
+    doc.moveDown(1); // Reduced from moveDown(2) to halve the space
 
     // Draw sections based on type
     let yPos = doc.y;
