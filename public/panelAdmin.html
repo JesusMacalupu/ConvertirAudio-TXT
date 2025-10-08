@@ -73,6 +73,10 @@
             transition: none;
         }
 
+        .icon-admin {
+            transition: opacity 0.5s ease;
+        }
+
         .btn {
             transition: all 0.3s ease;
         }
@@ -1408,13 +1412,39 @@
                         </button>
                     </div>
                 </div>
-                <div id="configuraciones"
-                    class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
-                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones del Sistema
-                    </h3>
-                    <p class="text-gray-300 text-center">Aquí puedes ajustar las configuraciones del sistema (en
-                        desarrollo).</p>
+                <div id="configuraciones" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones</h3>
+    <div class="flex flex-col md:flex-row gap-4 sm:gap-6">
+        <!-- Lado izquierdo: Datos del Administrador -->
+        <div class="w-full md:w-1/2 lg:w-[35%] flex flex-col items-center text-center">
+            <h4 class="text-white font-bold text-base sm:text-lg mb-3 sm:mb-4">Datos del Administrador</h4>
+            <i id="adminIcon" class="fas fa-user-shield text-orange-500 text-7xl sm:text-8xl md:text-9xl lg:text-10xl mb-3 sm:mb-4 icon-admin"></i>
+            <p id="adminId" class="text-gray-300 text-sm sm:text-base mb-2">ID: Cargando...</p>
+            <p id="adminRegistrationDate" class="text-gray-300 text-sm sm:text-base">Fecha de Registro: Cargando...</p>
+        </div>
+        <!-- Lado derecho: Formulario para cambiar datos -->
+        <div class="w-full md:w-1/2 lg:w-[65%]">
+            <form id="adminUpdateForm" class="flex flex-col gap-4">
+                <div class="form-group">
+                    <label for="adminNameInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Nombre completo</label>
+                    <input id="adminNameInput" type="text" class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none">
                 </div>
+                <div class="form-group">
+                    <label for="adminEmailInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Correo electronico</label>
+                    <input id="adminEmailInput" type="email" class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none">
+                </div>
+                <div class="form-group">
+                    <label for="adminPasswordInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Contraseña</label>
+                    <input id="adminPasswordInput" type="password" class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none">
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Botón centrado para ambas secciones -->
+    <div class="flex justify-center mt-4">
+        <button type="submit" form="adminUpdateForm" class="bg-orange-500 text-black font-bold py-3 px-6 rounded-md hover:bg-orange-600 transition-all w-full md:w-auto lg:max-w-sm lg:min-w-[200px]">Cambiar Datos</button>
+    </div>
+</div>
             </div>
         </main>
     </div>
@@ -2400,6 +2430,21 @@
                     });
                 });
             }
+
+            const icons = ['fa-user-shield', 'fa-user-cog', 'fa-user-lock', 'fa-user-check'];
+            let currentIconIndex = 0;
+            const adminIconEl = document.getElementById('adminIcon');
+
+            function changeAdminIcon() {
+                adminIconEl.style.opacity = 0;
+                setTimeout(() => {
+                    adminIconEl.classList.remove(icons[currentIconIndex]);
+                    currentIconIndex = (currentIconIndex + 1) % icons.length;
+                    adminIconEl.classList.add(icons[currentIconIndex]);
+                    adminIconEl.style.opacity = 1;
+                }, 500);
+            }
+            setInterval(changeAdminIcon, 3500);
 
             fetchAdminName();
             fetchUserCount();
