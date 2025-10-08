@@ -1412,45 +1412,81 @@
                         </button>
                     </div>
                 </div>
-                <div id="configuraciones" class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
-    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones</h3>
-    <div class="flex flex-col md:flex-row gap-4 sm:gap-6">
-        <!-- Lado izquierdo: Datos del Administrador -->
-        <div class="w-full md:w-1/2 lg:w-[35%] flex flex-col items-center text-center">
-            <h4 class="text-white font-bold text-base sm:text-lg mb-3 sm:mb-4">Datos del Administrador</h4>
-            <i id="adminIcon" class="fas fa-user-shield text-orange-500 text-7xl sm:text-8xl md:text-9xl lg:text-10xl mb-3 sm:mb-4 icon-admin"></i>
-            <p id="adminId" class="text-gray-300 text-sm sm:text-base mb-2">ID: Cargando...</p>
-            <p id="adminRegistrationDate" class="text-gray-300 text-sm sm:text-base">Fecha de Registro: Cargando...</p>
-        </div>
-        <!-- Lado derecho: Formulario para cambiar datos -->
-        <div class="w-full md:w-1/2 lg:w-[65%]">
-            <form id="adminUpdateForm" class="flex flex-col gap-4">
-                <div class="form-group">
-                    <label for="adminNameInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Nombre completo</label>
-                    <input id="adminNameInput" type="text" class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none">
+                <div id="configuraciones"
+                    class="bg-gray-800/90 rounded-xl p-4 sm:p-6 neumorphic-card animate-fadeInScale mt-6">
+                    <h3 class="text-white text-xl sm:text-2xl font-bold text-center mb-6">Configuraciones</h3>
+                    <div class="flex flex-col md:flex-row gap-4 sm:gap-6">
+                        <!-- Lado izquierdo: Datos del Administrador -->
+                        <div class="w-full md:w-1/2 lg:w-[35%] flex flex-col items-center text-center">
+                            <h4 class="text-white font-bold text-base sm:text-lg mb-3 sm:mb-4">Datos del Administrador
+                            </h4>
+                            <i id="adminIcon"
+                                class="fas fa-user-shield text-orange-500 text-7xl sm:text-8xl md:text-9xl lg:text-10xl mb-3 sm:mb-4 icon-admin"></i>
+                            <p id="adminId" class="text-gray-300 text-sm sm:text-base mb-2">ID: Cargando...</p>
+                            <p id="adminRegistrationDate" class="text-gray-300 text-sm sm:text-base">Fecha de Registro:
+                                Cargando...</p>
+                        </div>
+                        <!-- Lado derecho: Formulario para cambiar datos -->
+                        <div class="w-full md:w-1/2 lg:w-[65%]">
+                            <form id="adminUpdateForm" class="flex flex-col gap-4">
+                                <div class="form-group">
+                                    <label for="adminNameInput"
+                                        class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Nombre
+                                        completo</label>
+                                    <input id="adminNameInput" type="text"
+                                        class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none"
+                                        disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="adminEmailInput"
+                                        class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Correo
+                                        electronico</label>
+                                    <input id="adminEmailInput" type="email"
+                                        class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none"
+                                        disabled>
+                                </div>
+                                <div class="form-group relative">
+                                    <label for="adminPasswordInput"
+                                        class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Contraseña</label>
+                                    <input id="adminPasswordInput" type="password"
+                                        class="w-full p-2 pr-10 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none"
+                                        placeholder="Cargando..." disabled>
+                                    <i id="passwordToggle"
+                                        class="fas fa-eye absolute right-3 top-10 text-gray-400 cursor-pointer"></i>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Botón centrado para ambas secciones -->
+                    <div class="flex justify-center mt-4">
+                        <button id="toggleEditButton" type="button" form="adminUpdateForm"
+                            class="bg-orange-500 text-black font-bold py-3 px-6 rounded-md hover:bg-orange-600 transition-all w-full md:w-auto lg:max-w-sm lg:min-w-[200px]">Cambiar
+                            Datos</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="adminEmailInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Correo electronico</label>
-                    <input id="adminEmailInput" type="email" class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none">
-                </div>
-                <div class="form-group">
-                    <label for="adminPasswordInput" class="block text-sm sm:text-base font-medium text-gray-200 mb-1">Contraseña</label>
-                    <input id="adminPasswordInput" type="password" class="w-full p-2 border-2 border-orange-500 rounded-md bg-gray-800 text-white focus:border-orange-600 focus:outline-none">
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Botón centrado para ambas secciones -->
-    <div class="flex justify-center mt-4">
-        <button type="submit" form="adminUpdateForm" class="bg-orange-500 text-black font-bold py-3 px-6 rounded-md hover:bg-orange-600 transition-all w-full md:w-auto lg:max-w-sm lg:min-w-[200px]">Cambiar Datos</button>
-    </div>
-</div>
             </div>
         </main>
     </div>
 
     <div id="alertModal">
         <div id="alertMessage"></div>
+    </div>
+
+    <div id="updateConfirmModal"
+        class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+        <div id="updateConfirmModalContent"
+            class="bg-gray-800 p-6 rounded-lg text-center max-w-md w-full mx-4 border-2 border-orange-500">
+            <h3 class="text-orange-500 font-bold text-xl mb-4">Confirmar Cambios</h3>
+            <p id="updateConfirmMessage" class="text-gray-300 text-base mb-6">¿Estás seguro de realizar los cambios en
+                tu cuenta de administrador?</p>
+            <div class="flex justify-center space-x-4">
+                <button
+                    class="modal-btn confirm-delete-btn px-4 py-2 bg-orange-500 text-black rounded hover:bg-orange-600"
+                    id="confirmUpdateBtn">Confirmar</button>
+                <button class="modal-btn cancel-delete-btn px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                    id="cancelUpdateBtn">Cancelar</button>
+            </div>
+        </div>
     </div>
 
     <div id="topUsersModal">
@@ -2446,6 +2482,165 @@
             }
             setInterval(changeAdminIcon, 3500);
 
+            /*******************************************/
+
+            /*******************************************/
+
+            const adminId = document.getElementById('adminId');
+            const adminRegistrationDate = document.getElementById('adminRegistrationDate');
+            const adminNameInput = document.getElementById('adminNameInput');
+            const adminEmailInput = document.getElementById('adminEmailInput');
+            const adminPasswordInput = document.getElementById('adminPasswordInput');
+            const passwordToggle = document.getElementById('passwordToggle');
+            const adminUpdateForm = document.getElementById('adminUpdateForm');
+            const toggleEditButton = document.getElementById('toggleEditButton');
+            const updateConfirmModal = document.getElementById('updateConfirmModal');
+            const confirmUpdateBtn = document.getElementById('confirmUpdateBtn');
+            const cancelUpdateBtn = document.getElementById('cancelUpdateBtn');
+            let isEditing = false;
+
+            // Función para escapar HTML (seguridad)
+            function escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // Función para cargar datos del admin
+            async function fetchAdminDetails() {
+                try {
+                    const response = await fetch('/api/admin/details');
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Error al obtener datos del administrador');
+                    }
+                    const data = await response.json();
+                    adminId.textContent = `ID: ${escapeHTML(data.id.toString())}`;
+                    adminRegistrationDate.textContent = `Fecha de Registro: ${escapeHTML(data.fechaRegistro)}`;
+                    adminNameInput.value = escapeHTML(data.nombre);
+                    adminEmailInput.value = escapeHTML(data.email);
+                    adminPasswordInput.value = escapeHTML(data.password); // Cargar contraseña
+                    // Guardar valores originales para comparar cambios
+                    adminNameInput.setAttribute('data-original-nombre', data.nombre);
+                    adminEmailInput.setAttribute('data-original-email', data.email);
+                    adminPasswordInput.setAttribute('data-original-password', data.password);
+                } catch (err) {
+                    console.error('Error fetching admin details:', err);
+                    showAlert('Error al cargar los datos del administrador: ' + err.message); // Changed from alert
+                    adminId.textContent = 'ID: Error';
+                    adminRegistrationDate.textContent = 'Fecha de Registro: Error';
+                    adminPasswordInput.placeholder = 'Error al cargar';
+                }
+            }
+
+            // Evento para alternar visibilidad de la contraseña
+            passwordToggle.addEventListener('click', () => {
+                if (adminPasswordInput.type === 'password') {
+                    adminPasswordInput.type = 'text';
+                    passwordToggle.classList.remove('fa-eye');
+                    passwordToggle.classList.add('fa-eye-slash');
+                } else {
+                    adminPasswordInput.type = 'password';
+                    passwordToggle.classList.remove('fa-eye-slash');
+                    passwordToggle.classList.add('fa-eye');
+                }
+            });
+
+            // Evento para habilitar/deshabilitar edición
+            toggleEditButton.addEventListener('click', () => {
+                if (!isEditing) {
+                    // Habilitar campos
+                    adminNameInput.disabled = false;
+                    adminEmailInput.disabled = false;
+                    adminPasswordInput.disabled = false;
+                    toggleEditButton.textContent = 'Realizar Cambios';
+                    toggleEditButton.classList.remove('bg-orange-500', 'hover:bg-orange-600');
+                    toggleEditButton.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                    isEditing = true;
+                } else {
+                    // Validar antes de enviar el formulario
+                    const nombre = adminNameInput.value.trim();
+                    const email = adminEmailInput.value.trim();
+                    const password = adminPasswordInput.value.trim();
+
+                    // Validaciones básicas
+                    if (!nombre || !email) {
+                        showAlert('El nombre y el correo son requeridos.'); // Changed from alert
+                        return;
+                    }
+                    if (!/\S+@\S+\.\S+/.test(email)) {
+                        showAlert('El correo debe ser válido (ej: ejemplo@dominio.com).'); // Changed from alert
+                        return;
+                    }
+                    if (!password) {
+                        showAlert('La contraseña es requerida.'); // Changed from alert
+                        return;
+                    }
+                    // Verificar si hay cambios
+                    if (nombre === adminNameInput.getAttribute('data-original-nombre') &&
+                        email === adminEmailInput.getAttribute('data-original-email') &&
+                        password === adminPasswordInput.getAttribute('data-original-password')) {
+                        showAlert('No hay cambios para guardar.'); // Changed from alert
+                        return;
+                    }
+
+                    // Mostrar modal de confirmación
+                    updateConfirmModal.classList.remove('hidden');
+                }
+            });
+
+            // Evento para confirmar actualización
+            confirmUpdateBtn.addEventListener('click', async () => {
+                const nombre = adminNameInput.value.trim();
+                const email = adminEmailInput.value.trim();
+                const password = adminPasswordInput.value.trim();
+                const updateData = { nombre, email, password };
+
+                try {
+                    const response = await fetch('/api/admin', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updateData)
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Error al actualizar datos');
+                    }
+                    const data = await response.json();
+                    showAlert(data.message);
+                    // Deshabilitar campos y restaurar botón
+                    adminNameInput.disabled = true;
+                    adminEmailInput.disabled = true;
+                    adminPasswordInput.disabled = true;
+                    toggleEditButton.textContent = 'Cambiar Datos';
+                    toggleEditButton.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                    toggleEditButton.classList.add('bg-orange-500', 'hover:bg-orange-600');
+                    isEditing = false;
+                    // Recargar datos
+                    await fetchAdminDetails();
+                    updateConfirmModal.classList.add('hidden');
+                    // Refrescamos para ver los cambios reflejados en el panel
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                } catch (err) {
+                    console.error('Error updating admin:', err);
+                    showAlert('Error al actualizar los datos: ' + err.message); // Changed from alert
+                }
+            });
+
+            // Evento para cancelar
+            cancelUpdateBtn.addEventListener('click', () => {
+                updateConfirmModal.classList.add('hidden');
+            });
+
+            // Cerrar modal al click fuera
+            updateConfirmModal.addEventListener('click', (e) => {
+                if (e.target === updateConfirmModal) {
+                    updateConfirmModal.classList.add('hidden');
+                }
+            });
+
             fetchAdminName();
             fetchUserCount();
             fetchTranscriptionCount();
@@ -2455,6 +2650,7 @@
             fetchTranscriptions();
             renderCharts();
             handleReportOptionSelection();
+            fetchAdminDetails();
         })();
     </script>
 </body>

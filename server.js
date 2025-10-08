@@ -955,6 +955,90 @@ function sumArray(arr) {
   return arr.reduce((a, b) => a + b, 0);
 }
 
+// Ruta para obtener detalles del admin
+app.get('/api/admin/details', async (req, res) => {
+    if (!req.session.user || !req.session.isAdmin) {
+        return res.status(401).json({ error: "No autorizado" });
+    }
+    try {
+        const pool = await sql.connect(dbConfig);
+        const result = await pool
+            .request()
+            .input("Email", sql.NVarChar(150), req.session.user.email)
+            .query("SELECT Id AS id, Nombre AS nombre, Email AS email, PasswordAdmin AS password, CONVERT(varchar, FechaRegistro, 120) AS fechaRegistro FROM AdministradoresHRL WHERE Email = @Email");
+        
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ error: "Administrador no encontrado" });
+        }
+        res.json(result.recordset[0]);
+    } catch (error) {
+        console.error("Error al obtener detalles del admin:", error.message, error.stack);
+        res.status(500).json({ error: "Error al obtener detalles del admin" });
+    }
+});
+
+// Ruta para actualizar datos del admin
+app.put('/api/admin', async (req, res) => {
+    if (!req.session.user || !req.session.isAdmin) {
+        return res.status(401).json({ error: "No autorizado" });
+    }
+
+    const { nombre, email, password } = req.body;
+    if (!nombre || !email || !password) {
+        return res.status(400).json({ error: "Nombre, email y contraseña son requeridos" });
+    }
+
+    try {
+        const pool = await sql.connect(dbConfig);
+
+        // Verificar si email ya existe en admins o usuarios (excepto el actual)
+        const emailCheck = await pool
+            .request()
+            .input("email", sql.NVarChar(150), email)
+            .input("currentEmail", sql.NVarChar(150), req.session.user.email)
+            .query(`
+                SELECT 1 FROM AdministradoresHRL WHERE Email = @email AND Email != @currentEmail
+                UNION
+                SELECT 1 FROM UsuariosHRL WHERE Email = @email
+            `);
+        if (emailCheck.recordset.length > 0) {
+            return res.status(409).json({ error: "El correo ya está en uso" });
+        }
+
+        // Verificar si la contraseña ya existe
+        const passwordCheck = await pool
+            .request()
+            .input("password", sql.NVarChar(255), password)
+            .input("currentEmail", sql.NVarChar(150), req.session.user.email)
+            .query("SELECT 1 FROM AdministradoresHRL WHERE PasswordAdmin = @password AND Email != @currentEmail");
+        if (passwordCheck.recordset.length > 0) {
+            return res.status(409).json({ error: "La contraseña ya está en uso" });
+        }
+
+        const request = pool.request();
+        let query = "UPDATE AdministradoresHRL SET Nombre = @nombre, Email = @email, PasswordAdmin = @password";
+        request.input("nombre", sql.NVarChar(150), nombre);
+        request.input("email", sql.NVarChar(150), email);
+        request.input("password", sql.NVarChar(255), password);
+        request.input("currentEmail", sql.NVarChar(150), req.session.user.email);
+
+        query += " WHERE Email = @currentEmail";
+        const result = await request.query(query);
+        if (result.rowsAffected[0] === 0) {
+            return res.status(404).json({ error: "Administrador no encontrado" });
+        }
+
+        // Actualizar sesión
+        req.session.user.nombre = nombre;
+        req.session.user.email = email;
+
+        res.json({ message: "Datos actualizados correctamente" });
+    } catch (error) {
+        console.error("Error al actualizar admin:", error.message, error.stack);
+        res.status(500).json({ error: "Error al actualizar datos del administrador", details: error.message });
+    }
+});
+
 // Iniciar servidor y actualizar datos en tiempo real al inicio
 app.listen(PORT, async () => {
   console.log(`Servidor corriendo en 👉 http://localhost:${PORT}`);
