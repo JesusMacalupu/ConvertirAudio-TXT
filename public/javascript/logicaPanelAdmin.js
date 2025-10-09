@@ -926,9 +926,7 @@
     }
     setInterval(changeAdminIcon, 3500);
 
-    /*******************************************/
-
-    /*******************************************/
+    /******************** ACTUALIZAR DATOS DEL ADMINISTRADOR ***********************/
 
     const adminId = document.getElementById('adminId');
     const adminRegistrationDate = document.getElementById('adminRegistrationDate');
