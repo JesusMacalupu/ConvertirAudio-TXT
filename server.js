@@ -510,6 +510,11 @@ app.post("/api/register", async (req, res) => {
     return res.status(400).json({ error: "Faltan datos" });
   }
 
+  // Validar que el email termine en @hrlatam.com
+  if (!email.endsWith("@hrlatam.com")) {
+    return res.status(400).json({ error: "El correo debe terminar en @hrlatam.com" });
+  }
+
   try {
     const pool = await sql.connect(dbConfig);
     await pool
@@ -535,6 +540,11 @@ app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: "Faltan datos" });
+  }
+
+  // Validar que el email termine en @hrlatam.com
+  if (!email.endsWith("@hrlatam.com")) {
+    return res.status(400).json({ error: "El correo debe terminar en @hrlatam.com" });
   }
 
   try {
@@ -610,6 +620,11 @@ app.put("/api/users/:id", async (req, res) => {
   const { Nombre, Email, PasswordHash } = req.body;
   if (!Nombre && !Email && !PasswordHash) {
     return res.status(400).json({ error: "No se proporcionó ningún dato para actualizar" });
+  }
+
+  // Validar que el email termine en @hrlatam.com si se proporciona
+  if (Email && !Email.endsWith("@hrlatam.com")) {
+    return res.status(400).json({ error: "El correo debe terminar en @hrlatam.com" });
   }
 
   try {
@@ -986,6 +1001,11 @@ app.put('/api/admin', async (req, res) => {
     const { nombre, email, password } = req.body;
     if (!nombre || !email || !password) {
         return res.status(400).json({ error: "Nombre, email y contraseña son requeridos" });
+    }
+
+    // Validar que el email termine en @hrlatam.com
+    if (!email.endsWith("@hrlatam.com")) {
+        return res.status(400).json({ error: "El correo debe terminar en @hrlatam.com" });
     }
 
     try {
