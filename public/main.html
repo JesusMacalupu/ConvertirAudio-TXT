@@ -107,7 +107,7 @@
         }
 
         /* Modal de alertas */
-        #alertModal {
+        .custom-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -120,17 +120,88 @@
             z-index: 1000;
         }
 
-        #alertMessage {
-            background: #10B981;
-            padding: 1.5rem 2rem;
+        .modal-content {
+            background: #1E293B;
+            padding: 2rem;
             border-radius: 0.5rem;
-            text-align: center;
             max-width: 90%;
             width: 400px;
             box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: black;
+            border: 3px solid #10B981;
+            animation: fadeInScale 0.3s ease-out;
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            color: #D1D5DB;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            color: #D1D5DB;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2D3748;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.25rem;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #10B981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .modal-buttons .confirm-btn {
+            background: #10B981;
+            color: white;
+        }
+
+        .modal-buttons .confirm-btn.delete-btn {
+            background: #B91C1C;
+        }
+
+        .modal-buttons .confirm-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .modal-buttons .confirm-btn.delete-btn:hover {
+            background: #991B1B;
+            transform: translateY(-2px);
+        }
+
+        .modal-buttons .cancel-btn {
+            background: #4B5563;
+            color: white;
+        }
+
+        .modal-buttons .cancel-btn:hover {
+            background: #6B7280;
+            transform: translateY(-2px);
         }
 
         /* Sidebar */
@@ -379,8 +450,8 @@
             }
             .ellipsis-menu-content {
                 min-width: 140px;
-                padding: 0.25rem 0; /* Tighter padding for mobile */
-                z-index: 3000; /* Ensure above sidebar and overlay */
+                padding: 0.25rem 0;
+                z-index: 3000;
             }
         }
     </style>
@@ -488,9 +559,40 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div id="alertModal">
-        <div id="alertMessage"></div>
+    <!-- Modal de alertas -->
+    <div id="alertModal" class="custom-modal">
+        <div class="modal-content">
+            <h2>Mensaje</h2>
+            <p id="alertMessage"></p>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="alertCloseBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar nombre -->
+    <div id="editNameModal" class="custom-modal">
+        <div class="modal-content">
+            <h2>Editar Nombre</h2>
+            <p>Ingresa el nuevo nombre para la transcripción:</p>
+            <input type="text" id="editNameInput" placeholder="Nuevo nombre" maxlength="100">
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="editNameCancelBtn">Cancelar</button>
+                <button type="button" class="confirm-btn" id="editNameConfirmBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div id="deleteConfirmModal" class="custom-modal">
+        <div class="modal-content">
+            <h2>Confirmar Eliminación</h2>
+            <p>¿Estás seguro de que deseas borrar esta transcripción? Esta acción no se puede deshacer.</p>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="deleteCancelBtn">Cancelar</button>
+                <button type="button" class="confirm-btn delete-btn" id="deleteConfirmBtn">Borrar</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -507,6 +609,14 @@
             const loadingSpinner = document.getElementById('loadingSpinner');
             const alertModal = document.getElementById('alertModal');
             const alertMessage = document.getElementById('alertMessage');
+            const alertCloseBtn = document.getElementById('alertCloseBtn');
+            const editNameModal = document.getElementById('editNameModal');
+            const editNameInput = document.getElementById('editNameInput');
+            const editNameConfirmBtn = document.getElementById('editNameConfirmBtn');
+            const editNameCancelBtn = document.getElementById('editNameCancelBtn');
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+            const deleteCancelBtn = document.getElementById('deleteCancelBtn');
             const transcriptionList = document.getElementById('transcriptionList');
             const transcriptHeader = document.getElementById('transcriptHeader');
             const welcomeMessage = document.getElementById('welcomeMessage');
@@ -516,6 +626,7 @@
 
             let transcript = '';
             let currentTranscriptionId = null;
+            let currentEditId = null;
 
             async function fetchUser() {
                 try {
@@ -556,7 +667,7 @@
                     updateStatus('Archivo cargado. Presiona "Transcribir Audio".', 'text-green-400');
                 } else {
                     transcribeBtn.disabled = true;
-                    updateStatus('Por favor, selecciona un archivo de audio.', 'text-yellow-400');
+                    updateStatusUi('Por favor, selecciona un archivo de audio.', 'text-yellow-400');
                 }
             }
 
@@ -649,20 +760,18 @@
                             const sidebar = document.getElementById('sidebar');
                             const sidebarRect = sidebar.getBoundingClientRect();
                             const isMobile = window.innerWidth < 768;
-                            const menuWidth = 140; // Matches min-width in mobile CSS
+                            const menuWidth = 140;
                             const viewportWidth = window.innerWidth;
 
                             if (isMobile) {
-                                // Center the menu horizontally under the button
                                 let left = rect.left + window.scrollX + (rect.width / 2) - (menuWidth / 2);
-                                // Ensure menu stays within viewport with 10px margin
                                 if (left < 10) {
                                     left = 10;
                                 } else if (left + menuWidth > viewportWidth - 10) {
                                     left = viewportWidth - menuWidth - 10;
                                 }
                                 menu.style.left = `${left}px`;
-                                menu.style.top = `${rect.bottom + window.scrollY + 8}px`; // Slightly larger offset for clarity
+                                menu.style.top = `${rect.bottom + window.scrollY + 8}px`;
                             } else {
                                 menu.style.left = `${sidebarRect.right + 10}px`;
                                 menu.style.top = `${rect.top + window.scrollY}px`;
@@ -672,10 +781,10 @@
 
                             menu.querySelector('.edit-name').addEventListener('click', (e) => {
                                 e.preventDefault();
-                                const newName = prompt('Ingrese el nuevo nombre:');
-                                if (newName) {
-                                    handleUpdateName(id, newName);
-                                }
+                                currentEditId = id;
+                                editNameInput.value = '';
+                                editNameModal.style.display = 'flex';
+                                editNameInput.focus();
                                 closeAllMenus();
                             });
 
@@ -697,7 +806,8 @@
 
                             menu.querySelector('.delete-transcription').addEventListener('click', (e) => {
                                 e.preventDefault();
-                                handleDeleteTranscription(id);
+                                currentEditId = id;
+                                deleteConfirmModal.style.display = 'flex';
                                 closeAllMenus();
                             });
                         });
@@ -784,23 +894,21 @@
             }
 
             async function handleDeleteTranscription(id) {
-                if (confirm('¿Estás seguro de que deseas borrar esta transcripción?')) {
-                    try {
-                        const response = await fetch(`/api/transcriptions/${id}`, {
-                            method: 'DELETE'
-                        });
-                        if (response.ok) {
-                            showAlert('Transcripción borrada correctamente.');
-                            fetchTranscriptionHistory();
-                            if (currentTranscriptionId === id) {
-                                resetTranscript();
-                            }
-                        } else {
-                            showAlert('Error al borrar la transcripción.');
+                try {
+                    const response = await fetch(`/api/transcriptions/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        showAlert('Transcripción borrada correctamente.');
+                        fetchTranscriptionHistory();
+                        if (currentTranscriptionId === id) {
+                            resetTranscript();
                         }
-                    } catch (error) {
+                    } else {
                         showAlert('Error al borrar la transcripción.');
                     }
+                } catch (error) {
+                    showAlert('Error al borrar la transcripción.');
                 }
             }
 
@@ -914,6 +1022,57 @@
                 }, 4000);
             }
 
+            // Modal event listeners
+            alertCloseBtn.addEventListener('click', () => {
+                alertModal.style.display = 'none';
+            });
+
+            editNameCancelBtn.addEventListener('click', () => {
+                editNameModal.style.display = 'none';
+                editNameInput.value = '';
+                currentEditId = null;
+            });
+
+            editNameConfirmBtn.addEventListener('click', () => {
+                const newName = editNameInput.value.trim();
+                if (newName && currentEditId) {
+                    handleUpdateName(currentEditId, newName);
+                    editNameModal.style.display = 'none';
+                    editNameInput.value = '';
+                    currentEditId = null;
+                } else {
+                    showAlert('Por favor, ingresa un nombre válido.');
+                }
+            });
+
+            deleteCancelBtn.addEventListener('click', () => {
+                deleteConfirmModal.style.display = 'none';
+                currentEditId = null;
+            });
+
+            deleteConfirmBtn.addEventListener('click', () => {
+                if (currentEditId) {
+                    handleDeleteTranscription(currentEditId);
+                    deleteConfirmModal.style.display = 'none';
+                    currentEditId = null;
+                }
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.custom-modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                        if (modal === editNameModal) {
+                            editNameInput.value = '';
+                            currentEditId = null;
+                        } else if (modal === deleteConfirmModal) {
+                            currentEditId = null;
+                        }
+                    }
+                });
+            });
+
             audioFileInput.addEventListener('change', handleFileChange);
             transcribeBtn.addEventListener('click', handleTranscribe);
             downloadTxtBtn.addEventListener('click', handleDownloadTxt);
@@ -921,7 +1080,6 @@
             copyBtn.addEventListener('click', handleCopy);
             logoutBtn.addEventListener('click', handleLogout);
             reloadBtn.addEventListener('click', handleReload);
-            alertModal.addEventListener('click', () => alertModal.style.display = 'none');
 
             fetchUser();
             fetchTranscriptionHistory();
