@@ -594,7 +594,8 @@
                         copyBtn.disabled = false;
                         downloadTxtBtn.disabled = false;
                         downloadDocxBtn.disabled = false;
-                        updateStatus('Transcripción completada.', 'text-green-400');
+                        showAlert('¡Transcripción completada!');
+                        updateStatus('¡Transcripción completada!', 'text-green-400');
                         fetchTranscriptionHistory();
                     } else {
                         updateStatus('No se pudo generar transcripción.', 'text-red-400');
