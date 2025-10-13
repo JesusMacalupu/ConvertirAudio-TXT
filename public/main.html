@@ -107,6 +107,33 @@
         }
 
         /* Modal de alertas */
+        #alertModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+
+        #alertMessage {
+            background: #10B981;
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: black;
+        }
+
+        /* Modal para editar y eliminar */
         .custom-modal {
             position: fixed;
             top: 0;
@@ -559,15 +586,9 @@
         </div>
     </div>
 
-    <!-- Modal de alertas -->
-    <div id="alertModal" class="custom-modal">
-        <div class="modal-content">
-            <h2>Mensaje</h2>
-            <p id="alertMessage"></p>
-            <div class="modal-buttons">
-                <button type="button" class="cancel-btn" id="alertCloseBtn">Cerrar</button>
-            </div>
-        </div>
+    <!-- Modal -->
+    <div id="alertModal">
+        <div id="alertMessage"></div>
     </div>
 
     <!-- Modal para editar nombre -->
@@ -609,7 +630,6 @@
             const loadingSpinner = document.getElementById('loadingSpinner');
             const alertModal = document.getElementById('alertModal');
             const alertMessage = document.getElementById('alertMessage');
-            const alertCloseBtn = document.getElementById('alertCloseBtn');
             const editNameModal = document.getElementById('editNameModal');
             const editNameInput = document.getElementById('editNameInput');
             const editNameConfirmBtn = document.getElementById('editNameConfirmBtn');
@@ -667,7 +687,7 @@
                     updateStatus('Archivo cargado. Presiona "Transcribir Audio".', 'text-green-400');
                 } else {
                     transcribeBtn.disabled = true;
-                    updateStatusUi('Por favor, selecciona un archivo de audio.', 'text-yellow-400');
+                    updateStatus('Por favor, selecciona un archivo de audio.', 'text-yellow-400');
                 }
             }
 
@@ -1023,9 +1043,7 @@
             }
 
             // Modal event listeners
-            alertCloseBtn.addEventListener('click', () => {
-                alertModal.style.display = 'none';
-            });
+            alertModal.addEventListener('click', () => alertModal.style.display = 'none');
 
             editNameCancelBtn.addEventListener('click', () => {
                 editNameModal.style.display = 'none';
