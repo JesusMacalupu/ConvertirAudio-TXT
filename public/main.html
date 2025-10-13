@@ -279,21 +279,21 @@
         .ellipsis-menu-content {
             display: none;
             position: absolute;
-            right: -160px; /* Position to the right */
-            top: 0;
             background-color: #1E293B;
             min-width: 160px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-            z-index: 200; /* High z-index to ensure visibility */
+            z-index: 3000;
             border-radius: 0.5rem;
             padding: 0.5rem 0;
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
         .ellipsis-menu-content.active {
             display: block;
             opacity: 1;
+            transform: translateY(0);
         }
 
         .ellipsis-menu-content a {
@@ -378,7 +378,9 @@
                 border-radius: 4px;
             }
             .ellipsis-menu-content {
-                right: 0; /* Adjust for mobile to avoid clipping */
+                min-width: 140px;
+                padding: 0.25rem 0; /* Tighter padding for mobile */
+                z-index: 3000; /* Ensure above sidebar and overlay */
             }
         }
     </style>
@@ -621,11 +623,6 @@
                                     <div class="dot"></div>
                                     <div class="dot"></div>
                                 </div>
-                                <div class="ellipsis-menu-content">
-                                    <a href="#" class="edit-name" data-id="${transcription.id_transcripcion}">Editar nombre</a>
-                                    <a href="#" class="edit-transcription" data-id="${transcription.id_transcripcion}">Editar transcripción</a>
-                                    <a href="#" class="delete-transcription" data-id="${transcription.id_transcripcion}">Borrar</a>
-                                </div>
                             </div>
                         `;
                         transcriptionList.appendChild(li);
@@ -638,55 +635,70 @@
                         });
                     });
 
-                    document.querySelectorAll('.edit-name').forEach(item => {
-                        item.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            const id = item.dataset.id;
-                            const newName = prompt('Ingrese el nuevo nombre:');
-                            if (newName) {
-                                handleUpdateName(id, newName);
-                            }
-                            closeAllMenus();
-                        });
-                    });
-
-                    document.querySelectorAll('.edit-transcription').forEach(item => {
-                        item.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            const id = item.dataset.id;
-                            transcriptArea.removeAttribute('readonly');
-                            updateStatus('Editando transcripción. Presiona "Guardar" para guardar cambios.', 'text-yellow-400');
-                            const saveBtn = document.createElement('button');
-                            saveBtn.type = 'button';
-                            saveBtn.className = 'btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold ml-[8px]';
-                            saveBtn.textContent = 'Guardar';
-                            saveBtn.onclick = () => {
-                                handleSaveTranscription(id, saveBtn);
-                                closeAllMenus();
-                            };
-                            transcriptHeader.querySelector('.flex.items-center.space-x-\\\[8px\\\]').appendChild(saveBtn);
-                            closeAllMenus();
-                        });
-                    });
-
-                    document.querySelectorAll('.delete-transcription').forEach(item => {
-                        item.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            handleDeleteTranscription(item.dataset.id);
-                            closeAllMenus();
-                        });
-                    });
-
-                    // Add click event for ellipsis buttons
                     document.querySelectorAll('.ellipsis-btn').forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            const menu = btn.nextElementSibling;
-                            const isOpen = menu.classList.contains('active');
                             closeAllMenus();
-                            if (!isOpen) {
-                                menu.classList.add('active');
+
+                            const id = btn.parentElement.previousElementSibling.dataset.id;
+                            const menu = createEllipsisMenu(id);
+                            document.body.appendChild(menu);
+
+                            const rect = btn.getBoundingClientRect();
+                            const sidebar = document.getElementById('sidebar');
+                            const sidebarRect = sidebar.getBoundingClientRect();
+                            const isMobile = window.innerWidth < 768;
+                            const menuWidth = 140; // Matches min-width in mobile CSS
+                            const viewportWidth = window.innerWidth;
+
+                            if (isMobile) {
+                                // Center the menu horizontally under the button
+                                let left = rect.left + window.scrollX + (rect.width / 2) - (menuWidth / 2);
+                                // Ensure menu stays within viewport with 10px margin
+                                if (left < 10) {
+                                    left = 10;
+                                } else if (left + menuWidth > viewportWidth - 10) {
+                                    left = viewportWidth - menuWidth - 10;
+                                }
+                                menu.style.left = `${left}px`;
+                                menu.style.top = `${rect.bottom + window.scrollY + 8}px`; // Slightly larger offset for clarity
+                            } else {
+                                menu.style.left = `${sidebarRect.right + 10}px`;
+                                menu.style.top = `${rect.top + window.scrollY}px`;
                             }
+
+                            menu.classList.add('active');
+
+                            menu.querySelector('.edit-name').addEventListener('click', (e) => {
+                                e.preventDefault();
+                                const newName = prompt('Ingrese el nuevo nombre:');
+                                if (newName) {
+                                    handleUpdateName(id, newName);
+                                }
+                                closeAllMenus();
+                            });
+
+                            menu.querySelector('.edit-transcription').addEventListener('click', (e) => {
+                                e.preventDefault();
+                                transcriptArea.removeAttribute('readonly');
+                                updateStatus('Editando transcripción. Presiona "Guardar" para guardar cambios.', 'text-yellow-400');
+                                const saveBtn = document.createElement('button');
+                                saveBtn.type = 'button';
+                                saveBtn.className = 'btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold ml-[8px]';
+                                saveBtn.textContent = 'Guardar';
+                                saveBtn.onclick = () => {
+                                    handleSaveTranscription(id, saveBtn);
+                                    closeAllMenus();
+                                };
+                                transcriptHeader.querySelector('.flex.items-center.space-x-\\\[8px\\\]').appendChild(saveBtn);
+                                closeAllMenus();
+                            });
+
+                            menu.querySelector('.delete-transcription').addEventListener('click', (e) => {
+                                e.preventDefault();
+                                handleDeleteTranscription(id);
+                                closeAllMenus();
+                            });
                         });
                     });
                 } catch (error) {
@@ -694,14 +706,23 @@
                 }
             }
 
-            // Close all ellipsis menus
+            function createEllipsisMenu(id) {
+                const menu = document.createElement('div');
+                menu.className = 'ellipsis-menu-content';
+                menu.innerHTML = `
+                    <a href="#" class="edit-name" data-id="${id}">Editar nombre</a>
+                    <a href="#" class="edit-transcription" data-id="${id}">Editar transcripción</a>
+                    <a href="#" class="delete-transcription" data-id="${id}">Borrar</a>
+                `;
+                return menu;
+            }
+
             function closeAllMenus() {
                 document.querySelectorAll('.ellipsis-menu-content').forEach(menu => {
-                    menu.classList.remove('active');
+                    menu.remove();
                 });
             }
 
-            // Close menus when clicking outside
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.ellipsis-menu')) {
                     closeAllMenus();
