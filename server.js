@@ -412,7 +412,7 @@ app.get("/api/transcriptions", async (req, res) => {
     const result = await pool
       .request()
       .input("nombre_usuario", sql.NVarChar(150), req.session.user.nombre)
-      .query("SELECT id_transcripcion, nombre_archivo, CONVERT(varchar, fecha_subida, 120) AS fecha_subida, texto_transcrito FROM Historial_transcripciones WHERE nombre_usuario = @nombre_usuario");
+      .query("SELECT id_transcripcion, nombre_archivo, CONVERT(varchar, fecha_subida, 120) AS fecha_subida FROM Historial_transcripciones WHERE nombre_usuario = @nombre_usuario");
     res.json(result.recordset);
   } catch (error) {
     console.error("Error al obtener transcripciones:", error.message, error.stack);
