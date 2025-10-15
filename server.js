@@ -506,32 +506,91 @@ app.delete("/api/transcriptions/:id", async (req, res) => {
 // Ruta para registrar usuario
 app.post("/api/register", async (req, res) => {
   const { nombre, email, password } = req.body;
+  
+  // Validación básica
   if (!nombre || !email || !password) {
-    return res.status(400).json({ error: "Faltan datos" });
+    return res.status(400).json({ error: "Faltan datos requeridos" });
   }
 
-  // Validar que el email termine en @hrlatam.com
-  if (!email.endsWith("@hrlatam.com")) {
-    return res.status(400).json({ error: "El correo debe terminar en @hrlatam.com" });
+  const nombreLimpio = nombre.trim();
+  const emailLimpio = email.trim();
+
+  // VALIDACIÓN NOMBRE: Solo letras, acentos, ñ y espacios (SIN NÚMEROS)
+  const nombreRegex = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]+$/;
+  if (!nombreRegex.test(nombreLimpio)) {
+    return res.status(400).json({ error: "❌ El nombre solo permite letras, acentos, ñ y espacios (sin números)" });
+  }
+
+  // VALIDACIÓN EMAIL:
+  // 1. Debe terminar en @hrlatam.com
+  if (!emailLimpio.endsWith("@hrlatam.com")) {
+    return res.status(400).json({ error: "❌ El email debe terminar en @hrlatam.com" });
+  }
+
+  // 2. EXACTAMENTE UN SOLO @
+  const atCount = (emailLimpio.match(/@/g) || []).length;
+  if (atCount !== 1) {
+    return res.status(400).json({ error: "❌ El email debe tener exactamente un @" });
+  }
+
+  // 3. Formato básico válido
+  const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
+  if (!emailRegex.test(emailLimpio)) {
+    return res.status(400).json({ error: "❌ Formato de email inválido" });
+  }
+
+  // 4. Password mínimo 6 caracteres
+  if (password.length < 6) {
+    return res.status(400).json({ error: "❌ La contraseña debe tener al menos 6 caracteres" });
   }
 
   try {
     const pool = await sql.connect(dbConfig);
+
+    // VERIFICAR SI EMAIL YA EXISTE
+    const existingUser = await pool
+      .request()
+      .input("Email", sql.NVarChar(150), emailLimpio)
+      .query(`
+        SELECT COUNT(*) as count 
+        FROM UsuariosHRL 
+        WHERE Email = @Email
+      `);
+
+    if (existingUser.recordset[0].count > 0) {
+      return res.status(400).json({ error: "❌ Este email ya está registrado" });
+    }
+
+    // INSERTAR USUARIO NUEVO
     await pool
       .request()
-      .input("Nombre", sql.NVarChar(150), nombre)
-      .input("Email", sql.NVarChar(150), email)
-      .input("PasswordHash", sql.NVarChar(255), password)
-      .query(
-        "INSERT INTO UsuariosHRL (Nombre, Email, PasswordHash) VALUES (@Nombre, @Email, @PasswordHash)"
-      );
+      .input("Nombre", sql.NVarChar(150), nombreLimpio)
+      .input("Email", sql.NVarChar(150), emailLimpio)
+      .input("PasswordHash", sql.NVarChar(255), password) // ⚠️ En producción usa bcrypt
+      .input("FechaRegistro", sql.DateTime, new Date())
+      .query(`
+        INSERT INTO UsuariosHRL (Nombre, Email, PasswordHash, FechaRegistro) 
+        VALUES (@Nombre, @Email, @PasswordHash, @FechaRegistro)
+      `);
 
-    await updateRealtimeData(); // Actualizar tabla de datos en tiempo real después del registro
+    // Actualizar datos en tiempo real
+    await updateRealtimeData();
 
-    res.json({ message: "👍 Usuario registrado correctamente" });
+    res.status(201).json({ 
+      message: "👍 Usuario registrado correctamente",
+      email: emailLimpio 
+    });
+
   } catch (err) {
-    console.error("Error al registrar:", err.message, err.stack);
-    res.status(500).json({ error: "Error al registrar usuario", details: err.message });
+    console.error("❌ Error al registrar:", err.message, err.stack);
+    
+    // Detectar violación de constraint único
+    if (err.message.includes("Violation of UNIQUE KEY constraint") || 
+        err.message.includes("Cannot insert duplicate key")) {
+      return res.status(400).json({ error: "❌ El email ya está en uso" });
+    }
+    
+    res.status(500).json({ error: "❌ Error interno del servidor" });
   }
 });
 
