@@ -73,6 +73,23 @@
             background-color: #B91C1C;
         }
 
+        /* Botón Save mejorado */
+        .save-btn {
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .save-btn:disabled {
+            animation: none;
+            background-color: #059669 !important;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        }
+
         /* Fondo */
         body {
             background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%);
@@ -545,7 +562,7 @@
 
         #fileNameDisplay svg {
             flex-shrink: 0;
-            margin-right: 0.4rem; /* Reducido de 0.75rem a 0.4rem para juntar más */
+            margin-right: 0.4rem;
             stroke: #10B981;
             stroke-width: 1.5;
         }
@@ -572,7 +589,7 @@
             #fileNameDisplay svg {
                 width: 3.5px;
                 height: 3.5px;
-                margin-right: 0.3rem; /* Reducido para móviles */
+                margin-right: 0.3rem;
             }
             
             #transcriptHeader {
@@ -597,7 +614,7 @@
             #fileNameDisplay svg {
                 width: 3px;
                 height: 3px;
-                margin-right: 0.25rem; /* Aún más cerca en pantallas muy pequeñas */
+                margin-right: 0.25rem;
             }
         }
 
@@ -609,7 +626,7 @@
             #fileNameDisplay svg {
                 width: 1.25rem;
                 height: 1.25rem;
-                margin-right: 0.5rem; /* Reducido también para pantallas grandes */
+                margin-right: 0.5rem;
             }
         }
 
@@ -840,6 +857,13 @@
                 overlay.classList.add('hidden');
             });
 
+            function removeSaveButton() {
+                const existingSaveBtn = rightHeaderButtons.querySelector('.save-btn');
+                if (existingSaveBtn) {
+                    existingSaveBtn.remove();
+                }
+            }
+
             function handleFileChange(e) {
                 const file = e.target.files[0];
                 if (file) {
@@ -921,7 +945,6 @@
                     transcriptionList.innerHTML = '';
                     
                     transcriptions.forEach(transcription => {
-                        // Usar el nombre del archivo del historial
                         const displayName = transcription.nombre_archivo || 
                                           (transcription.filename || 'Transcripción sin nombre');
                         
@@ -952,7 +975,6 @@
                         });
                     });
 
-                    // Event listeners para ellipsis menus
                     document.querySelectorAll('.ellipsis-btn').forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             e.stopPropagation();
@@ -963,7 +985,6 @@
                             const menu = createEllipsisMenu(id, name);
                             document.body.appendChild(menu);
 
-                            // Posicionamiento del menú (código existente...)
                             const rect = btn.getBoundingClientRect();
                             const sidebarRect = sidebar.getBoundingClientRect();
                             const isMobile = window.innerWidth < 768;
@@ -985,7 +1006,6 @@
 
                             menu.classList.add('active');
 
-                            // Event listeners del menú
                             menu.querySelector('.edit-name').addEventListener('click', (e) => {
                                 e.preventDefault();
                                 currentEditId = id;
@@ -997,14 +1017,22 @@
 
                             menu.querySelector('.edit-transcription').addEventListener('click', (e) => {
                                 e.preventDefault();
+                                
+                                // REMOVER CUALQUIER BOTÓN SAVE ANTERIOR
+                                removeSaveButton();
+                                
+                                // HABILITAR EDICIÓN
                                 transcriptArea.removeAttribute('readonly');
                                 updateStatus('Editando transcripción. Presiona "Guardar" para guardar cambios.', 'text-yellow-400');
+                                
+                                // CREAR UN SOLO BOTÓN SAVE
                                 const saveBtn = document.createElement('button');
                                 saveBtn.type = 'button';
-                                saveBtn.className = 'btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold ml-[8px]  ';
+                                saveBtn.className = 'btn bg-emerald-500 text-white py-1 px-3 rounded-md font-semibold ml-2 save-btn';
                                 saveBtn.textContent = 'Guardar';
                                 saveBtn.onclick = () => handleSaveTranscription(id, saveBtn);
                                 rightHeaderButtons.appendChild(saveBtn);
+                                
                                 closeAllMenus();
                             });
 
@@ -1048,10 +1076,12 @@
                 downloadTxtBtn.disabled = true;
                 downloadDocxBtn.disabled = true;
 
-                transcriptArea.setAttribute('readonly', 'true');
-                const saveBtn = rightHeaderButtons.querySelector('.save-btn');
-                if (saveBtn) saveBtn.remove();
+                // LIMPIAR BOTÓN SAVE SI EXISTE
+                removeSaveButton();
 
+                // RESTAURAR MODO LECTURA
+                transcriptArea.setAttribute('readonly', 'true');
+                
                 fileNameDisplay.classList.add('hidden');
 
                 try {
@@ -1060,7 +1090,6 @@
                     
                     const data = await response.json();
                     
-                    // Priorizar nombre de la lista del historial, luego de la API, luego fallback
                     const fileName = nameFromList || 
                                    (data.nombre_archivo || data.filename || 'Transcripción sin nombre');
                     
@@ -1095,7 +1124,6 @@
                 textSpan.textContent = displayName;
                 fileNameDisplay.dataset.fullname = fullName;
                 
-                // Limpiar y reconstruir
                 fileNameDisplay.innerHTML = '';
                 fileNameDisplay.appendChild(icon.cloneNode(true));
                 fileNameDisplay.appendChild(textSpan);
@@ -1105,11 +1133,15 @@
 
             async function handleSaveTranscription(id, saveBtn) {
                 try {
+                    saveBtn.textContent = 'Guardando...';
+                    saveBtn.disabled = true;
+                    
                     const response = await fetch(`/api/transcriptions/${id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ texto_transcrito: transcriptArea.value })
                     });
+                    
                     if (response.ok) {
                         showAlert('Transcripción guardada correctamente.');
                         transcriptArea.setAttribute('readonly', 'true');
@@ -1117,10 +1149,17 @@
                         transcript = transcriptArea.value;
                         updateStatus('Transcripción guardada.', 'text-green-400');
                     } else {
-                        showAlert('Error al guardar la transcripción.');
+                        const errorData = await response.json();
+                        showAlert(`Error al guardar: ${errorData.error || 'Inténtalo de nuevo'}`);
                     }
                 } catch (error) {
                     showAlert('Error al guardar la transcripción.');
+                    console.error('Error saving transcription:', error);
+                } finally {
+                    if (saveBtn.parentNode) {
+                        saveBtn.remove();
+                    }
+                    transcriptArea.setAttribute('readonly', 'true');
                 }
             }
 
@@ -1161,7 +1200,6 @@
                 }
             }
 
-            // Resto de funciones sin cambios (handleCopy, handleDownloadTxt, etc.)
             function handleCopy() {
                 if (!transcriptArea.value.trim()) {
                     showAlert('No hay texto para copiar.');
@@ -1250,9 +1288,10 @@
                 downloadTxtBtn.disabled = true;
                 downloadDocxBtn.disabled = true;
                 
+                // LIMPIAR BOTÓN SAVE
+                removeSaveButton();
+                
                 fileNameDisplay.classList.add('hidden');
-                const saveBtn = rightHeaderButtons.querySelector('.save-btn');
-                if (saveBtn) saveBtn.remove();
                 
                 updateStatus('Selecciona una transcripción del historial o sube un nuevo archivo.', 'text-gray-400');
             }
